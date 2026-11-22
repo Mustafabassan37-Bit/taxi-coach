@@ -1,6 +1,7 @@
 // Offline-Unterstützung: erst Netz versuchen (damit Updates ankommen), sonst Cache.
-const CACHE = 'taxicoach-v1';
-const FILES = ['./', './index.html', './styles.css', './app.js', './icon.svg', './manifest.webmanifest'];
+const CACHE = 'taxicoach-v2';
+const FILES = ['./', './index.html', './styles.css', './app.js', './icon.svg', './icon-192.png', './icon-512.png',
+  './apple-touch-icon.png', './manifest.webmanifest'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)).then(() => self.skipWaiting()));
