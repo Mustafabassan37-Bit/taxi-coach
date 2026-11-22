@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" fill="#ffcc00"/>
+  <g fill="#101317">
+    <rect x="96" y="150" width="40" height="40"/><rect x="176" y="150" width="40" height="40"/>
+    <rect x="256" y="150" width="40" height="40"/><rect x="336" y="150" width="40" height="40"/>
+    <rect x="136" y="190" width="40" height="40"/><rect x="216" y="190" width="40" height="40"/>
+    <rect x="296" y="190" width="40" height="40"/><rect x="376" y="190" width="40" height="40"/>
+  </g>
+  <text x="256" y="350" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="900" font-size="120" fill="#101317">TAXI</text>
+</svg>

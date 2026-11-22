@@ -1,0 +1,15 @@
+{
+  "name": "Taxi Coach",
+  "short_name": "Taxi Coach",
+  "description": "Schicht, Fahrten und Umsatz für Taxifahrer – mit Coach für die besten Orte und Zeiten.",
+  "lang": "de",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#101317",
+  "theme_color": "#101317",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
