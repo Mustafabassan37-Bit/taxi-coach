@@ -152,3 +152,150 @@ window.HALTEPLAETZE = [
   [4, '037', 'Zentrale', 202, 'Bonner Wall 37', null, 0],
   [4, '008', 'Zülpicher Platz', 202, 'Hohenstaufenring 20', null, 0]
 ];
+
+// Kartenpositionen [Breite, Länge] in derselben Reihenfolge wie oben – aus OpenStreetMap
+// (© OpenStreetMap-Mitwirkende, ODbL) ermittelt. Ungefähr; null = nicht gefunden.
+window.HALTEPLAETZE_GEO = [
+  [50.91705, 6.93916], // B. K. Allee
+  [50.90481, 6.97192], // Bayenthalgürtel
+  [50.90169, 6.96476], // Bonotel
+  [50.90530, 6.95797], // Brühler Anna
+  [50.93916, 6.92228], // Conti
+  [50.90771, 6.91964], // Geisberg
+  [50.93089, 6.92295], // Hildegardis
+  [50.92410, 6.89711], // Hohenlind
+  [50.93666, 6.90761], // Hültzstr.
+  [50.93743, 6.86750], // Junkersdorf
+  [50.92275, 6.93528], // Justiz
+  [50.91206, 6.92440], // Klettenberggürtel
+  [50.86286, 6.92627], // Kölnberg
+  [50.92242, 6.84648], // Marsdorf
+  null, // Maternusplatz
+  [50.93759, 6.88073], // Müngersdorf
+  [50.87562, 6.94337], // Rondorf
+  [50.91450, 6.96174], // Koblenzer Str.
+  [50.91533, 6.92756], // Siebengebirgsallee
+  [50.92890, 6.90833], // Stadtwald
+  [50.92243, 6.92153], // Stelzmann
+  [50.92687, 6.93812], // Südbahnhof
+  [50.90036, 6.94438], // Südfriedhof
+  [50.86317, 7.00590], // Sürth
+  [50.92154, 6.93326], // Unicenter
+  [50.92321, 6.91780], // Uniklinik
+  [50.93721, 6.89425], // Voigtel
+  [50.93734, 6.83351], // Weiden
+  [50.88851, 7.00056], // Weißer Str.
+  [50.91059, 6.94141], // Zollstock
+  [50.92059, 6.91496], // Zülpicher Hof
+  [50.96917, 6.93950], // Bilderstöckchen
+  [50.96997, 6.86651], // Bocklemünd
+  [50.97633, 6.89083], // Butzweiler
+  [51.02073, 6.89786], // Chorweiler
+  [50.96186, 6.98179], // Colonia
+  [50.95344, 6.91972], // Ehrenfeldgürtel
+  [50.94650, 6.92556], // Franz Geuer
+  [50.95440, 6.91841], // Franziskus
+  [50.95101, 6.91537], // Helios
+  [50.99473, 6.92616], // Herforder
+  [50.95531, 6.93999], // Hornstr.
+  [50.97094, 6.88605], // Karl Bosch
+  [50.96009, 6.95404], // Kempener
+  [50.95690, 6.91916], // Lenauplatz
+  [50.95636, 6.93420], // Liebig
+  [50.99835, 6.90247], // Longerich
+  [50.94641, 6.89812], // Maarweg
+  [50.96009, 6.95404], // Neuss./Gürtel
+  [50.99306, 6.93994], // Neuss./Sollmann
+  [50.98927, 6.96168], // Niehl
+  [50.99955, 6.87904], // Pesch
+  [50.95040, 6.92793], // Peter Bauer
+  [50.98543, 6.88732], // Rich.-Byrd
+  [50.96392, 6.97630], // Riehl
+  [50.96580, 6.95385], // Scharnhorst
+  [50.95344, 6.91972], // Subbelrath
+  [50.95405, 6.93119], // SVA
+  null, // Widdersdorf
+  [50.95739, 6.89933], // Wilh-Mauser
+  [51.05255, 6.85219], // Worringen S-Bahn
+  [50.95892, 6.97242], // Zoo Bedarfs
+  [50.90884, 7.05540], // ABC-Tower
+  [50.94890, 7.07908], // Brück
+  [50.95098, 7.00516], // Buchforst
+  [50.97144, 7.00633], // Clevischer Ring
+  [50.97431, 7.07511], // Dellbrück
+  [50.94027, 6.97464], // Deutz Bhf
+  [50.94263, 6.98208], // Dorint Messe
+  [50.99639, 7.03807], // Dünnwald
+  [50.89928, 7.03079], // Ensen
+  [50.93641, 6.97823], // Gotenring
+  null, // Grengel
+  [50.94175, 7.02243], // Höhenberg
+  null, // Höhenhaus
+  [50.96946, 7.04471], // Holweide
+  [50.96653, 7.05753], // Holweide
+  [50.93039, 6.99667], // Humboldt
+  null, // Hyatt
+  [50.93520, 7.00239], // Kalk Karree
+  [50.93750, 6.99765], // Kalk Post
+  [50.93773, 7.00178], // Kapelle
+  [50.93773, 7.00178], // Kaufhof Kalk
+  [50.93749, 7.05236], // Klinikum
+  [50.91993, 7.09729], // Königsforst
+  [50.94797, 7.04514], // Merheim
+  [50.95790, 7.01224], // Mülheim Bhf
+  [50.96166, 7.00589], // Ostheim
+  [50.91609, 6.99217], // Poll
+  [50.89275, 7.05203], // Porz-Krhs.
+  [50.88376, 7.05893], // Porz-Mitte
+  [50.94399, 6.98623], // Radisson
+  [50.98120, 7.06957], // S-Bahn Dellbrück
+  [50.96704, 7.01040], // Schanzenstr.
+  [50.98618, 6.99842], // Stammheim
+  [50.93589, 7.06075], // Straßburger
+  [50.88156, 7.08141], // Urbach
+  [50.93307, 7.02185], // Vingst
+  [50.93915, 6.97881], // W.-Brandt-Platz
+  [50.85842, 7.07971], // Wahn (Bhf)
+  [50.96166, 7.00589], // Wiener Platz
+  null, // Zündorf
+  [50.94003, 6.95750], // Am Hof
+  null, // Barbarossaplatz
+  [50.93909, 6.95069], // Breite Str.
+  [50.93836, 6.93473], // Brüsseler
+  [50.94130, 6.95625], // Burgmauer
+  [50.92113, 6.95868], // Chlodwigplatz
+  null, // Barcelo, Hotel
+  [50.94001, 6.94509], // Helenenstr.
+  null, // Ebertplatz
+  [50.94122, 6.94025], // Friesenplatz
+  [50.94343, 6.94656], // Gereonsdriesch
+  [50.93575, 6.93894], // Habsburgerring
+  [50.93064, 6.94070], // Herz Jesu
+  [50.93640, 6.96098], // Heumarkt
+  [50.94517, 6.96093], // Hilton Köln
+  [50.94134, 6.94007], // Hohenzollernring
+  [50.94517, 6.96093], // Johannis
+  [50.94554, 6.94260], // K.-W.-Ring
+  [50.93543, 6.95615], // Kaufhof
+  [50.93147, 6.95118], // Kaygasse
+  [50.93809, 6.94200], // Kettengasse
+  [50.92330, 6.95152], // Kleingedank
+  [50.93504, 6.96140], // Maritim
+  [50.94554, 6.94260], // Mediapark
+  [50.93286, 6.93955], // Mozart
+  [50.93935, 6.95996], // Mühlengasse
+  [50.93604, 6.94909], // Neumarkt
+  [50.93783, 6.95285], // Oper
+  [50.94024, 6.96146], // Philharmonie
+  [50.93575, 6.93894], // Pilgrimstr.
+  [50.95386, 6.96272], // Reichensperger
+  [50.94009, 6.94250], // Renaissance
+  [50.93295, 6.96290], // Rheinau
+  [50.94074, 6.94305], // Römergasse
+  [50.93607, 6.94136], // Rudolfplatz
+  [50.92862, 6.95746], // Severinshof
+  [50.93247, 6.95633], // Waidmarkt
+  [50.92999, 6.94515], // Weyerstr.
+  [50.91758, 6.95237], // Zentrale
+  [50.93064, 6.94070], // Zülpicher Platz
+];

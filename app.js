@@ -8,6 +8,7 @@ const DEFAULTS = {
   settings: {
     goal: 200,            // Tagesziel Umsatz in Euro
     share: 100,           // mein Anteil am Umsatz in Prozent (Angestellte z. B. 40–50)
+    aiModel: 'opus',      // 'opus' = beste Qualität, 'haiku' = sparsam
     tariffMode: 'koeln',  // 'koeln' = amtlicher Kölner Tarif, 'custom' = eigene Werte unten
     tariff: { base: 4.9, km1: 2.9, km1Until: 0, km2: 2.9, waitPerHour: 36, large: 6 },
     places: ['Hauptbahnhof', 'Bf Messe/Deutz', 'Flughafen', 'Altstadt/Heumarkt', 'Ringe', 'Zülpicher Str.',
@@ -67,9 +68,18 @@ let tab = 'heute';
 let period = 'woche';
 
 // Halteplätze aus halteplaetze.js: [Kanal, Nr., Name, Zone, Lage, Plätze, Rufsäule, Zeiten]
-const HP = (window.HALTEPLAETZE || []).map(a => ({
-  ch: a[0], nr: a[1], name: a[2], zone: a[3], lage: a[4], n: a[5], rs: !!a[6], hrs: a[7] || ''
+// Kartenpositionen (aus OpenStreetMap ermittelt) stehen als zweite Liste in derselben Datei.
+const GEO = window.HALTEPLAETZE_GEO || [];
+// Umfeld je Platz (aus OpenStreetMap gezählt): [[Anzahl je Art in der Reihenfolge von UMFELD_ARTEN], [auffällige Namen]]
+const UMFELD = window.HALTEPLAETZE_UMFELD || [];
+const UMFELD_ARTEN = ['bahnhof', 'hotel', 'klinik', 'bahnbetrieb', 'event', 'nacht', 'restaurant', 'buero',
+  'versicherung', 'industrie', 'pflege', 'arzt', 'einkauf', 'uni'];
+const HP = (window.HALTEPLAETZE || []).map((a, i) => ({
+  ch: a[0], nr: a[1], name: a[2], zone: a[3], lage: a[4], n: a[5], rs: !!a[6], hrs: a[7] || '', pos: GEO[i] || null,
+  env: UMFELD[i] ? Object.fromEntries(UMFELD_ARTEN.map((k, j) => [k, UMFELD[i][0][j] || 0])) : null,
+  envNames: UMFELD[i] ? UMFELD[i][1] || [] : []
 }));
+let hpNear = false;
 const CHANNELS = { 1: 'Süd und West', 2: 'Nord und Ehrenfeld', 3: 'Rechtsrheinisch', 4: 'Innenstadt' };
 let hpQuery = '';
 let hpChan = 0;
@@ -530,7 +540,9 @@ function viewCoach() {
       <p class="muted small">Allgemeine Erfahrungswerte. Deine eigenen Zahlen unten sind genauer, sobald genug Fahrten eingetragen sind.</p>
     </section>
     ${season ? `<section class="card hint warn"><h2>Gerade in Köln: ${esc(season.title)}</h2><p>${esc(season.text)}</p></section>` : ''}
+    ${potentialCard(now)}
     ${standCard(now)}
+    ${sourceCard()}
     ${bestCard}
     <section class="card">
       <h2>Deine starken Zeiten</h2>
@@ -542,6 +554,119 @@ function viewCoach() {
       <h2>${TIPS.length} Regeln für mehr Umsatz in Köln</h2>
       <ol class="tips">${TIPS.map(t => `<li>${esc(t)}</li>`).join('')}</ol>
     </section>`;
+}
+
+/* ---------- Eigener Standort (GPS) ---------- */
+
+// Der Standort bleibt im Arbeitsspeicher dieses Geräts: Er wird nicht gespeichert und nirgendwohin gesendet.
+let myPos = null; // { lat, lon, acc, t }
+
+function distM(a, b) {
+  const R = 6371000, rad = x => x * Math.PI / 180;
+  const dLat = rad(b[0] - a[0]), dLon = rad(b[1] - a[1]);
+  const h = Math.sin(dLat / 2) ** 2 + Math.cos(rad(a[0])) * Math.cos(rad(b[0])) * Math.sin(dLon / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(h));
+}
+const fmtDist = m => m < 1000 ? Math.round(m / 10) * 10 + ' m' : (m / 1000).toFixed(1).replace('.', ',') + ' km';
+const posFresh = () => !!myPos && Date.now() - myPos.t < 10 * 60000;
+
+function locate() {
+  return new Promise((resolve, reject) => {
+    if (!navigator.geolocation) return reject(new Error('Dieses Gerät kann keinen Standort liefern.'));
+    navigator.geolocation.getCurrentPosition(
+      p => { myPos = { lat: p.coords.latitude, lon: p.coords.longitude, acc: p.coords.accuracy, t: Date.now() }; resolve(myPos); },
+      e => reject(new Error(e.code === 1 ? 'Standort nicht erlaubt. Bitte im Handy für diese App freigeben.'
+        : e.code === 3 ? 'Der Standort hat zu lange gedauert. Bitte noch einmal versuchen.'
+        : 'Der Standort ist gerade nicht verfügbar.')),
+      { enableHighAccuracy: true, timeout: 12000, maximumAge: 30000 });
+  });
+}
+
+function nearby(limit) {
+  if (!myPos) return [];
+  const me = [myPos.lat, myPos.lon];
+  return HP.filter(p => p.pos).map(p => ({ p, d: distM(me, p.pos) })).sort((a, b) => a.d - b.d).slice(0, limit);
+}
+
+// Manche Plätze gelten nur zu bestimmten Zeiten, z. B. „6–22“ oder über Mitternacht „22–6“
+function hpOpenNow(p, now = Date.now()) {
+  if (!p.hrs) return true;
+  const [a, b] = p.hrs.split('–').map(Number);
+  const h = new Date(now).getHours();
+  return a < b ? h >= a && h < b : h >= a || h < b;
+}
+
+/* ---------- Umfeld und geschätztes Potenzial (aus Kartendaten, keine Messung) ---------- */
+
+// Gewicht je Art und Tageszeit: [Nacht 0–4, Früh 4–9, Vormittag 9–12, Mittag 12–16, Feierabend 16–20, Abend 20–24].
+// „frei“ gilt an freien Tagen bzw. in Ausgeh-Nächten, „satt“ = ab so vielen Einrichtungen zählt mehr kaum noch.
+// Das sind Erfahrungs-Annahmen, keine gemessenen Umsätze – eigene Messungen sind immer genauer.
+const POTENZIAL = {
+  bahnhof:      { label: ['Bahnhof', 'Bahnhöfe'],             tag: [1.5, 2.5, 2, 2, 3, 2.5],     frei: [2, 1.5, 2, 2, 2.5, 2.5],     satt: 2 },
+  hotel:        { label: ['Hotel', 'Hotels'],                 tag: [0.5, 3, 1.5, 1, 2, 2],       frei: [1, 2, 2, 1, 1.5, 2],         satt: 8 },
+  klinik:       { label: ['Klinik', 'Kliniken'],              tag: [1, 1.5, 3, 2.5, 2, 1],       frei: [1, 1, 2, 2, 1.5, 1],         satt: 2 },
+  bahnbetrieb:  { label: ['Bahn-Betrieb', 'Bahn-Betriebe'],   tag: [2, 2, 1, 1, 1.5, 1.5],       frei: [2, 1.5, 1, 1, 1, 1.5],       satt: 2 },
+  event:        { label: ['Veranstaltungsort', 'Veranstaltungsorte'], tag: [0.5, 0, 0.3, 0.5, 1, 3], frei: [1, 0, 0.5, 1, 1.5, 3],   satt: 4, party: true },
+  nacht:        { label: ['Lokal', 'Lokale'],                 tag: [1.5, 0, 0, 0.2, 0.5, 2],     frei: [4, 0.5, 0, 0.3, 1, 3],       satt: 25, party: true },
+  restaurant:   { label: ['Restaurant', 'Restaurants'],       tag: [0.2, 0, 0.2, 0.7, 0.5, 1.5], frei: [0.5, 0, 0.3, 1, 1, 2],       satt: 30, party: true },
+  buero:        { label: ['Büro', 'Büros'],                   tag: [0, 1, 1.5, 1.5, 2.5, 0.5],   frei: [0, 0, 0.2, 0.2, 0.2, 0],     satt: 40 },
+  versicherung: { label: ['Versicherung', 'Versicherungen'],  tag: [0, 0.5, 1, 1, 1.5, 0.2],     frei: [0, 0, 0, 0, 0, 0],           satt: 3 },
+  industrie:    { label: ['Betrieb', 'Betriebe'],             tag: [0.3, 1, 0.5, 1, 1, 0.7],     frei: [0.2, 0.3, 0.2, 0.3, 0.3, 0.3], satt: 3 },
+  pflege:       { label: ['Pflegeheim', 'Pflegeheime'],       tag: [0, 0.5, 1.5, 1.5, 0.5, 0],   frei: [0, 0.3, 1, 1, 0.5, 0],       satt: 2 },
+  arzt:         { label: ['Arztpraxis', 'Arztpraxen'],        tag: [0, 0.5, 2, 1.5, 1, 0],       frei: [0, 0, 0.2, 0.2, 0, 0],       satt: 15 },
+  einkauf:      { label: ['Einkaufszentrum', 'Einkaufszentren'], tag: [0, 0, 1, 1.5, 1.5, 0.3],  frei: [0, 0, 1.5, 2, 1.5, 0.3],     satt: 2 },
+  uni:          { label: ['Hochschule', 'Hochschulen'],       tag: [0, 0.3, 0.5, 0.5, 0.5, 0.2], frei: [0, 0, 0, 0, 0, 0],           satt: 2 }
+};
+const HAS_UMFELD = HP.some(p => p.env);
+
+function potential(p, now = Date.now()) {
+  if (!p.env) return null;
+  const d = dow(now), h = new Date(now).getHours();
+  const slot = h < 4 ? 0 : h < 9 ? 1 : h < 12 ? 2 : h < 16 ? 3 : h < 20 ? 4 : 5;
+  const freeDay = d >= 5;                                                   // Samstag, Sonntag
+  const partyTime = ((d === 5 || d === 6) && h < 5) || ((d === 4 || d === 5) && h >= 20);
+  const parts = [];
+  let score = 0;
+  for (const k of UMFELD_ARTEN) {
+    const n = p.env[k];
+    if (!n) continue;
+    const def = POTENZIAL[k];
+    const wgt = (def.party ? partyTime : freeDay) ? def.frei[slot] : def.tag[slot];
+    const v = wgt * Math.min(1, Math.sqrt(n / def.satt));
+    if (v > 0) { score += v; parts.push({ k, v }); }
+  }
+  parts.sort((a, b) => b.v - a.v);
+  return { score, why: parts.slice(0, 2).map(x => POTENZIAL[x.k].label[p.env[x.k] === 1 ? 0 : 1]) };
+}
+
+// Kurzbeschreibung des Umfelds, wichtigste Arten zuerst
+function envLine(p, max = 5) {
+  if (!p.env) return '';
+  return UMFELD_ARTEN.filter(k => p.env[k] > 0).slice(0, max)
+    .map(k => p.env[k] === 1 ? POTENZIAL[k].label[0] : `${p.env[k]} ${POTENZIAL[k].label[1]}`).join(' · ');
+}
+
+function potentialRanking(now, list, limit) {
+  return list.filter(p => p.env && hpOpenNow(p, now)).map(p => ({ p, pot: potential(p, now) }))
+    .filter(x => x.pot.score > 0).sort((a, b) => b.pot.score - a.pot.score).slice(0, limit);
+}
+
+function potentialCard(now) {
+  if (!HAS_UMFELD) return '';
+  const me = posFresh() ? [myPos.lat, myPos.lon] : null;
+  const row = (x, i) => `<tr><td>${i + 1}. ${esc(x.p.name)}</td><td>${esc(x.pot.why.join(', '))}</td>
+    <td>${me && x.p.pos ? fmtDist(distM(me, x.p.pos)) : ''}</td></tr>`;
+  const table = (rows, third) => `<table class="t"><tr><th>Platz</th><th>Warum</th><th>${third}</th></tr>${rows.map(row).join('')}</table>`;
+  const nearList = me ? potentialRanking(now, HP.filter(p => p.pos && distM(me, p.pos) <= 3000), 5) : [];
+  const all = potentialRanking(now, HP, 8);
+  return `<section class="card hint">
+    <h2>Geschätztes Potenzial jetzt</h2>
+    <p class="muted small">Aus der Karte berechnet: Was liegt rund um den Platz (Bahnhöfe, Hotels, Kliniken, Büros, Lokale …) und wann ist dort üblicherweise Betrieb? Eine Schätzung, keine gemessenen Umsätze.</p>
+    ${me ? (nearList.length ? `<h3>In deiner Nähe (bis 3 km Luftlinie)</h3>${table(nearList, 'Weg')}` : '<p class="muted">Kein passender Platz im Umkreis von 3 km.</p>')
+      : '<button class="btn" data-act="geoCoach" style="margin-bottom:10px">📍 Standort abrufen – beste Plätze in meiner Nähe</button>'}
+    <h3>Ganz Köln</h3>
+    ${table(all, me ? 'Weg' : '')}
+  </section>`;
 }
 
 /* ---------- Halteplätze: Standort, Rangliste, Verzeichnis ---------- */
@@ -559,7 +684,10 @@ function standListHtml(query) {
   const btn = (name, sub) => `<li><button type="button" class="btn pick" data-act="standSet" data-name="${esc(name)}">
       <span>${esc(name)}</span>${sub ? `<span class="sub">${esc(sub)}</span>` : ''}</button></li>`;
   if (!q) {
-    return `<p class="muted small">Meine Orte – oder oben tippen, um alle ${HP.length} Halteplätze zu durchsuchen.</p>
+    const near = posFresh() ? nearby(5) : [];
+    const nearHtml = near.length ? `<p class="muted small">In deiner Nähe (Luftlinie)</p>
+      <ul class="list picks">${near.map(x => btn(x.p.name, `${fmtDist(x.d)} · ${x.p.lage}${hpOpenNow(x.p) ? '' : ' · jetzt nicht in Betrieb'}`)).join('')}</ul>` : '';
+    return `${nearHtml}<p class="muted small">Meine Orte – oder oben tippen, um alle ${HP.length} Halteplätze zu durchsuchen.</p>
       <ul class="list picks">${S.settings.places.map(p => btn(p, '')).join('')}</ul>`;
   }
   const seen = new Set();
@@ -573,6 +701,7 @@ function standListHtml(query) {
 function standSheet() {
   return `<h2>Wo stehst du?</h2>
     <label class="f"><input id="standSearch" type="text" placeholder="Halteplatz oder Straße suchen" autocomplete="off"></label>
+    <p class="muted small" id="standGeo">${HP.some(p => p.pos) && !posFresh() ? 'Standort wird gesucht …' : ''}</p>
     <div id="standList">${standListHtml('')}</div>
     <button type="button" class="btn ghost" data-act="sheetClose" style="margin-top:10px">Abbrechen</button>`;
 }
@@ -636,8 +765,14 @@ function standCard(now) {
 
 function hpMatches() {
   const q = hpQuery.trim().toLowerCase();
-  return HP.filter(p => (!hpChan || p.ch === hpChan) &&
+  const list = HP.filter(p => (!hpChan || p.ch === hpChan) &&
     (!q || (p.name + ' ' + p.lage + ' zone ' + p.zone + ' ' + (p.nr || '')).toLowerCase().includes(q)));
+  if (hpNear && myPos) {   // nach Entfernung sortieren; Plätze ohne Kartenposition ans Ende
+    const me = [myPos.lat, myPos.lon];
+    const d = p => p.pos ? distM(me, p.pos) : Infinity;
+    list.sort((a, b) => d(a) - d(b));
+  }
+  return list;
 }
 
 function hpListHtml() {
@@ -645,11 +780,14 @@ function hpListHtml() {
   if (!list.length) return '<p class="muted">Kein Halteplatz gefunden.</p>';
   return `<ul class="list hp">${list.map(p => {
     const fav = S.settings.places.includes(p.name);
-    const meta = ['Kanal ' + p.ch, 'Zone ' + p.zone, p.nr ? 'Nr. ' + p.nr : '', p.n ? p.n + ' Plätze' : '',
-      p.rs ? 'Rufsäule' : '', p.hrs ? 'nur ' + p.hrs + ' Uhr' : ''].filter(Boolean).join(' · ');
+    const away = myPos && p.pos ? fmtDist(distM([myPos.lat, myPos.lon], p.pos)) + ' Luftlinie' : '';
+    const meta = [away, 'Kanal ' + p.ch, 'Zone ' + p.zone, p.nr ? 'Nr. ' + p.nr : '', p.n ? p.n + ' Plätze' : '',
+      p.rs ? 'Rufsäule' : '', p.hrs ? 'nur ' + p.hrs + ' Uhr' + (hpOpenNow(p) ? '' : ' (jetzt nicht in Betrieb)') : ''].filter(Boolean).join(' · ');
     const dest = encodeURIComponent(p.lage + ', ' + p.name + ', Köln');
     return `<li>
-      <div class="grow"><div><b>${esc(p.name)}</b></div><div class="sub">${esc(p.lage)}</div><div class="sub">${esc(meta)}</div></div>
+      <div class="grow"><div><b>${esc(p.name)}</b></div><div class="sub">${esc(p.lage)}</div><div class="sub">${esc(meta)}</div>
+        ${p.env && envLine(p) ? `<div class="sub">Umfeld: ${esc(envLine(p))}</div>` : ''}
+        ${p.envNames.length ? `<div class="sub">z. B. ${esc(p.envNames.join(', '))}</div>` : ''}</div>
       <button class="x star ${fav ? 'on' : ''}" data-act="hpFav" data-name="${esc(p.name)}"
         aria-label="${fav ? 'Aus meinen Orten entfernen' : 'Zu meinen Orten hinzufügen'}">${fav ? '★' : '☆'}</button>
       <a class="btn route" href="https://www.google.com/maps/dir/?api=1&amp;destination=${dest}" target="_blank" rel="noopener">Route</a>
@@ -671,11 +809,14 @@ function updateHp() {
 
 function viewPlaces() {
   if (!HP.length) return '<section class="card"><p class="muted">Die Halteplatzliste ist auf diesem Gerät nicht geladen.</p></section>';
-  return `<label class="f"><input id="hpSearch" type="text" placeholder="Halteplatz, Straße oder Zone suchen" value="${esc(hpQuery)}" autocomplete="off"></label>
+  const geoBtn = HP.some(p => p.pos)
+    ? `<button class="btn ${hpNear ? 'primary' : ''}" data-act="hpNear" style="margin-bottom:12px">📍 ${hpNear ? 'Sortiert nach Entfernung – tippen zum Ausschalten' : 'Plätze in meiner Nähe'}</button>` : '';
+  return `${geoBtn}<label class="f"><input id="hpSearch" type="text" placeholder="Halteplatz, Straße oder Zone suchen" value="${esc(hpQuery)}" autocomplete="off"></label>
     <div class="chips">${[0, 1, 2, 3, 4].map(c => `<label class="chip"><input type="radio" name="hpChan" value="${c}" ${hpChan === c ? 'checked' : ''}><span>${c ? 'Kanal ' + c : 'Alle'}</span></label>`).join('')}</div>
     <p class="muted small" id="hpInfo">${esc(hpInfoText())}</p>
     <section class="card" id="hpList">${hpListHtml()}</section>
-    <p class="muted small">Halteplatzliste TAXI RUF Köln, Stand Januar 2023. Mit ☆ kommt ein Platz in „Meine Orte“ und ist dann mit einem Tipp wählbar. „Route“ öffnet Google Maps.</p>`;
+    <p class="muted small">Halteplatzliste TAXI RUF Köln, Stand Januar 2023. Mit ☆ kommt ein Platz in „Meine Orte“ und ist dann mit einem Tipp wählbar. „Route“ öffnet Google Maps.</p>
+    <p class="muted small">Entfernungen sind Luftlinie und die Kartenpositionen ungefähr (aus OpenStreetMap) – der Rhein kann dazwischen liegen. Dein Standort bleibt auf dem Handy.</p>`;
 }
 
 /* ---------- KI-Berater (Claude) ---------- */
@@ -683,8 +824,12 @@ function viewPlaces() {
 // Der Schlüssel liegt getrennt von den Fahrdaten und nur auf diesem Gerät:
 // Er steht nicht im Programmcode und kommt nicht in die Sicherungsdatei.
 const AI_KEY = 'taxicoach.aikey';
-const AI_MODEL = 'claude-opus-5-5';
-const AI_PRICE = { input: 4, output: 20 }; // US-Dollar je 1 Mio. Tokens (Listenpreis, nur für die Kostenschätzung)
+// Preise in US-Dollar je 1 Mio. Tokens (Listenpreis, nur für die Kostenschätzung in der App)
+const AI_MODELS = {
+  opus: { id: 'claude-opus-5-5', label: 'Beste Qualität (Opus)', input: 4, output: 20 },
+  haiku: { id: 'claude-haiku-5-5', label: 'Sparsam (Haiku)', input: 0.1, output: 0.5 }
+};
+const aiModel = () => AI_MODELS[S.settings.aiModel] || AI_MODELS.opus;
 let ai = { loading: false, text: '', error: '', t: 0, cost: null };
 
 function getAiKey() { try { return localStorage.getItem(AI_KEY) || ''; } catch (e) { return ''; } }
@@ -700,7 +845,7 @@ function aiSystemPrompt() {
   }).join('\n');
   return `Du bist der Umsatz-Berater in einer App für einen Taxifahrer in Köln, der neu im Beruf ist. Er fragt dich während der Schicht, wohin er als Nächstes fahren soll, und liest deine Antwort im stehenden Auto auf dem Handy.
 
-Du bekommst die aktuelle Zeit, das Wetter, seine eigenen Messungen je Halteplatz und einen allgemeinen Erfahrungswert. Seine eigenen Messungen sind die beste Grundlage, aber nur, wenn genug Fahrten dahinterstehen. Bei weniger als etwa 5 Fahrten an einem Platz ist die Zahl ein Hinweis und kein Beweis; sag das dann offen und stütze dich stärker auf Uhrzeit, Wochentag, Wetter und das, was über Köln allgemein bekannt ist. Erfinde keine Zahlen, Veranstaltungen oder Zugzeiten: Den heutigen Veranstaltungskalender kennst du nicht.
+Du bekommst die aktuelle Zeit, das Wetter, seine eigenen Messungen je Halteplatz, eine grobe Schätzung aus Kartendaten (welche Einrichtungen rund um einen Platz liegen) und einen allgemeinen Erfahrungswert. Seine eigenen Messungen sind die beste Grundlage, aber nur, wenn genug Fahrten dahinterstehen. Bei weniger als etwa 5 Fahrten an einem Platz ist die Zahl ein Hinweis und kein Beweis; sag das dann offen und stütze dich stärker auf Uhrzeit, Wochentag, Wetter und das, was über Köln allgemein bekannt ist. Erfinde keine Zahlen, Veranstaltungen oder Zugzeiten: Den heutigen Veranstaltungskalender kennst du nicht.
 
 Antworte auf Deutsch in einfachen, kurzen Sätzen, ohne Fachwörter und ohne Formatierungszeichen. Nenne zuerst einen konkreten Halteplatz aus der Liste unten, dann in einem Satz den Grund, dann eine Ausweichmöglichkeit. Wenn er gerade an einem Platz steht, sag klar, ob er bleiben oder wechseln soll. Höchstens fünf Sätze.
 
@@ -746,6 +891,16 @@ function aiContext(now, weather) {
   slots.sort((a, b) => b.v - a.v);
   if (slots.length) L.push('', 'Stärkste Zeitfenster bisher: ' + slots.slice(0, 5).map(s => `${s.label} ${Math.round(s.v)} € pro Stunde`).join('; '));
 
+  if (posFresh()) {
+    const near = nearby(5);
+    if (near.length) L.push('', 'Nächste Halteplätze zu meinem Standort (Luftlinie):',
+      near.map(x => `- ${x.p.name}, ${fmtDist(x.d)}${envLine(x.p) ? ' – Umfeld: ' + envLine(x.p) : ''}`).join('\n'));
+  }
+  if (HAS_UMFELD) {
+    const top = potentialRanking(now, HP, 8);
+    if (top.length) L.push('', 'Geschätztes Potenzial jetzt laut Kartendaten (grobe Schätzung aus dem Umfeld, keine Messung):',
+      top.map(x => `- ${x.p.name}: ${envLine(x.p)}`).join('\n'));
+  }
   L.push('', 'Meine Orte: ' + S.settings.places.join(', '));
   const adv = slotAdvice(now);
   L.push(`Allgemeiner Erfahrungswert der App für diese Uhrzeit: ${adv.title} – ${adv.places.join(', ')}. ${adv.text}`);
@@ -794,8 +949,9 @@ async function askAi() {
     const weather = await fetchWeather();
     // Der Schlüssel gehört dem Nutzer und liegt nur auf seinem Gerät; deshalb darf der Aufruf direkt aus der App kommen.
     const client = new Anthropic({ apiKey: key, dangerouslyAllowBrowser: true, maxRetries: 1, timeout: 60000 });
+    const model = aiModel();
     const response = await client.beta.messages.create({
-      model: AI_MODEL,
+      model: model.id,
       max_tokens: 4096,
       betas: ['server-side-fallback-2026-07-01'],
       fallbacks: 'default',               // lehnt das Modell ab, versucht der Server es mit dem vorgesehenen Ersatzmodell
@@ -807,7 +963,7 @@ async function askAi() {
     const text = response.content.filter(b => b.type === 'text').map(b => b.text).join('\n').trim();
     if (!text) return fail(response.stop_reason === 'max_tokens' ? 'Die Antwort wurde abgeschnitten. Bitte noch einmal fragen.' : 'Die KI hat keine Antwort geliefert. Bitte noch einmal fragen.');
     const u = response.usage;
-    const cost = u ? (u.input_tokens * AI_PRICE.input + u.output_tokens * AI_PRICE.output) / 1e6 : null;
+    const cost = u ? (u.input_tokens * model.input + u.output_tokens * model.output) / 1e6 : null;
     ai = { loading: false, text, error: '', t: now, cost };
     if (!sheetOpen()) render();
   } catch (err) {
@@ -819,6 +975,46 @@ async function askAi() {
     else if (err instanceof Anthropic.APIError) fail(`Die KI ist gerade nicht erreichbar (Fehler ${err.status || '?'}). Bitte später noch einmal versuchen.`);
     else fail('Unerwarteter Fehler bei der KI-Anfrage.');
   }
+}
+
+// Kostenloser Weg mit Claude-Abo: Frage samt Zahlen kopieren und in der Claude-App einfügen
+async function copyForClaude() {
+  const weather = await fetchWeather();
+  const text = aiSystemPrompt() + '\n\n' + aiContext(Date.now(), weather);
+  try {
+    await navigator.clipboard.writeText(text);
+    toast('Kopiert – jetzt in der Claude-App einfügen');
+  } catch (e) {   // Zwischenablage gesperrt: Text zum Markieren anzeigen
+    openSheet(`<h2>Text für die Claude-App</h2>
+      <p class="muted small">Alles markieren, kopieren und in der Claude-App einfügen.</p>
+      <textarea readonly style="min-height:50vh">${esc(text)}</textarea>
+      <button type="button" class="btn" data-act="sheetClose" style="margin-top:10px">Schließen</button>`);
+  }
+}
+
+// Wo kommen Funk- und App-Aufträge her? Aus der Angabe „Wie kam die Fahrt?“ je Einstiegsort
+function sourceCard() {
+  const m = new Map();
+  for (const r of S.rides) {
+    if (!r.place) continue;
+    const o = m.get(r.place) || { place: r.place, funk: 0, app: 0, stand: 0, n: 0 };
+    o.n++;
+    if (r.src === 'Funk') o.funk++; else if (r.src === 'App') o.app++; else if (r.src === 'Halteplatz') o.stand++;
+    m.set(r.place, o);
+  }
+  const list = [...m.values()].sort((a, b) => (b.funk + b.app) - (a.funk + a.app) || b.n - a.n).slice(0, 10);
+  if (!list.length) {
+    return `<section class="card"><h2>Wo kommen Funk-Aufträge?</h2>
+      <p class="muted">Noch keine Daten. Wähle beim Eintragen jeder Fahrt unter „Wie kam die Fahrt?“ aus, ob sie über Funk, App oder direkt am Halteplatz kam – dann siehst du hier, an welchem Platz welche Aufträge kommen.</p></section>`;
+  }
+  const zone = name => { const p = HP.find(x => x.name === name); return p ? ` <span class="muted small">Zone ${p.zone}</span>` : ''; };
+  return `<section class="card"><h2>Wo kommen Funk-Aufträge?</h2>
+    <table class="t">
+      <tr><th>Platz</th><th>Funk</th><th>App</th><th>Einsteiger</th><th>Alle</th></tr>
+      ${list.map(o => `<tr><td>${esc(o.place)}${zone(o.place)}</td><td><b>${o.funk}</b></td><td>${o.app}</td><td>${o.stand}</td><td>${o.n}</td></tr>`).join('')}
+    </table>
+    <p class="muted small" style="margin-top:8px">Aus deinen eigenen Fahrten, sortiert nach Funk und App.</p>
+  </section>`;
 }
 
 function aiCard() {
@@ -843,7 +1039,8 @@ function aiCard() {
   return `<section class="card hint">
     <h2>🤖 KI-Berater</h2>
     ${body}
-    <p class="muted small" style="margin-top:10px">Die KI bekommt Uhrzeit, Wetter und deine Zahlen je Halteplatz – keine Namen und keine Fahrgastdaten. Jede Frage kostet einen kleinen Betrag von deinem Anthropic-Guthaben.</p>
+    <button class="btn" data-act="aiCopy" style="margin-top:10px">Frage für die Claude-App kopieren (kostenlos mit Abo)</button>
+    <p class="muted small" style="margin-top:10px">Die KI bekommt Uhrzeit, Wetter und deine Zahlen je Halteplatz – keine Namen und keine Fahrgastdaten. Hast du deinen Standort abgerufen, bekommt sie die Namen der nächsten Halteplätze, nicht deine genaue Position. Der Knopf „KI fragen“ kostet einen kleinen Betrag von deinem Anthropic-Guthaben (Modell: ${esc(aiModel().label)}).</p>
   </section>`;
 }
 
@@ -1057,6 +1254,8 @@ function settingsForm() {
       <label class="f"><span>KI-Schlüssel von Anthropic (${getAiKey() ? 'ist gespeichert – leer lassen, um ihn zu behalten' : 'noch keiner gespeichert'})</span>
         <input name="aikey" type="password" autocomplete="off" placeholder="sk-ant-…"></label>
       <p class="muted small">Der Schlüssel bleibt nur auf diesem Gerät. Er steht nicht im Programm und nicht in der Sicherung.</p>
+      <span class="muted small">KI-Modell – Haiku kostet nach Listenpreis etwa ein Vierzigstel von Opus</span>
+      <div class="chips">${Object.keys(AI_MODELS).map(k => `<label class="chip"><input type="radio" name="aimodel" value="${k}" ${aiModel() === AI_MODELS[k] ? 'checked' : ''}><span>${AI_MODELS[k].label}</span></label>`).join('')}</div>
       ${getAiKey() ? '<button type="button" class="btn danger" data-act="aiKeyDel" style="margin-bottom:12px">KI-Schlüssel löschen</button>' : ''}
       <div class="row">
         <button type="button" class="btn ghost" data-act="sheetClose">Abbrechen</button>
@@ -1130,7 +1329,29 @@ const ACTIONS = {
     save(); render(); toast('Schicht beendet');
   },
   rideNew() { openSheet(rideForm()); },
-  standPick() { if (activeShift()) openSheet(standSheet()); },
+  standPick() {
+    if (!activeShift()) return;
+    openSheet(standSheet());
+    if (!HP.some(p => p.pos) || posFresh()) return;
+    // Standort holen und die nächsten Plätze oben einblenden – solange noch nichts getippt wurde
+    const done = msg => { const el = $('#standGeo'); if (el) el.textContent = msg; };
+    locate().then(() => {
+      done('');
+      const s = $('#standSearch');
+      if (s && !s.value) $('#standList').innerHTML = standListHtml('');
+    }).catch(err => done(err.message));
+  },
+  hpNear() {
+    if (hpNear) { hpNear = false; return render(); }
+    toast('Standort wird gesucht …');
+    locate().then(() => { hpNear = true; if (tab === 'plaetze') render(); })
+      .catch(err => toast(err.message));
+  },
+  aiCopy() { copyForClaude(); },
+  geoCoach() {
+    toast('Standort wird gesucht …');
+    locate().then(() => { if (tab === 'coach' && !sheetOpen()) render(); }).catch(err => toast(err.message));
+  },
   standSet(el) {
     closeStand();
     S.stand = { name: el.dataset.name, since: Date.now() };
@@ -1241,6 +1462,7 @@ const FORMS = {
       waitPerHour: Math.max(0, num(f.waitPerHour.value)),
       large: Math.max(0, num(f.large.value))
     };
+    s.aiModel = AI_MODELS[f.aimodel.value] ? f.aimodel.value : 'opus';
     const key = f.aikey.value.trim();
     if (key) setAiKey(key);
     save(); closeSheet(); render();

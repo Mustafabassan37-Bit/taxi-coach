@@ -1,5 +1,5 @@
 // Offline-Unterstützung: erst Netz versuchen (damit Updates ankommen), sonst Cache.
-const CACHE = 'taxicoach-v5';
+const CACHE = 'taxicoach-v6';
 const FILES = ['./', './index.html', './styles.css', './app.js', './halteplaetze.js', './vendor/anthropic-sdk.js',
   './icon.svg', './icon-192.png', './icon-512.png',
   './apple-touch-icon.png', './manifest.webmanifest'];
