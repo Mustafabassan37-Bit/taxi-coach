@@ -511,6 +511,7 @@ function viewCoach() {
       <p class="muted small">Allgemeine Erfahrungswerte. Deine eigenen Zahlen unten sind genauer, sobald genug Fahrten eingetragen sind.</p>
     </section>
     ${season ? `<section class="card hint warn"><h2>Gerade in Köln: ${esc(season.title)}</h2><p>${esc(season.text)}</p></section>` : ''}
+    ${dayTipsCard(now)}
     ${potentialCard(now)}
     ${standCard(now)}
     ${sourceCard()}
@@ -575,7 +576,8 @@ function hpOpenNow(p, now = Date.now()) {
 const POTENZIAL = {
   bahnhof:      { label: ['Bahnhof', 'Bahnhöfe'],             tag: [1.5, 2.5, 2, 2, 3, 2.5],     frei: [2, 1.5, 2, 2, 2.5, 2.5],     satt: 2 },
   hotel:        { label: ['Hotel', 'Hotels'],                 tag: [0.5, 3, 1.5, 1, 2, 2],       frei: [1, 2, 2, 1, 1.5, 2],         satt: 8 },
-  klinik:       { label: ['Klinik', 'Kliniken'],              tag: [1, 1.5, 3, 2.5, 2, 1],       frei: [1, 1, 2, 2, 1.5, 1],         satt: 2 },
+  // „Klinik“ in den Kartendaten sind oft kleine Praxiskliniken – die großen Krankenhäuser stehen unten bei HUBS
+  klinik:       { label: ['Klinik', 'Kliniken'],              tag: [0.5, 1, 2, 1.8, 1.3, 0.5],   frei: [0.5, 0.5, 1.2, 1.2, 1, 0.5], satt: 3 },
   bahnbetrieb:  { label: ['Bahn-Betrieb', 'Bahn-Betriebe'],   tag: [2, 2, 1, 1, 1.5, 1.5],       frei: [2, 1.5, 1, 1, 1, 1.5],       satt: 2 },
   event:        { label: ['Veranstaltungsort', 'Veranstaltungsorte'], tag: [0.5, 0, 0.3, 0.5, 1, 3], frei: [1, 0, 0.5, 1, 1.5, 3],   satt: 4, party: true },
   nacht:        { label: ['Lokal', 'Lokale'],                 tag: [1.5, 0, 0, 0.2, 0.5, 2],     frei: [4, 0.5, 0, 0.3, 1, 3],       satt: 25, party: true },
@@ -596,7 +598,14 @@ const HUBS = {
   'Hauptbahnhof': { label: 'Fernbahnhof', tag: [2, 3, 3, 2.5, 3.5, 3], frei: [2.5, 2, 2.5, 3, 3.5, 3] },
   'Breslauer Platz': { label: 'Fernbahnhof', tag: [1.5, 2.5, 2.5, 2, 3, 2.5], frei: [2, 1.5, 2, 2.5, 3, 2.5] },
   'Deutz Bhf': { label: 'Fernbahnhof', tag: [1.5, 2.5, 2.5, 2, 3, 2.5], frei: [1.5, 1.5, 2, 2.5, 3, 2] },
-  'Flughafen': { label: 'Flughafen', tag: [0.3, 5.5, 3.5, 3.5, 4, 3], frei: [0.3, 5, 4, 4, 4, 3] }
+  'Flughafen': { label: 'Flughafen', tag: [0.3, 5.5, 3.5, 3.5, 4, 3], frei: [0.3, 5, 4, 4, 4, 3] },
+  // Große Krankenhäuser: vormittags Entlassungen, Arzt- und Ambulanztermine, nachmittags Besucher
+  'Uniklinik': { label: 'Großklinik', tag: [0.2, 1.5, 7, 5, 3, 0.5], frei: [0.2, 0.5, 3, 3, 2, 0.3] },
+  'Klinikum': { label: 'Großklinik', tag: [0.2, 1.2, 6, 4.5, 2.5, 0.4], frei: [0.2, 0.4, 2.5, 2.5, 1.5, 0.3] },
+  'Holweide': { label: 'Krankenhaus', tag: [0.2, 1, 4.5, 3.5, 2, 0.3], frei: [0.2, 0.3, 1.5, 1.5, 1, 0.2] },
+  'Porz-Krhs.': { label: 'Krankenhaus', tag: [0.2, 1, 4.5, 3.5, 2, 0.3], frei: [0.2, 0.3, 1.5, 1.5, 1, 0.2] },
+  'Hildegardis': { label: 'Krankenhaus', tag: [0.2, 1, 4.5, 3.5, 2, 0.3], frei: [0.2, 0.3, 1.5, 1.5, 1, 0.2] },
+  'Hohenlind': { label: 'Krankenhaus', tag: [0.2, 1, 4.5, 3.5, 2, 0.3], frei: [0.2, 0.3, 1.5, 1.5, 1, 0.2] }
 };
 
 function potential(p, now = Date.now()) {
@@ -635,6 +644,70 @@ function envLine(p, max = 5) {
 function potentialRanking(now, list, limit) {
   return list.filter(p => p.env && !p.note && hpOpenNow(p, now)).map(p => ({ p, pot: potential(p, now) }))
     .filter(x => x.pot.score > 0).sort((a, b) => b.pot.score - a.pot.score).slice(0, limit);
+}
+
+// ---- Tagsüber-Plan: je Zeitfenster die besten Stände, über die Stadt verteilt ----
+const TAG_FENSTER = [
+  { von: 6, bis: 9, name: 'Früh', icon: '🌅', tip: 'Flughafen- und Bahnhofsfahrten aus Hotels, Geschäftsreisende' },
+  { von: 9, bis: 12, name: 'Vormittag', icon: '🏥', tip: 'Arzttermine, Entlassungen aus Kliniken, Behörden' },
+  { von: 12, bis: 15, name: 'Mittag', icon: '🍽️', tip: 'Eher ruhig – Bahnhof, Einkaufen, Kliniken; gute Zeit für Pause' },
+  { von: 15, bis: 18, name: 'Nachmittag', icon: '🏢', tip: 'Feierabend, Rückreisende, Kliniken-Besucher' }
+];
+
+// Nicht fünfmal die Altstadt: ein Stand wird nur genommen, wenn er mindestens 800 m von den schon gewählten entfernt ist
+function diverse(ranked, n, minDist = 800) {
+  const out = [];
+  for (const x of ranked) {
+    if (!x.p.pos || out.some(o => distM(o.p.pos, x.p.pos) < minDist)) continue;
+    out.push(x);
+    if (out.length >= n) break;
+  }
+  return out;
+}
+
+function dayPlan(dayStart, messen) {
+  return TAG_FENSTER.map(f => {
+    const t = dayStart + ((f.von + f.bis) / 2) * 36e5;
+    const picks = diverse(potentialRanking(t, HP, 40), 3).map(x => ({ name: x.p.name, why: x.pot.why.join(', ') }));
+    // Messe-Tage: Messeschluss am Nachmittag geht vor
+    if (f.von === 15 && messen && messen.length && dow(dayStart) !== 6) picks.unshift({ name: 'Messe Nord / Süd', why: 'Messeschluss 16–19 Uhr' });
+    return Object.assign({}, f, { picks: picks.slice(0, 3) });
+  });
+}
+
+function dayPlanHtml(dayStart, messen) {
+  if (!HAS_UMFELD) return '';
+  return `<div class="dayplan"><div class="muted small"><b>☀️ Tagsüber</b> – beste Stände:</div>
+    ${dayPlan(dayStart, messen).map(f => `<div class="slot"><span class="when">${f.icon} ${pad(f.von)}–${pad(f.bis)}</span>
+      <span class="grow">${f.picks.map(p => `<b>${esc(p.name)}</b> <span class="muted small">(${esc(p.why)})</span>`).join(' · ')}</span></div>`).join('')}
+  </div>`;
+}
+
+const TAG_TIPPS = [
+  ['Früh ab 5 Uhr', 'Hotels in Innenstadt und Deutz: Gäste fahren zum Flughafen und zum ersten ICE. Das sind oft die längsten Fahrten des Tages. Nimm am Vorabend Vorbestellungen an.'],
+  ['Kliniken am Vormittag', 'Zwischen 9 und 13 Uhr werden Patienten entlassen und Arzttermine wahrgenommen – Uniklinik, Merheim, Holweide, Porz. Frag immer, ob auch eine Rückfahrt gebraucht wird.'],
+  ['Stammkunden aufbauen', 'Dialyse, Bestrahlung, Physiotherapie: Viele Patienten fahren mehrmals pro Woche zur gleichen Zeit. Visitenkarte geben – daraus werden feste, planbare Fahrten.'],
+  ['Krankenfahrten mit Schein', 'Fahrten mit Transportschein der Krankenkasse rechnet dein Unternehmen ab. Frag deinen Chef, mit welchen Kassen er Verträge hat und was du dafür mitnehmen musst.'],
+  ['Hotels kennen', 'Check-out ist meist 7–11 Uhr. Ein freundliches Wort an der Rezeption bringt dir später Vorbestellungen zum Flughafen.'],
+  ['Hauptbahnhof tagsüber', 'Fast immer Fahrgäste mit Gepäck. Bei Bahnstreik oder Zugausfällen sofort hin – dann brauchen Hunderte ein Taxi.'],
+  ['Mittagsloch nutzen', '12–15 Uhr ist meist am schwächsten: Pause, tanken, Auto sauber machen. Dann bist du am Nachmittag bereit.'],
+  ['Messe-Tage', 'Läuft eine Messe, sind die Hotels voll: morgens Hotel → Messe, ab 16 Uhr Messe → Hotel, Bahnhof, Flughafen. Der Reiter „Woche“ zeigt dir die Messetage.'],
+  ['Funk und App tagsüber', 'In den Außenbezirken kommen tagsüber kaum Winker. Funk und Vermittlungs-App bringen hier die meisten Aufträge – immer eingeschaltet lassen.'],
+  ['Regen am Tag', 'Bei Regen steigt die Nachfrage sofort, vor allem an Haltestellen, Einkaufsstraßen und Kliniken. „Jetzt wichtig“ warnt dich 2 Stunden vorher.'],
+  ['Senioren freundlich behandeln', 'Ältere Fahrgäste aus Pflegeheimen und Arztpraxen rufen gern wieder den gleichen Fahrer. Geduld beim Ein- und Aussteigen zahlt sich aus.']
+];
+
+function dayTipsCard(now) {
+  const t0 = new Date(now); t0.setHours(0, 0, 0, 0);
+  const d = radar.data;
+  const messen = d && Array.isArray(d.messen) ? d.messen.filter(m => parseLocal(m.von) <= t0.getTime() && parseLocal(m.bis) >= t0.getTime()) : [];
+  return `<section class="card">
+    <h2>☀️ Tagfahrten heute</h2>
+    ${dayPlanHtml(t0.getTime(), messen)}
+    <details class="tips-more"><summary>Tipps für Tagfahrten (${TAG_TIPPS.length})</summary>
+      <ol class="tips">${TAG_TIPPS.map(([h, t]) => `<li><b>${esc(h)}:</b> ${esc(t)}</li>`).join('')}</ol>
+    </details>
+  </section>`;
 }
 
 function potentialCard(now) {
@@ -1542,6 +1615,7 @@ function viewWeek() {
     const hidden = x.list.length - x.shown.length;
     return `<section class="card">${head(x, i)}
       ${notes.map(n => `<p class="small">${n}</p>`).join('')}
+      ${dayPlanHtml(x.a, x.messen)}
       ${peaks(x)}
       ${messeRows || x.shown.length ? `<ul class="list">${messeRows}${x.shown.map(row).join('')}</ul>` : '<p class="muted">Keine großen Veranstaltungen.</p>'}
       ${hidden > 0 ? `<p class="muted small">+ ${hidden} kleinere Veranstaltung${hidden === 1 ? '' : 'en'} (oben „auch kleinere“ antippen)</p>` : ''}

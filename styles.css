@@ -126,6 +126,13 @@ p:last-child { margin-bottom: 0; }
 .near { background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 8px 10px; margin: 0 0 10px; }
 .near .list li { padding: 8px 0; }
 
+.dayplan { background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; margin-bottom: 10px; }
+.dayplan .slot { display: flex; gap: 8px; padding: 5px 0; border-top: 1px solid var(--line); font-size: 15px; }
+.dayplan .slot:first-of-type { border-top: 0; }
+.dayplan .when { flex: none; width: 78px; color: var(--muted); font-size: 14px; }
+details.tips-more summary { cursor: pointer; color: var(--accent); font-weight: 600; padding: 8px 0; }
+details.tips-more ol { margin-top: 6px; }
+
 /* Rechner */
 .here { display: flex; align-items: center; gap: 10px; padding: 10px 12px; margin-bottom: 12px; background: var(--bg); border: 1px solid var(--line); border-radius: 12px; }
 .linkbtn { border: 0; background: none; color: var(--accent); font: inherit; padding: 4px 0; cursor: pointer; text-decoration: underline; text-align: left; }
