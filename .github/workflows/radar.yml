@@ -1,0 +1,46 @@
+# Holt jeden Morgen die Termine der LANXESS arena und der Koelnmesse neu (radar.json)
+# und veröffentlicht die App danach neu. Von Hand starten: GitHub → Actions → „Radar aktualisieren“ → Run workflow.
+name: Radar aktualisieren
+
+on:
+  schedule:
+    - cron: '30 3 * * *'   # täglich 03:30 UTC = 04:30 (Winter) / 05:30 (Sommer) in Köln
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+
+concurrency:
+  group: radar
+  cancel-in-progress: false
+
+jobs:
+  aktualisieren:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Termine holen
+        run: node radar/aktualisieren.mjs
+
+      - name: Speichern und App neu veröffentlichen
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if git diff --quiet -- radar.json; then
+            echo "Keine Änderung."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add radar.json
+          git commit -m "Radar: Termine aktualisiert"
+          git push
+          # Ein Push mit dem Workflow-Token startet die Seiten-Veröffentlichung nicht von selbst
+          gh api -X POST "repos/${{ github.repository }}/pages/builds" || echo "Neuveröffentlichung nicht angestoßen."
