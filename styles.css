@@ -111,6 +111,7 @@ p:last-child { margin-bottom: 0; }
 .radar.hot { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
 
 /* Rechner */
+.here { display: flex; align-items: center; gap: 10px; padding: 10px 12px; margin-bottom: 12px; background: var(--bg); border: 1px solid var(--line); border-radius: 12px; }
 .linkbtn { border: 0; background: none; color: var(--accent); font: inherit; padding: 4px 0; cursor: pointer; text-decoration: underline; text-align: left; }
 
 /* KI-Berater */

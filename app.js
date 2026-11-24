@@ -1237,7 +1237,7 @@ async function calcRoute(f) {
       from = r[0];
     } else {
       const me = posFresh() ? myPos : await locate();
-      from = { lat: me.lat, lon: me.lon, label: 'Mein Standort' };
+      from = { lat: me.lat, lon: me.lon, label: 'Mein Standort' + (here.label ? ' (' + here.label + ')' : '') };
     }
     const hits = await searchPlace(toQ);
     if (!hits.length) throw new Error('Ziel nicht gefunden. Bitte genauer eingeben (Straße, Hausnummer, Stadtteil).');
@@ -1262,18 +1262,58 @@ async function pickRouteAlt(i) {
   updateRoute();
 }
 
+// ---- Eigener Standort im Rechner: beim Öffnen holen und als Adresse anzeigen ----
+let here = { busy: false, err: '', label: '', stand: '', t: 0 };
+
+async function reverseLabel(lat, lon) {
+  try {
+    const ctl = new AbortController();
+    const timer = setTimeout(() => ctl.abort(), 6000);
+    const res = await fetch(`https://photon.komoot.io/reverse?lang=de&lat=${lat}&lon=${lon}`, { signal: ctl.signal });
+    clearTimeout(timer);
+    const p = res.ok ? (((await res.json()).features || [])[0] || {}).properties : null;
+    if (!p) return '';
+    return [[p.street, p.housenumber].filter(Boolean).join(' ') || p.name, p.district || p.locality || p.city].filter(Boolean).join(', ');
+  } catch (e) { return ''; }
+}
+
+function hereHtml() {
+  if (here.busy) return '📍 Standort wird ermittelt …';
+  if (here.err) return `<span class="bad">📍 ${esc(here.err)}</span>`;
+  if (!myPos) return '📍 Standort noch nicht ermittelt';
+  return `📍 <b>${esc(here.label || 'Standort gefunden')}</b>${here.stand ? `<br><span class="muted small">Nächster Halteplatz: ${esc(here.stand)}</span>` : ''}`;
+}
+
+function updateHere() { const el = $('#hereOut'); if (el) el.innerHTML = hereHtml(); }
+
+async function locateHere(force) {
+  if (here.busy || (!force && posFresh() && here.label && Date.now() - here.t < 2 * 60000)) return updateHere();
+  here = { busy: true, err: '', label: '', stand: '', t: 0 };
+  updateHere();
+  try {
+    await locate();
+    const near = nearby(1)[0];
+    here = { busy: false, err: '', label: await reverseLabel(myPos.lat, myPos.lon), stand: near ? `${near.p.name} (${fmtDist(near.d)})` : '', t: Date.now() };
+  } catch (e) {
+    here = { busy: false, err: e.message, label: '', stand: '', t: 0 };
+  }
+  updateHere();
+}
+
 function viewCalc() {
   const t = tariff();
   return `<section class="card">
       <h2>Preis zum Ziel</h2>
+      <div class="here"><div id="hereOut" class="grow">${hereHtml()}</div>
+        <button type="button" class="btn route" data-act="hereAgain" aria-label="Standort neu ermitteln">↻</button></div>
       <form data-form="route" autocomplete="off">
-        <label class="f"><span>Start – leer lassen für meinen Standort</span><input name="from" type="text" placeholder="📍 Mein Standort"></label>
+        <label class="f"><span>Start – leer lassen = mein Standort (oben)</span><input name="from" type="text" placeholder="📍 Mein Standort"></label>
         <label class="f"><span>Ziel – Adresse, Ort oder Halteplatz</span><input name="to" type="text" placeholder="z. B. Aachener Str. 703 oder Flughafen"></label>
         <label class="check"><input type="checkbox" name="large" ${route.large ? 'checked' : ''}><span>Großraum (+ ${eur(t.large)})</span></label>
         <button type="submit" class="btn primary">Preis berechnen</button>
       </form>
       <div id="routeOut" style="margin-top:12px">${routeResultHtml()}</div>
-      <p class="muted small">Schätzung nach Kölner Tarif auf der schnellsten Strecke, ohne Verkehr. Es gilt der Taxameter. Start und Ziel werden zur Berechnung an Kartendienste (OpenStreetMap) geschickt.</p>
+      <p class="muted small">Schätzung nach Kölner Tarif auf der schnellsten Strecke, ohne Verkehr. Es gilt der Taxameter. Dein Standort, Start und Ziel werden zur Berechnung an Kartendienste (OpenStreetMap) geschickt – nicht gespeichert.</p>
     </section>
     <section class="card">
       <h2>Nach Kilometern</h2>
@@ -1478,6 +1518,7 @@ const ACTIONS = {
   },
   settings() { openSheet(settingsForm()); },
   routePick(el) { pickRouteAlt(Number(el.dataset.i)); },
+  hereAgain() { locateHere(true); },
   aiAsk() { askAi(); },
   aiKeyDel() {
     if (!confirm('KI-Schlüssel von diesem Gerät löschen?')) return;
@@ -1545,7 +1586,11 @@ const FORMS = {
 
 document.addEventListener('click', e => {
   const tabBtn = e.target.closest('#tabs button');
-  if (tabBtn) { tab = tabBtn.dataset.tab; render(); window.scrollTo(0, 0); return; }
+  if (tabBtn) {
+    tab = tabBtn.dataset.tab; render(); window.scrollTo(0, 0);
+    if (tab === 'rechner') locateHere(false);
+    return;
+  }
   const act = e.target.closest('[data-act]');
   if (act && ACTIONS[act.dataset.act]) { ACTIONS[act.dataset.act](act); return; }
   if (e.target.id === 'sheet') closeSheet(); // Tipp neben das Formular schließt es
