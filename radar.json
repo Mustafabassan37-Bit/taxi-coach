@@ -1,5 +1,5 @@
 {
- "stand": "2026-11-24T23:22:14.487Z",
+ "stand": "2026-11-24T23:24:08.052Z",
  "quellen": [
   "https://www.lanxess-arena.de/events-tickets/eventkalender",
   "https://www.koelnmesse.de/aktuelle-termine/alle-messen/",
@@ -7,6 +7,50 @@
   "https://www.koeln.de/veranstaltungen/"
  ],
  "veranstaltungen": [
+  {
+   "ort": "Carlswerk Victoria",
+   "stand": "Schanzenstr.",
+   "titel": "Freya Skye – Stars Align Tour | Support: Alex Sampson",
+   "zusatz": "",
+   "beginn": "2026-11-23T20:00",
+   "dauer": 165,
+   "groesse": "L",
+   "art": "Konzert",
+   "abgesagt": false
+  },
+  {
+   "ort": "Die Kantine",
+   "stand": "Kantine",
+   "titel": "Strangelove – The DEPECHE MODE Experience",
+   "zusatz": "",
+   "beginn": "2026-11-23T20:00",
+   "dauer": 165,
+   "groesse": "M",
+   "art": "Konzert",
+   "abgesagt": false
+  },
+  {
+   "ort": "Gloria",
+   "stand": "Neumarkt",
+   "titel": "Karlitoz – Die Karlitoz Supershow",
+   "zusatz": "",
+   "beginn": "2026-11-23T20:00",
+   "dauer": 165,
+   "groesse": "M",
+   "art": "Konzert",
+   "abgesagt": false
+  },
+  {
+   "ort": "Kölner Philharmonie",
+   "stand": "Philharmonie",
+   "titel": "Wiener Symphoniker",
+   "zusatz": "",
+   "beginn": "2026-11-23T20:00",
+   "dauer": 165,
+   "groesse": "L",
+   "art": "Konzert",
+   "abgesagt": false
+  },
   {
    "ort": "Volksbühne Am Rudolfplatz",
    "stand": "Rudolfplatz",
@@ -1746,138 +1790,6 @@
    "abgesagt": false
   },
   {
-   "ort": "Volksbühne Am Rudolfplatz",
-   "stand": "Rudolfplatz",
-   "titel": "Nicht nur zur Weihnachtszeit -Johanna Gastdorf, Jan-Gregor Kremp, Leo Gastdorf",
-   "zusatz": "",
-   "beginn": "2026-12-09T13:00",
-   "dauer": 150,
-   "groesse": "M",
-   "art": "Theater",
-   "abgesagt": false
-  },
-  {
-   "ort": "Palastzelt Schanzenviertel",
-   "stand": "Schanzenstr.",
-   "titel": "11. Kölner Weihnachtscircus",
-   "zusatz": "",
-   "beginn": "2026-12-09T15:30",
-   "dauer": 150,
-   "groesse": "M",
-   "art": "Show",
-   "abgesagt": false
-  },
-  {
-   "ort": "Kölner Philharmonie",
-   "stand": "Philharmonie",
-   "titel": "Julien Chauvin & Le Concert de la Loge",
-   "zusatz": "",
-   "beginn": "2026-12-09T19:00",
-   "dauer": 165,
-   "groesse": "L",
-   "art": "Konzert",
-   "abgesagt": false
-  },
-  {
-   "ort": "E-Werk Köln",
-   "stand": "E-Werk",
-   "titel": "Stunksitzung 2026",
-   "zusatz": "",
-   "beginn": "2026-12-09T19:30",
-   "dauer": 165,
-   "groesse": "L",
-   "art": "Konzert",
-   "abgesagt": false
-  },
-  {
-   "ort": "Theater am Tanzbrunnen",
-   "stand": "Tanzbrunnen",
-   "titel": "Brings – Das Weihnachtskonzert 3.0",
-   "zusatz": "",
-   "beginn": "2026-12-09T19:30",
-   "dauer": 150,
-   "groesse": "M",
-   "art": "Theater",
-   "abgesagt": false
-  },
-  {
-   "ort": "Volksbühne Am Rudolfplatz",
-   "stand": "Rudolfplatz",
-   "titel": "PAM PENGCO – PAM PENGCOs COMEDY YOUNGSTARS",
-   "zusatz": "",
-   "beginn": "2026-12-09T19:30",
-   "dauer": 150,
-   "groesse": "M",
-   "art": "Theater",
-   "abgesagt": false
-  },
-  {
-   "ort": "Schauspiel Köln",
-   "stand": "Schanzenstr.",
-   "titel": "Vergeltung",
-   "zusatz": "",
-   "beginn": "2026-12-09T19:30",
-   "dauer": 150,
-   "groesse": "M",
-   "art": "Theater",
-   "abgesagt": false
-  },
-  {
-   "ort": "Palastzelt Schanzenviertel",
-   "stand": "Schanzenstr.",
-   "titel": "11. Kölner Weihnachtscircus",
-   "zusatz": "",
-   "beginn": "2026-12-09T19:30",
-   "dauer": 150,
-   "groesse": "M",
-   "art": "Show",
-   "abgesagt": false
-  },
-  {
-   "ort": "Carlswerk Victoria",
-   "stand": "Schanzenstr.",
-   "titel": "Kodaline – Farewell Tour + Support: Bertie Newman",
-   "zusatz": "",
-   "beginn": "2026-12-09T20:00",
-   "dauer": 165,
-   "groesse": "L",
-   "art": "Konzert",
-   "abgesagt": false
-  },
-  {
-   "ort": "Schauspiel Köln im Depot",
-   "stand": "Schanzenstr.",
-   "titel": "Choreia",
-   "zusatz": "",
-   "beginn": "2026-12-09T20:00",
-   "dauer": 150,
-   "groesse": "M",
-   "art": "Theater",
-   "abgesagt": false
-  },
-  {
-   "ort": "Gloria",
-   "stand": "Neumarkt",
-   "titel": "NightWash Live",
-   "zusatz": "",
-   "beginn": "2026-12-09T20:00",
-   "dauer": 165,
-   "groesse": "M",
-   "art": "Konzert",
-   "abgesagt": false
-  },
-  {
-   "ort": "Schauspiel Köln",
-   "stand": "Schanzenstr.",
-   "titel": "#Motherfuckinghood",
-   "zusatz": "",
-   "beginn": "2026-12-09T20:00",
-   "dauer": 150,
-   "groesse": "M",
-   "art": "Theater",
-   "abgesagt": false
-  },
-  {
    "ort": "LANXESS arena",
    "stand": "Lanxess Arena",
    "titel": "Lisa Eckhart",
@@ -2301,17 +2213,6 @@
    "titel": "IHF MEN’S HANDBALL WORLD CHAMPIONSHIP 2027",
    "zusatz": "",
    "beginn": "2027-01-22T15:30",
-   "dauer": 135,
-   "groesse": "XL",
-   "art": "Sport",
-   "abgesagt": false
-  },
-  {
-   "ort": "LANXESS arena",
-   "stand": "Lanxess Arena",
-   "titel": "IHF MEN’S HANDBALL WORLD CHAMPIONSHIP 2027",
-   "zusatz": "",
-   "beginn": "2027-01-23T15:30",
    "dauer": 135,
    "groesse": "XL",
    "art": "Sport",
