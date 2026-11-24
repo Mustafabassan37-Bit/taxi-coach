@@ -521,7 +521,8 @@ function viewCoach() {
       }).join('')).join('')}
     </div>`;
 
-  return `<section class="card hint">
+  return `${aiCard()}
+    <section class="card hint">
       <h2>Jetzt: ${DAYS_LONG[dow(now)]}, ${hhmm(now)} Uhr</h2>
       <p><b>${esc(adv.title)}</b></p>
       <ul class="list">${adv.places.map((p, i) => `<li><span class="rank">${i + 1}</span><div class="grow">${esc(p)}</div></li>`).join('')}</ul>
@@ -675,6 +676,175 @@ function viewPlaces() {
     <p class="muted small" id="hpInfo">${esc(hpInfoText())}</p>
     <section class="card" id="hpList">${hpListHtml()}</section>
     <p class="muted small">Halteplatzliste TAXI RUF Köln, Stand Januar 2023. Mit ☆ kommt ein Platz in „Meine Orte“ und ist dann mit einem Tipp wählbar. „Route“ öffnet Google Maps.</p>`;
+}
+
+/* ---------- KI-Berater (Claude) ---------- */
+
+// Der Schlüssel liegt getrennt von den Fahrdaten und nur auf diesem Gerät:
+// Er steht nicht im Programmcode und kommt nicht in die Sicherungsdatei.
+const AI_KEY = 'taxicoach.aikey';
+const AI_MODEL = 'claude-opus-5-5';
+const AI_PRICE = { input: 4, output: 20 }; // US-Dollar je 1 Mio. Tokens (Listenpreis, nur für die Kostenschätzung)
+let ai = { loading: false, text: '', error: '', t: 0, cost: null };
+
+function getAiKey() { try { return localStorage.getItem(AI_KEY) || ''; } catch (e) { return ''; } }
+function setAiKey(v) {
+  try { if (v) localStorage.setItem(AI_KEY, v); else localStorage.removeItem(AI_KEY); }
+  catch (e) { toast('Schlüssel konnte nicht gespeichert werden'); }
+}
+
+function aiSystemPrompt() {
+  const stands = [1, 2, 3, 4].map(c => {
+    const names = [...new Set(HP.filter(p => p.ch === c).map(p => `${p.name} (${p.zone})`))];
+    return `Kanal ${c} (${CHANNELS[c]}): ${names.join(', ')}`;
+  }).join('\n');
+  return `Du bist der Umsatz-Berater in einer App für einen Taxifahrer in Köln, der neu im Beruf ist. Er fragt dich während der Schicht, wohin er als Nächstes fahren soll, und liest deine Antwort im stehenden Auto auf dem Handy.
+
+Du bekommst die aktuelle Zeit, das Wetter, seine eigenen Messungen je Halteplatz und einen allgemeinen Erfahrungswert. Seine eigenen Messungen sind die beste Grundlage, aber nur, wenn genug Fahrten dahinterstehen. Bei weniger als etwa 5 Fahrten an einem Platz ist die Zahl ein Hinweis und kein Beweis; sag das dann offen und stütze dich stärker auf Uhrzeit, Wochentag, Wetter und das, was über Köln allgemein bekannt ist. Erfinde keine Zahlen, Veranstaltungen oder Zugzeiten: Den heutigen Veranstaltungskalender kennst du nicht.
+
+Antworte auf Deutsch in einfachen, kurzen Sätzen, ohne Fachwörter und ohne Formatierungszeichen. Nenne zuerst einen konkreten Halteplatz aus der Liste unten, dann in einem Satz den Grund, dann eine Ausweichmöglichkeit. Wenn er gerade an einem Platz steht, sag klar, ob er bleiben oder wechseln soll. Höchstens fünf Sätze.
+
+Halteplätze in Köln (in Klammern die Funkzone), nach Funkkanal:
+${stands}`;
+}
+
+function aiContext(now, weather) {
+  const L = [];
+  const d = new Date(now);
+  L.push(`Jetzt: ${DAYS_LONG[dow(now)]}, ${pad(d.getDate())}.${pad(d.getMonth() + 1)}., ${hhmm(now)} Uhr`);
+  if (weather) L.push('Wetter in Köln: ' + weather);
+  const season = seasonHint(now);
+  if (season) L.push(`Besonderheit: ${season.title} – ${season.text}`);
+
+  const sh = activeShift();
+  if (sh) {
+    const s = summary(sh.start, now);
+    L.push(`Schicht: läuft seit ${dur(now - sh.start)}, Umsatz ${eur(s.rev)}, ${s.count} Fahrten${s.perHour ? ', ' + eur0(s.perHour) + ' pro Stunde' : ''}. Tagesziel ${eur(S.settings.goal)}.`);
+  } else {
+    L.push('Schicht: noch nicht gestartet.');
+  }
+  L.push('Standort: ' + (S.trip ? `Fahrt läuft (ab ${S.trip.place})`
+    : S.stand ? `steht seit ${Math.floor((now - S.stand.since) / 60000)} Min an „${S.stand.name}“`
+    : 'frei, kein Halteplatz gewählt'));
+
+  const line = o => o.rides
+    ? `- ${o.place}: ${o.rides} Fahrten, Ø ${Math.round(o.avgWait)} Min Warten, ${Math.round(o.perHour)} € pro Stunde`
+    : `- ${o.place}: 0 Fahrten, ${o.wait} Min vergeblich gewartet`;
+  const sorted = f => standStats(f).sort((a, b) => b.perHour - a.perHour).slice(0, 15);
+  const slot = sorted(slotFilter(now));
+  const all = sorted(null);
+  L.push('', 'Eigene Messungen um diese Uhrzeit (gleicher Tagestyp, ± 2 Stunden):', slot.length ? slot.map(line).join('\n') : '- noch keine');
+  L.push('', 'Eigene Messungen insgesamt:', all.length ? all.map(line).join('\n') : '- noch keine');
+
+  const places = byPlace(S.rides.filter(r => r.place)).slice(0, 12);
+  L.push('', 'Umsatz nach Einstiegsort (alle Fahrten, auch ohne Zeitmessung):',
+    places.length ? places.map(p => `- ${p.place}: ${p.count} Fahrten, ${eur(p.rev)} gesamt, Ø ${eur(p.rev / p.count)}`).join('\n') : '- noch keine');
+
+  const hm = heatmap();
+  const slots = [];
+  hm.cells.forEach((row, di) => row.forEach((v, b) => { if (v != null) slots.push({ v, label: `${DAYS[di]} ${b * 3}–${b * 3 + 3} Uhr` }); }));
+  slots.sort((a, b) => b.v - a.v);
+  if (slots.length) L.push('', 'Stärkste Zeitfenster bisher: ' + slots.slice(0, 5).map(s => `${s.label} ${Math.round(s.v)} € pro Stunde`).join('; '));
+
+  L.push('', 'Meine Orte: ' + S.settings.places.join(', '));
+  const adv = slotAdvice(now);
+  L.push(`Allgemeiner Erfahrungswert der App für diese Uhrzeit: ${adv.title} – ${adv.places.join(', ')}. ${adv.text}`);
+  L.push('', 'Frage: Wohin soll ich jetzt fahren?');
+  return L.join('\n');
+}
+
+// Aktuelles Wetter für Köln (Open-Meteo, kostenlos, ohne Anmeldung). Fehlt es, geht es ohne weiter.
+async function fetchWeather() {
+  try {
+    const ctl = new AbortController();
+    const timer = setTimeout(() => ctl.abort(), 5000);
+    const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=50.94&longitude=6.96&current=temperature_2m,precipitation,weather_code&timezone=Europe%2FBerlin', { signal: ctl.signal });
+    clearTimeout(timer);
+    if (!res.ok) return '';
+    const c = (await res.json()).current;
+    if (!c) return '';
+    const code = c.weather_code;
+    const sky = code === 0 ? 'klar' : code <= 3 ? 'bewölkt' : code <= 48 ? 'Nebel' : code <= 57 ? 'Nieselregen'
+      : code <= 67 ? 'Regen' : code <= 77 ? 'Schnee' : code <= 82 ? 'Regenschauer' : code <= 86 ? 'Schneeschauer' : 'Gewitter';
+    return `${Math.round(c.temperature_2m)} °C, ${sky}${c.precipitation > 0 ? `, ${String(c.precipitation).replace('.', ',')} mm Niederschlag` : ''}`;
+  } catch (e) {
+    return '';
+  }
+}
+
+async function askAi() {
+  if (ai.loading) return;
+  const key = getAiKey();
+  if (!key) return toast('Bitte zuerst den KI-Schlüssel eintragen');
+  if (navigator.onLine === false) { ai = { loading: false, text: '', error: 'Kein Internet. Die Rangliste unten funktioniert auch ohne Netz.', t: 0, cost: null }; return render(); }
+  ai = { loading: true, text: '', error: '', t: 0, cost: null };
+  render();
+
+  const fail = msg => { ai = { loading: false, text: '', error: msg, t: 0, cost: null }; if (!sheetOpen()) render(); };
+
+  let Anthropic;
+  try {
+    Anthropic = (await import('./vendor/anthropic-sdk.js')).default;
+  } catch (e) {
+    return fail('Der KI-Baustein konnte nicht geladen werden. Bitte Internet prüfen und noch einmal versuchen.');
+  }
+
+  try {
+    const now = Date.now();
+    const weather = await fetchWeather();
+    // Der Schlüssel gehört dem Nutzer und liegt nur auf seinem Gerät; deshalb darf der Aufruf direkt aus der App kommen.
+    const client = new Anthropic({ apiKey: key, dangerouslyAllowBrowser: true, maxRetries: 1, timeout: 60000 });
+    const response = await client.beta.messages.create({
+      model: AI_MODEL,
+      max_tokens: 4096,
+      betas: ['server-side-fallback-2026-07-01'],
+      fallbacks: 'default',               // lehnt das Modell ab, versucht der Server es mit dem vorgesehenen Ersatzmodell
+      output_config: { effort: 'low' },   // kurze Empfehlung: wenig Denkaufwand reicht und hält die Kosten klein
+      system: aiSystemPrompt(),
+      messages: [{ role: 'user', content: aiContext(now, weather) }]
+    });
+    if (response.stop_reason === 'refusal') return fail('Die KI hat diese Anfrage abgelehnt. Bitte später noch einmal versuchen.');
+    const text = response.content.filter(b => b.type === 'text').map(b => b.text).join('\n').trim();
+    if (!text) return fail(response.stop_reason === 'max_tokens' ? 'Die Antwort wurde abgeschnitten. Bitte noch einmal fragen.' : 'Die KI hat keine Antwort geliefert. Bitte noch einmal fragen.');
+    const u = response.usage;
+    const cost = u ? (u.input_tokens * AI_PRICE.input + u.output_tokens * AI_PRICE.output) / 1e6 : null;
+    ai = { loading: false, text, error: '', t: now, cost };
+    if (!sheetOpen()) render();
+  } catch (err) {
+    if (err instanceof Anthropic.AuthenticationError) fail('Der KI-Schlüssel ist ungültig. Bitte unter „Mehr → Einstellungen“ prüfen.');
+    else if (err instanceof Anthropic.PermissionDeniedError) fail('Der KI-Schlüssel hat keine Berechtigung für diese Anfrage.');
+    else if (err instanceof Anthropic.RateLimitError) fail('Zu viele Anfragen in kurzer Zeit. Bitte eine Minute warten.');
+    else if (err instanceof Anthropic.BadRequestError) fail('Die KI hat die Anfrage nicht angenommen. Häufigster Grund: kein Guthaben auf dem Anthropic-Konto.');
+    else if (err instanceof Anthropic.APIConnectionError) fail('Keine Verbindung zur KI. Bitte Internet prüfen.');
+    else if (err instanceof Anthropic.APIError) fail(`Die KI ist gerade nicht erreichbar (Fehler ${err.status || '?'}). Bitte später noch einmal versuchen.`);
+    else fail('Unerwarteter Fehler bei der KI-Anfrage.');
+  }
+}
+
+function aiCard() {
+  const hasKey = !!getAiKey();
+  let body;
+  if (!hasKey) {
+    body = `<p>Noch nicht eingerichtet. Du brauchst einen eigenen KI-Schlüssel von Anthropic:</p>
+      <ol class="tips">
+        <li>Auf <b>platform.claude.com</b> ein Konto anlegen und etwas Guthaben aufladen.</li>
+        <li>Dort einen „API Key“ erstellen und kopieren.</li>
+        <li>Hier in den Einstellungen einfügen.</li>
+      </ol>
+      <button class="btn" data-act="settings">KI-Schlüssel eintragen</button>`;
+  } else if (ai.loading) {
+    body = '<p>Die KI denkt nach … das dauert ein paar Sekunden.</p>';
+  } else {
+    const answer = ai.text ? `<div class="ai-answer">${ai.text.split(/\n+/).map(p => `<p>${esc(p)}</p>`).join('')}</div>
+      <p class="muted small">Antwort von ${hhmm(ai.t)} Uhr${ai.cost != null ? ` · Kosten ungefähr ${ai.cost < 0.01 ? 'unter 1' : Math.round(ai.cost * 100)} US-Cent` : ''}</p>` : '';
+    const error = ai.error ? `<p class="bad">${esc(ai.error)}</p>` : '';
+    body = `${answer}${error}<button class="btn primary" data-act="aiAsk">${ai.text ? 'Neu fragen' : 'Wohin jetzt? KI fragen'}</button>`;
+  }
+  return `<section class="card hint">
+    <h2>🤖 KI-Berater</h2>
+    ${body}
+    <p class="muted small" style="margin-top:10px">Die KI bekommt Uhrzeit, Wetter und deine Zahlen je Halteplatz – keine Namen und keine Fahrgastdaten. Jede Frage kostet einen kleinen Betrag von deinem Anthropic-Guthaben.</p>
+  </section>`;
 }
 
 /* ---------- Ansicht: Zahlen ---------- */
@@ -883,6 +1053,11 @@ function settingsForm() {
       <label class="f"><span>Euro pro km (danach)</span><input name="km2" type="text" inputmode="decimal" value="${v(t.km2)}"></label>
       <label class="f"><span>Wartezeit in Euro pro Stunde</span><input name="waitPerHour" type="text" inputmode="decimal" value="${v(t.waitPerHour)}"></label>
       <label class="f"><span>Zuschlag Großraumtaxi in Euro</span><input name="large" type="text" inputmode="decimal" value="${v(t.large || 0)}"></label>
+      <h3>KI-Berater</h3>
+      <label class="f"><span>KI-Schlüssel von Anthropic (${getAiKey() ? 'ist gespeichert – leer lassen, um ihn zu behalten' : 'noch keiner gespeichert'})</span>
+        <input name="aikey" type="password" autocomplete="off" placeholder="sk-ant-…"></label>
+      <p class="muted small">Der Schlüssel bleibt nur auf diesem Gerät. Er steht nicht im Programm und nicht in der Sicherung.</p>
+      ${getAiKey() ? '<button type="button" class="btn danger" data-act="aiKeyDel" style="margin-bottom:12px">KI-Schlüssel löschen</button>' : ''}
       <div class="row">
         <button type="button" class="btn ghost" data-act="sheetClose">Abbrechen</button>
         <button type="submit" class="btn primary">Speichern</button>
@@ -994,6 +1169,13 @@ const ACTIONS = {
     save(); render();
   },
   settings() { openSheet(settingsForm()); },
+  aiAsk() { askAi(); },
+  aiKeyDel() {
+    if (!confirm('KI-Schlüssel von diesem Gerät löschen?')) return;
+    setAiKey('');
+    ai = { loading: false, text: '', error: '', t: 0, cost: null };
+    closeSheet(); render(); toast('KI-Schlüssel gelöscht');
+  },
   sheetClose() { closeSheet(); },
   exportCsv() {
     if (!S.rides.length) return toast('Noch keine Fahrten vorhanden');
@@ -1002,8 +1184,10 @@ const ACTIONS = {
   exportJson() { download('taxi-coach-sicherung-' + dayKey(Date.now()) + '.json', JSON.stringify(S), 'application/json'); },
   importJson() { $('#importFile').click(); },
   wipe() {
-    if (!confirm('Wirklich ALLE Fahrten, Schichten und Einstellungen löschen? Das kann nicht rückgängig gemacht werden.')) return;
+    if (!confirm('Wirklich ALLE Fahrten, Schichten, Einstellungen und den KI-Schlüssel löschen? Das kann nicht rückgängig gemacht werden.')) return;
     S = JSON.parse(JSON.stringify(DEFAULTS));
+    setAiKey('');
+    ai = { loading: false, text: '', error: '', t: 0, cost: null };
     save(); tab = 'heute'; render(); toast('Alles gelöscht');
   }
 };
@@ -1057,7 +1241,10 @@ const FORMS = {
       waitPerHour: Math.max(0, num(f.waitPerHour.value)),
       large: Math.max(0, num(f.large.value))
     };
-    save(); closeSheet(); render(); toast('Gespeichert');
+    const key = f.aikey.value.trim();
+    if (key) setAiKey(key);
+    save(); closeSheet(); render();
+    toast(key && !key.startsWith('sk-ant-') ? 'Gespeichert – der Schlüssel sieht aber ungewöhnlich aus' : 'Gespeichert');
   }
 };
 
