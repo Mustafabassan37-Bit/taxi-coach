@@ -67,7 +67,8 @@ let S = load();
 let tab = 'heute';
 let period = 'woche';
 
-// Halteplätze aus halteplaetze.js: [Kanal, Nr., Name, Zone, Lage, Plätze, Rufsäule, Zeiten]
+// Halteplätze aus halteplaetze.js: [Kanal, Nr., Name, Zone, Lage, Plätze, Rufsäule, Zeiten, Hinweis]
+// Kanal 5 = Sonderplätze aus der Liste der Stadt (Hauptbahnhof, Flughafen, Messe, Veranstaltungsorte).
 // Kartenpositionen (aus OpenStreetMap ermittelt) stehen als zweite Liste in derselben Datei.
 const GEO = window.HALTEPLAETZE_GEO || [];
 // Umfeld je Platz (aus OpenStreetMap gezählt): [[Anzahl je Art in der Reihenfolge von UMFELD_ARTEN], [auffällige Namen]]
@@ -75,12 +76,13 @@ const UMFELD = window.HALTEPLAETZE_UMFELD || [];
 const UMFELD_ARTEN = ['bahnhof', 'hotel', 'klinik', 'bahnbetrieb', 'event', 'nacht', 'restaurant', 'buero',
   'versicherung', 'industrie', 'pflege', 'arzt', 'einkauf', 'uni'];
 const HP = (window.HALTEPLAETZE || []).map((a, i) => ({
-  ch: a[0], nr: a[1], name: a[2], zone: a[3], lage: a[4], n: a[5], rs: !!a[6], hrs: a[7] || '', pos: GEO[i] || null,
+  ch: a[0], nr: a[1], name: a[2], zone: a[3], lage: a[4], n: a[5], rs: !!a[6], hrs: a[7] || '', note: a[8] || '', pos: GEO[i] || null,
   env: UMFELD[i] ? Object.fromEntries(UMFELD_ARTEN.map((k, j) => [k, UMFELD[i][0][j] || 0])) : null,
   envNames: UMFELD[i] ? UMFELD[i][1] || [] : []
 }));
 let hpNear = false;
-const CHANNELS = { 1: 'Süd und West', 2: 'Nord und Ehrenfeld', 3: 'Rechtsrheinisch', 4: 'Innenstadt' };
+const CHANNELS = { 1: 'Süd und West', 2: 'Nord und Ehrenfeld', 3: 'Rechtsrheinisch', 4: 'Innenstadt', 5: 'Sonderplätze' };
+const chLabel = c => c === 5 ? 'Sonderplatz' : 'Kanal ' + c;
 let hpQuery = '';
 let hpChan = 0;
 
@@ -619,6 +621,15 @@ const POTENZIAL = {
 };
 const HAS_UMFELD = HP.some(p => p.env);
 
+// Große Verkehrsknoten: Das Zählen von Einrichtungen unterschätzt sie, weil ein Fernbahnhof oder
+// ein Flughafen nur „eine“ Einrichtung ist, aber den ganzen Tag Reisende mit Gepäck bringt.
+const HUBS = {
+  'Hauptbahnhof': { label: 'Fernbahnhof', tag: [2, 3, 3, 2.5, 3.5, 3], frei: [2.5, 2, 2.5, 3, 3.5, 3] },
+  'Breslauer Platz': { label: 'Fernbahnhof', tag: [1.5, 2.5, 2.5, 2, 3, 2.5], frei: [2, 1.5, 2, 2.5, 3, 2.5] },
+  'Deutz Bhf': { label: 'Fernbahnhof', tag: [1.5, 2.5, 2.5, 2, 3, 2.5], frei: [1.5, 1.5, 2, 2.5, 3, 2] },
+  'Flughafen': { label: 'Flughafen', tag: [0.3, 5.5, 3.5, 3.5, 4, 3], frei: [0.3, 5, 4, 4, 4, 3] }
+};
+
 function potential(p, now = Date.now()) {
   if (!p.env) return null;
   const d = dow(now), h = new Date(now).getHours();
@@ -633,10 +644,15 @@ function potential(p, now = Date.now()) {
     const def = POTENZIAL[k];
     const wgt = (def.party ? partyTime : freeDay) ? def.frei[slot] : def.tag[slot];
     const v = wgt * Math.min(1, Math.sqrt(n / def.satt));
-    if (v > 0) { score += v; parts.push({ k, v }); }
+    if (v > 0) { score += v; parts.push({ k, v, label: def.label[n === 1 ? 0 : 1] }); }
+  }
+  const hub = HUBS[p.name];
+  if (hub) {
+    const v = freeDay ? hub.frei[slot] : hub.tag[slot];
+    if (v > 0) { score += v; parts.push({ k: 'hub', v, label: hub.label }); }
   }
   parts.sort((a, b) => b.v - a.v);
-  return { score, why: parts.slice(0, 2).map(x => POTENZIAL[x.k].label[p.env[x.k] === 1 ? 0 : 1]) };
+  return { score, why: parts.slice(0, 2).map(x => x.label) };
 }
 
 // Kurzbeschreibung des Umfelds, wichtigste Arten zuerst
@@ -646,8 +662,9 @@ function envLine(p, max = 5) {
     .map(k => p.env[k] === 1 ? POTENZIAL[k].label[0] : `${p.env[k]} ${POTENZIAL[k].label[1]}`).join(' · ');
 }
 
+// Plätze „nur bei Veranstaltungen/Bedarf“ fehlen hier: Ob gerade etwas stattfindet, weiß die App nicht.
 function potentialRanking(now, list, limit) {
-  return list.filter(p => p.env && hpOpenNow(p, now)).map(p => ({ p, pot: potential(p, now) }))
+  return list.filter(p => p.env && !p.note && hpOpenNow(p, now)).map(p => ({ p, pot: potential(p, now) }))
     .filter(x => x.pot.score > 0).sort((a, b) => b.pot.score - a.pot.score).slice(0, limit);
 }
 
@@ -686,7 +703,7 @@ function standListHtml(query) {
   if (!q) {
     const near = posFresh() ? nearby(5) : [];
     const nearHtml = near.length ? `<p class="muted small">In deiner Nähe (Luftlinie)</p>
-      <ul class="list picks">${near.map(x => btn(x.p.name, `${fmtDist(x.d)} · ${x.p.lage}${hpOpenNow(x.p) ? '' : ' · jetzt nicht in Betrieb'}`)).join('')}</ul>` : '';
+      <ul class="list picks">${near.map(x => btn(x.p.name, `${fmtDist(x.d)} · ${x.p.lage}${hpOpenNow(x.p) ? '' : ' · jetzt nicht in Betrieb'}${x.p.note ? ' · nur ' + x.p.note : ''}`)).join('')}</ul>` : '';
     return `${nearHtml}<p class="muted small">Meine Orte – oder oben tippen, um alle ${HP.length} Halteplätze zu durchsuchen.</p>
       <ul class="list picks">${S.settings.places.map(p => btn(p, '')).join('')}</ul>`;
   }
@@ -695,7 +712,7 @@ function standListHtml(query) {
   own.forEach(p => seen.add(p));
   const hits = HP.filter(p => (p.name + ' ' + p.lage).toLowerCase().includes(q) && !seen.has(p.name) && seen.add(p.name)).slice(0, 30);
   if (!own.length && !hits.length) return '<p class="muted">Nichts gefunden.</p>';
-  return `<ul class="list picks">${own.map(p => btn(p, 'Mein Ort')).join('')}${hits.map(p => btn(p.name, p.lage + ' · Zone ' + p.zone)).join('')}</ul>`;
+  return `<ul class="list picks">${own.map(p => btn(p, 'Mein Ort')).join('')}${hits.map(p => btn(p.name, p.lage + (p.zone ? ' · Zone ' + p.zone : '') + (p.note ? ' · nur ' + p.note : ''))).join('')}</ul>`;
 }
 
 function standSheet() {
@@ -766,7 +783,7 @@ function standCard(now) {
 function hpMatches() {
   const q = hpQuery.trim().toLowerCase();
   const list = HP.filter(p => (!hpChan || p.ch === hpChan) &&
-    (!q || (p.name + ' ' + p.lage + ' zone ' + p.zone + ' ' + (p.nr || '')).toLowerCase().includes(q)));
+    (!q || (p.name + ' ' + p.lage + (p.zone ? ' zone ' + p.zone : '') + ' ' + (p.nr || '')).toLowerCase().includes(q)));
   if (hpNear && myPos) {   // nach Entfernung sortieren; Plätze ohne Kartenposition ans Ende
     const me = [myPos.lat, myPos.lon];
     const d = p => p.pos ? distM(me, p.pos) : Infinity;
@@ -781,8 +798,9 @@ function hpListHtml() {
   return `<ul class="list hp">${list.map(p => {
     const fav = S.settings.places.includes(p.name);
     const away = myPos && p.pos ? fmtDist(distM([myPos.lat, myPos.lon], p.pos)) + ' Luftlinie' : '';
-    const meta = [away, 'Kanal ' + p.ch, 'Zone ' + p.zone, p.nr ? 'Nr. ' + p.nr : '', p.n ? p.n + ' Plätze' : '',
-      p.rs ? 'Rufsäule' : '', p.hrs ? 'nur ' + p.hrs + ' Uhr' + (hpOpenNow(p) ? '' : ' (jetzt nicht in Betrieb)') : ''].filter(Boolean).join(' · ');
+    const meta = [away, chLabel(p.ch), p.zone ? 'Zone ' + p.zone : '', p.nr ? 'Nr. ' + p.nr : '', p.n ? p.n + ' Plätze' : '',
+      p.rs ? 'Rufsäule' : '', p.hrs ? 'nur ' + p.hrs + ' Uhr' + (hpOpenNow(p) ? '' : ' (jetzt nicht in Betrieb)') : '',
+      p.note ? 'nur ' + p.note : ''].filter(Boolean).join(' · ');
     const dest = encodeURIComponent(p.lage + ', ' + p.name + ', Köln');
     return `<li>
       <div class="grow"><div><b>${esc(p.name)}</b></div><div class="sub">${esc(p.lage)}</div><div class="sub">${esc(meta)}</div>
@@ -797,7 +815,8 @@ function hpListHtml() {
 
 function hpInfoText() {
   const n = hpMatches().length;
-  return n + (n === 1 ? ' Halteplatz' : ' Halteplätze') + (hpChan ? ' · Kanal ' + hpChan + ': ' + CHANNELS[hpChan] : '');
+  return n + (n === 1 ? ' Halteplatz' : ' Halteplätze') + (hpChan === 5 ? ' · Sonderplätze (Bahnhof, Flughafen, Messe, Veranstaltungen)'
+    : hpChan ? ' · Kanal ' + hpChan + ': ' + CHANNELS[hpChan] : '');
 }
 
 function updateHp() {
@@ -812,10 +831,10 @@ function viewPlaces() {
   const geoBtn = HP.some(p => p.pos)
     ? `<button class="btn ${hpNear ? 'primary' : ''}" data-act="hpNear" style="margin-bottom:12px">📍 ${hpNear ? 'Sortiert nach Entfernung – tippen zum Ausschalten' : 'Plätze in meiner Nähe'}</button>` : '';
   return `${geoBtn}<label class="f"><input id="hpSearch" type="text" placeholder="Halteplatz, Straße oder Zone suchen" value="${esc(hpQuery)}" autocomplete="off"></label>
-    <div class="chips">${[0, 1, 2, 3, 4].map(c => `<label class="chip"><input type="radio" name="hpChan" value="${c}" ${hpChan === c ? 'checked' : ''}><span>${c ? 'Kanal ' + c : 'Alle'}</span></label>`).join('')}</div>
+    <div class="chips">${[0, 1, 2, 3, 4, 5].map(c => `<label class="chip"><input type="radio" name="hpChan" value="${c}" ${hpChan === c ? 'checked' : ''}><span>${c === 5 ? 'Sonder' : c ? 'Kanal ' + c : 'Alle'}</span></label>`).join('')}</div>
     <p class="muted small" id="hpInfo">${esc(hpInfoText())}</p>
     <section class="card" id="hpList">${hpListHtml()}</section>
-    <p class="muted small">Halteplatzliste TAXI RUF Köln, Stand Januar 2023. Mit ☆ kommt ein Platz in „Meine Orte“ und ist dann mit einem Tipp wählbar. „Route“ öffnet Google Maps.</p>
+    <p class="muted small">Halteplatzliste TAXI RUF Köln, Stand Januar 2023. Sonderplätze (Hauptbahnhof, Flughafen, Messe, Veranstaltungsorte) stammen aus der Liste der Stadt Köln, Stand 2019. Mit ☆ kommt ein Platz in „Meine Orte“ und ist dann mit einem Tipp wählbar. „Route“ öffnet Google Maps.</p>
     <p class="muted small">Entfernungen sind Luftlinie und die Kartenpositionen ungefähr (aus OpenStreetMap) – der Rhein kann dazwischen liegen. Dein Standort bleibt auf dem Handy.</p>`;
 }
 
@@ -839,9 +858,9 @@ function setAiKey(v) {
 }
 
 function aiSystemPrompt() {
-  const stands = [1, 2, 3, 4].map(c => {
-    const names = [...new Set(HP.filter(p => p.ch === c).map(p => `${p.name} (${p.zone})`))];
-    return `Kanal ${c} (${CHANNELS[c]}): ${names.join(', ')}`;
+  const stands = [1, 2, 3, 4, 5].map(c => {
+    const names = [...new Set(HP.filter(p => p.ch === c).map(p => p.name + (p.zone ? ` (${p.zone})` : '') + (p.note ? ` – nur ${p.note}` : '')))];
+    return c === 5 ? `Sonderplätze ohne Funkkanal: ${names.join(', ')}` : `Kanal ${c} (${CHANNELS[c]}): ${names.join(', ')}`;
   }).join('\n');
   return `Du bist der Umsatz-Berater in einer App für einen Taxifahrer in Köln, der neu im Beruf ist. Er fragt dich während der Schicht, wohin er als Nächstes fahren soll, und liest deine Antwort im stehenden Auto auf dem Handy.
 
@@ -1007,7 +1026,7 @@ function sourceCard() {
     return `<section class="card"><h2>Wo kommen Funk-Aufträge?</h2>
       <p class="muted">Noch keine Daten. Wähle beim Eintragen jeder Fahrt unter „Wie kam die Fahrt?“ aus, ob sie über Funk, App oder direkt am Halteplatz kam – dann siehst du hier, an welchem Platz welche Aufträge kommen.</p></section>`;
   }
-  const zone = name => { const p = HP.find(x => x.name === name); return p ? ` <span class="muted small">Zone ${p.zone}</span>` : ''; };
+  const zone = name => { const p = HP.find(x => x.name === name); return p && p.zone ? ` <span class="muted small">Zone ${p.zone}</span>` : ''; };
   return `<section class="card"><h2>Wo kommen Funk-Aufträge?</h2>
     <table class="t">
       <tr><th>Platz</th><th>Funk</th><th>App</th><th>Einsteiger</th><th>Alle</th></tr>
