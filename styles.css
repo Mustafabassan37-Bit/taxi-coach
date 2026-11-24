@@ -110,6 +110,14 @@ p:last-child { margin-bottom: 0; }
 .radar .ico { font-size: 22px; width: 30px; text-align: center; flex: none; }
 .radar.hot { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
 
+/* Woche */
+.badge { flex: none; font-size: 11px; font-weight: 700; padding: 3px 7px; border-radius: 99px; margin-top: 2px; }
+.badge.gXL { background: var(--bad); color: #fff; }
+.badge.gL { background: var(--warn); color: var(--accent-ink); }
+.badge.gM { background: var(--card2); color: var(--muted); border: 1px solid var(--line); }
+.peak { background: var(--bg); border: 1px solid var(--accent); border-radius: 10px; padding: 8px 10px; font-size: 15px; }
+.seg .chip input[type=checkbox] { position: absolute; opacity: 0; inset: 0; }
+
 /* Rechner */
 .here { display: flex; align-items: center; gap: 10px; padding: 10px 12px; margin-bottom: 12px; background: var(--bg); border: 1px solid var(--line); border-radius: 12px; }
 .linkbtn { border: 0; background: none; color: var(--accent); font: inherit; padding: 4px 0; cursor: pointer; text-decoration: underline; text-align: left; }

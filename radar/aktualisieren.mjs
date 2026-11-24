@@ -1,5 +1,8 @@
-// Holt Veranstaltungen (LANXESS arena) und Messen (Koelnmesse) von den offiziellen Webseiten
-// und schreibt sie nach radar.json, das die App lädt.
+// Holt Veranstaltungen, bei denen sich viele Menschen sammeln, und schreibt sie nach radar.json:
+//  - LANXESS arena (offizieller Eventkalender)
+//  - Koelnmesse (offizielle Messeliste)
+//  - Heimspiele 1. FC Köln und Viktoria Köln (OpenLigaDB)
+//  - große Veranstaltungsorte aus dem koeln.de-Kalender (Palladium, E-Werk, Philharmonie, Tanzbrunnen …)
 // Aufruf (im Ordner der App):  node radar/aktualisieren.mjs
 // Keine Zusatzpakete nötig (Node 18+).
 import fs from 'node:fs';
@@ -61,7 +64,8 @@ async function arena() {
     const unter = t2.trim();
     out.push({
       ort: 'LANXESS arena', stand: 'Lanxess Arena', titel, zusatz: /^(tickets?|details?)$/i.test(unter) ? '' : unter,
-      beginn: iso(+y, +mo, +d, +h, +mi), dauer: dauerMin(titel + ' ' + unter), abgesagt: /abgesagt|verlegt/i.test(unter)
+      beginn: iso(+y, +mo, +d, +h, +mi), dauer: dauerMin(titel + ' ' + unter), groesse: 'XL',
+      art: /haie|handball|final4|eishockey|darts/i.test(titel) ? 'Sport' : 'Konzert/Show', abgesagt: /abgesagt|verlegt/i.test(unter)
     });
   }
   return out;
@@ -87,6 +91,104 @@ async function messe() {
   return out;
 }
 
+// ---------- Fußball: Heimspiele aus OpenLigaDB (freier Spielplan-Dienst) ----------
+const VEREINE = [
+  { name: /^1\. FC Köln$/, ligen: ['bl1', 'bl2'], ort: 'RheinEnergieStadion', stand: 'Müngersdorf', groesse: 'XL' },
+  { name: /Viktoria Köln/, ligen: ['bl3'], ort: 'Sportpark Höhenberg', stand: 'Höhenberg', groesse: 'M' }
+];
+
+async function fussball() {
+  const now = new Date();
+  const saison = now.getMonth() >= 6 ? now.getFullYear() : now.getFullYear() - 1;
+  const out = [];
+  for (const v of VEREINE) {
+    for (const liga of v.ligen) {
+      let spiele;
+      try {
+        const res = await fetch(`https://api.openligadb.de/getmatchdata/${liga}/${saison}`, { headers: { 'User-Agent': UA } });
+        if (!res.ok) continue;
+        spiele = await res.json();
+      } catch (e) { continue; }
+      for (const m of spiele) {
+        if (!v.name.test(m.team1.teamName)) continue;   // nur Heimspiele
+        const d = new Date(m.matchDateTime);             // Ortszeit Köln ohne Zonenangabe
+        out.push({
+          ort: v.ort, stand: v.stand, titel: `${m.team1.teamName} – ${m.team2.teamName}`, zusatz: 'Fußball',
+          beginn: m.matchDateTime.slice(0, 16), dauer: 115, groesse: v.groesse, art: 'Fußball', abgesagt: false,
+          _d: d
+        });
+      }
+    }
+  }
+  return out.map(({ _d, ...e }) => e);
+}
+
+// ---------- koeln.de Veranstaltungskalender: nur große Veranstaltungsorte ----------
+// [Teil des Ortsnamens bei koeln.de, Größe, nächster Halteplatz in der App, Art]
+// Größe: XL = Zehntausende, L = mehrere Tausend, M = etwa tausend Besucher (grobe Einteilung)
+const ORTE = [
+  ['tanzbrunnen', 'L', 'Tanzbrunnen', 'Veranstaltung'],   // „Theater am Tanzbrunnen“ unten als M
+  ['theater am tanzbrunnen', 'M', 'Tanzbrunnen', 'Theater'],
+  ['rheinenergiestadion', 'XL', 'Müngersdorf', 'Veranstaltung'],
+  ['palladium', 'L', 'Schanzenstr.', 'Konzert'],
+  ['e-werk', 'L', 'E-Werk', 'Konzert'],
+  ['philharmonie', 'L', 'Philharmonie', 'Konzert'],
+  ['carlswerk', 'L', 'Schanzenstr.', 'Konzert'],
+  ['musical dome', 'L', 'Breslauer Platz', 'Musical'],
+  ['halle tor 2', 'L', 'Halle Tor 2', 'Party'],
+  ['bootshaus', 'L', 'Bootshaus', 'Party'],
+  ['galopprennbahn', 'L', 'Scharnhorst', 'Pferderennen'],
+  ['live music hall', 'M', 'Helios', 'Konzert'],
+  ['gloria', 'M', 'Neumarkt', 'Konzert'],
+  ['kantine', 'M', 'Kantine', 'Konzert'],
+  ['essigfabrik', 'M', 'Drehbrücke', 'Konzert'],
+  ['volksbühne', 'M', 'Rudolfplatz', 'Theater'],
+  ['oper köln', 'M', 'Tanzbrunnen', 'Oper'],
+  ['schauspiel köln', 'M', 'Schanzenstr.', 'Theater'],
+  ['palastzelt', 'M', 'Schanzenstr.', 'Show'],
+  ['gürzenich', 'M', 'Heumarkt', 'Veranstaltung'],
+  ['sartory', 'M', 'Friesenplatz', 'Veranstaltung'],
+  ['stadthalle mülheim', 'M', 'Wiener Platz', 'Veranstaltung'],
+  ['flora', 'M', 'Zoo Bedarfs', 'Veranstaltung'],
+  ['rhein roxy', 'M', 'Rhein Roxy', 'Party']
+];
+const DAUER = { Konzert: 165, Theater: 150, Oper: 180, Musical: 165, Show: 150, Party: 300, Pferderennen: 300, Veranstaltung: 180 };
+
+async function koelnDe(von, bis) {
+  const fmt = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}%20${pad(d.getHours())}:${pad(d.getMinutes())}:00`;
+  let url = `https://www.koeln.de/wp-json/tribe/events/v1/events?per_page=50&start_date=${fmt(von)}&end_date=${fmt(bis)}`;
+  const out = [];
+  let seiten = 0;
+  while (url && seiten < 40) {
+    const res = await fetch(url, { headers: { 'User-Agent': UA } });
+    if (!res.ok) throw new Error('koeln.de: HTTP ' + res.status);
+    const j = await res.json();
+    seiten++;
+    for (const e of j.events || []) {
+      const venue = entities((e.venue && e.venue.venue) || '');
+      const v = venue.toLowerCase();
+      if (v.includes('lanxess')) continue;   // kommt direkt von der Arena
+      // längster passender Eintrag gewinnt („theater am tanzbrunnen“ vor „tanzbrunnen“)
+      const hit = ORTE.filter(o => v.includes(o[0])).sort((a, b) => b[0].length - a[0].length)[0];
+      if (!hit || e.all_day) continue;
+      const titel = entities(e.title).trim();
+      if (/workshop|führung|fuehrung|kurs\b|probe\b|einführung/i.test(titel)) continue;   // keine Menschenmengen
+      const markt = /flohmarkt|trödel|markt\b/i.test(titel);
+      const beginn = e.start_date.replace(' ', 'T').slice(0, 16);
+      const start = new Date(beginn), ende = new Date(e.end_date.replace(' ', 'T'));
+      const min = Math.round((ende - start) / 60000);
+      out.push({
+        ort: venue, stand: hit[2], titel, zusatz: '', beginn,
+        dauer: min >= 45 && min <= 600 ? min : DAUER[hit[3]] || 165,
+        groesse: markt ? 'M' : hit[1], art: markt ? 'Markt' : hit[3], abgesagt: false
+      });
+    }
+    url = j.next_rest_url || null;
+    if (url) await new Promise(r => setTimeout(r, 2100));   // koeln.de bittet um 2 Sekunden Abstand
+  }
+  return out;
+}
+
 const heute = new Date(); heute.setHours(0, 0, 0, 0);
 const grenze = new Date(heute.getTime() + TAGE_VORAUS * 864e5);
 const result = { stand: new Date().toISOString(), quellen: [], veranstaltungen: [], messen: [], fehler: [] };
@@ -103,6 +205,27 @@ try {
   result.quellen.push('https://www.koelnmesse.de/aktuelle-termine/alle-messen/');
 } catch (e) { result.fehler.push('Messe: ' + e.message); }
 
+try {
+  const fb = (await fussball()).filter(e => new Date(e.beginn) >= new Date(heute.getTime() - 864e5) && new Date(e.beginn) <= grenze);
+  result.veranstaltungen.push(...fb);
+  result.quellen.push('https://www.openligadb.de/');
+} catch (e) { result.fehler.push('Fußball: ' + e.message); }
+
+try {
+  // koeln.de nur für die nächsten 14 Tage (sonst sehr viele Seiten)
+  const ev = await koelnDe(new Date(heute.getTime() - 864e5), new Date(heute.getTime() + 14 * 864e5));
+  result.veranstaltungen.push(...ev);
+  result.quellen.push('https://www.koeln.de/veranstaltungen/');
+} catch (e) { result.fehler.push('koeln.de: ' + e.message); }
+
+// Doppelte Einträge (gleicher Ort, gleiche Zeit, gleicher Titel) entfernen
+const seen = new Set();
+result.veranstaltungen = result.veranstaltungen.filter(e => {
+  const k = e.stand + e.beginn + e.titel.toLowerCase();
+  if (seen.has(k)) return false;
+  seen.add(k);
+  return true;
+});
 result.veranstaltungen.sort((a, b) => a.beginn.localeCompare(b.beginn));
 result.messen.sort((a, b) => a.von.localeCompare(b.von));
 

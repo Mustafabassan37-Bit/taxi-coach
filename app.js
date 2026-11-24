@@ -853,15 +853,16 @@ function radarItems(now = Date.now()) {
   const d = radar.data;
   if (d && Array.isArray(d.veranstaltungen)) {
     for (const e of d.veranstaltungen) {
-      if (e.abgesagt) continue;
+      // Im Radar nur die großen Ereignisse; die mittleren stehen im Reiter „Woche“
+      if (e.abgesagt || (e.groesse && e.groesse === 'M')) continue;
       const start = parseLocal(e.beginn), end = start + (e.dauer || 165) * 60000;
       const label = `${e.titel} (${e.ort})`;
       if (now >= end - 20 * 60000 && now <= end + 40 * 60000) {
-        items.push({ prio: 3, icon: '🔥', text: `Jetzt hin: ${label} endet ca. ${hhmm(end)}`, sub: `Halteplatz ${e.stand} – oder Deutz Bhf als Ausweich`, stand: e.stand });
+        items.push({ prio: 3, icon: '🔥', text: `Jetzt hin: ${label} endet ca. ${hhmm(end)}`, sub: `Halteplatz ${e.stand}` + (e.stand === 'Lanxess Arena' ? ' – oder Deutz Bhf als Ausweich' : ''), stand: e.stand });
       } else if (now >= start && now < end - 20 * 60000) {
         items.push({ prio: 2, icon: '🎤', text: `${label} läuft – Ende ca. ${hhmm(end)}`, sub: `Ab ${hhmm(end - 20 * 60000)} am Platz ${e.stand} sein`, stand: e.stand });
       } else if (now >= start - 2 * 36e5 && now < start) {
-        items.push({ prio: 2, icon: '🎟️', text: `${label} beginnt ${hhmm(start)}`, sub: 'Anreise läuft: Fahrten vom Hauptbahnhof und aus Hotels zur Arena' });
+        items.push({ prio: 2, icon: '🎟️', text: `${label} beginnt ${hhmm(start)}`, sub: 'Anreise läuft: Fahrten vom Hauptbahnhof und aus Hotels dorthin' });
       } else if (start > now && sameDay(start, now)) {
         items.push({ prio: 1, icon: '📅', text: `Heute: ${label}`, sub: `Beginn ${hhmm(start)}, Ende ca. ${hhmm(end)}` });
       } else if (start > now && start - now < 36 * 36e5 && sameDay(start, now + 864e5)) {
@@ -1423,10 +1424,103 @@ function exportCsv() {
   download('taxi-fahrten-' + dayKey(Date.now()) + '.csv', '﻿' + rows.map(r => r.map(csvCell).join(';')).join('\r\n'), 'text/csv;charset=utf-8');
 }
 
+/* ---------- Ansicht: Woche – wo sammeln sich in den nächsten Tagen Menschen? ---------- */
+
+let week = { days: 3, showM: false, wx: null, wxAt: 0 };
+const GROESSE = { XL: 'Riesig', L: 'Groß', M: 'Mittel' };
+
+// Feiertage in NRW (fest und von Ostern abhängig)
+function holidayName(t) {
+  const d = new Date(t), y = d.getFullYear(), k = `${d.getMonth() + 1}-${d.getDate()}`;
+  const fixed = { '1-1': 'Neujahr', '5-1': 'Tag der Arbeit', '10-3': 'Tag der Deutschen Einheit', '11-1': 'Allerheiligen',
+    '12-24': 'Heiligabend', '12-25': '1. Weihnachtstag', '12-26': '2. Weihnachtstag', '12-31': 'Silvester' };
+  if (fixed[k]) return fixed[k];
+  const e = easter(y), diff = Math.round((new Date(y, d.getMonth(), d.getDate()) - new Date(e.getFullYear(), e.getMonth(), e.getDate())) / 864e5);
+  return { '-2': 'Karfreitag', '0': 'Ostersonntag', '1': 'Ostermontag', '39': 'Christi Himmelfahrt',
+    '49': 'Pfingstsonntag', '50': 'Pfingstmontag', '60': 'Fronleichnam',
+    '-52': 'Weiberfastnacht', '-49': 'Karnevalssonntag', '-48': 'Rosenmontag' }[String(diff)] || '';
+}
+
+async function loadWeekWeather() {
+  if (week.wx && Date.now() - week.wxAt < 3 * 36e5) return;
+  try {
+    const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=50.94&longitude=6.96&daily=precipitation_sum,precipitation_probability_max,temperature_2m_max,temperature_2m_min&forecast_days=8&timezone=Europe%2FBerlin');
+    if (!res.ok) return;
+    const d = (await res.json()).daily;
+    week.wx = {};
+    d.time.forEach((t, i) => { week.wx[t] = { rain: d.precipitation_sum[i], prob: d.precipitation_probability_max[i], max: d.temperature_2m_max[i], min: d.temperature_2m_min[i] }; });
+    week.wxAt = Date.now();
+  } catch (e) { /* ohne Netz kein Wetter */ }
+}
+
+function viewWeek() {
+  const now = Date.now();
+  const d = radar.data;
+  const evs = d && Array.isArray(d.veranstaltungen) ? d.veranstaltungen.filter(e => !e.abgesagt) : [];
+  const fairs = d && Array.isArray(d.messen) ? d.messen : [];
+  const days = [];
+  const t0 = new Date(now); t0.setHours(0, 0, 0, 0);
+  for (let i = 0; i < week.days; i++) {
+    const day = new Date(t0); day.setDate(t0.getDate() + i);
+    const a = day.getTime(), b = a + 864e5;
+    const list = evs.map(e => ({ e, start: parseLocal(e.beginn) })).filter(x => x.start >= a && x.start < b)
+      .map(x => Object.assign(x, { end: x.start + (x.e.dauer || 165) * 60000 }));
+    const big = list.filter(x => (x.e.groesse || 'XL') !== 'M');
+    const shown = week.showM ? list : big;
+    const messen = fairs.filter(m => parseLocal(m.von) <= a && parseLocal(m.bis) >= a);
+    days.push({ a, list, big, shown, messen, wx: week.wx && week.wx[dayKey(a)], holiday: holidayName(a), season: seasonHint(a + 12 * 36e5) });
+  }
+
+  const head = (x, i) => {
+    const date = new Date(x.a);
+    const name = i === 0 ? 'Heute' : i === 1 ? 'Morgen' : DAYS_LONG[dow(x.a)];
+    const w = x.wx ? ` · ${Math.round(x.wx.max)}°${x.wx.rain >= 1 ? ` · 🌧️ ${String(Math.round(x.wx.rain * 10) / 10).replace('.', ',')} mm` : x.wx.prob >= 50 ? ' · 🌦️' : ''}` : '';
+    return `<h2>${name}, ${pad(date.getDate())}.${pad(date.getMonth() + 1)}.<span class="muted small" style="font-weight:400">${w}</span></h2>`;
+  };
+
+  // Schlusszeiten der großen Ereignisse: wann und wo die meisten Fahrgäste gleichzeitig rauskommen
+  const peaks = x => {
+    const ends = x.big.slice().sort((p, q) => p.end - q.end);
+    if (!ends.length) return '';
+    return `<p class="peak">🔥 <b>Schlusszeiten:</b> ${ends.map(y => `${hhmm(y.end)} ${esc(y.e.stand)}`).join(' · ')}</p>`;
+  };
+
+  const row = y => `<li>
+      <span class="badge g${y.e.groesse || 'XL'}">${GROESSE[y.e.groesse || 'XL']}</span>
+      <div class="grow"><div><b>${hhmm(y.start)}</b> ${esc(y.e.titel)}</div>
+        <div class="sub">${esc(y.e.ort)}${y.e.art ? ' · ' + esc(y.e.art) : ''} · Ende ca. ${hhmm(y.end)}</div>
+        <div class="sub">→ Halteplatz <b>${esc(y.e.stand)}</b> ab ${hhmm(y.end - 20 * 60000)}</div></div></li>`;
+
+  const dayCard = (x, i) => {
+    const notes = [];
+    if (x.holiday) notes.push(`🎉 ${x.holiday}`);
+    if (x.season) notes.push(`🎄 ${x.season.title}`);
+    x.messen.forEach(m => notes.push(`🏢 Messe ${esc(m.titel)} (bis ${dm(parseLocal(m.bis))}): Anreise 7–10 Uhr, Schluss 16–19 Uhr → Messe Nord/Süd`));
+    if ([4, 5].includes(dow(x.a))) notes.push('🌙 Ausgeh-Nacht: Ringe, Zülpicher Str., Altstadt');   // Freitag, Samstag
+    if (x.wx && x.wx.rain >= 3) notes.push('🌧️ Viel Regen angesagt – mehr Fahrgäste, besonders abends');
+    const hidden = x.list.length - x.shown.length;
+    return `<section class="card">${head(x, i)}
+      ${notes.map(n => `<p class="small">${n}</p>`).join('')}
+      ${peaks(x)}
+      ${x.shown.length ? `<ul class="list">${x.shown.map(row).join('')}</ul>` : '<p class="muted">Keine großen Veranstaltungen.</p>'}
+      ${hidden > 0 ? `<p class="muted small">+ ${hidden} kleinere Veranstaltung${hidden === 1 ? '' : 'en'} (oben „auch kleinere“ antippen)</p>` : ''}
+    </section>`;
+  };
+
+  const stand = d && d.stand ? `Stand der Termine: ${dm(new Date(d.stand).getTime())} ${hhmm(new Date(d.stand).getTime())} Uhr` : 'Termine werden geladen …';
+  return `<div class="seg">
+      ${[3, 7].map(n => `<label class="chip"><input type="radio" name="weekDays" value="${n}" ${week.days === n ? 'checked' : ''}><span>${n} Tage</span></label>`).join('')}
+      <label class="chip"><input type="checkbox" name="weekShowM" ${week.showM ? 'checked' : ''}><span>auch kleinere</span></label>
+    </div>
+    ${days.map(dayCard).join('')}
+    <p class="muted small">${stand}. Quellen: LANXESS arena, Koelnmesse, OpenLigaDB (Fußball), koeln.de (große Veranstaltungsorte), Wetter: Open-Meteo. Endzeiten und Größe sind geschätzt.</p>`;
+}
+
 /* ---------- Rendern und Ereignisse ---------- */
 
 const VIEWS = {
   heute: { title: 'Heute', render: viewToday },
+  woche: { title: 'Woche', render: viewWeek },
   coach: { title: 'Coach', render: viewCoach },
   plaetze: { title: 'Halteplätze', render: viewPlaces },
   rechner: { title: 'Rechner', render: viewCalc },
@@ -1589,6 +1683,7 @@ document.addEventListener('click', e => {
   if (tabBtn) {
     tab = tabBtn.dataset.tab; render(); window.scrollTo(0, 0);
     if (tab === 'rechner') locateHere(false);
+    if (tab === 'woche') Promise.all([loadRadar(false), loadWeekWeather()]).then(() => { if (tab === 'woche' && !sheetOpen()) render(); });
     return;
   }
   const act = e.target.closest('[data-act]');
@@ -1610,6 +1705,8 @@ document.addEventListener('change', e => {
     save(); render(); return;
   }
   if (t.name === 'hpChan') { hpChan = Number(t.value); updateHp(); return; }
+  if (t.name === 'weekDays') { week.days = Number(t.value); render(); return; }
+  if (t.name === 'weekShowM') { week.showM = t.checked; render(); return; }
   if (t.id === 'importFile' && t.files[0]) {
     const reader = new FileReader();
     reader.onload = () => {

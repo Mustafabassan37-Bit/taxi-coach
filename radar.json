@@ -1,10 +1,78 @@
 {
- "stand": "2026-11-24T23:14:09.272Z",
+ "stand": "2026-11-24T23:22:14.487Z",
  "quellen": [
   "https://www.lanxess-arena.de/events-tickets/eventkalender",
-  "https://www.koelnmesse.de/aktuelle-termine/alle-messen/"
+  "https://www.koelnmesse.de/aktuelle-termine/alle-messen/",
+  "https://www.openligadb.de/",
+  "https://www.koeln.de/veranstaltungen/"
  ],
  "veranstaltungen": [
+  {
+   "ort": "Volksbühne Am Rudolfplatz",
+   "stand": "Rudolfplatz",
+   "titel": "Gestatten, Hans Tobar – Eine jüdische Zeitreise durch den kölschen Fastelovend",
+   "zusatz": "",
+   "beginn": "2026-11-24T19:00",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Theater",
+   "abgesagt": false
+  },
+  {
+   "ort": "Theater am Tanzbrunnen",
+   "stand": "Tanzbrunnen",
+   "titel": "Tina Dico – Live 2026",
+   "zusatz": "",
+   "beginn": "2026-11-24T20:00",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Theater",
+   "abgesagt": false
+  },
+  {
+   "ort": "Die Kantine",
+   "stand": "Kantine",
+   "titel": "Frida Gold – Tour 2026",
+   "zusatz": "",
+   "beginn": "2026-11-24T20:00",
+   "dauer": 165,
+   "groesse": "M",
+   "art": "Konzert",
+   "abgesagt": false
+  },
+  {
+   "ort": "Carlswerk Victoria",
+   "stand": "Schanzenstr.",
+   "titel": "MUNA – Gets So Hot Tour | Support: Emmma",
+   "zusatz": "",
+   "beginn": "2026-11-24T20:00",
+   "dauer": 165,
+   "groesse": "L",
+   "art": "Konzert",
+   "abgesagt": false
+  },
+  {
+   "ort": "Kölner Philharmonie",
+   "stand": "Philharmonie",
+   "titel": "Jan Lisiecki – World (of) Dance",
+   "zusatz": "",
+   "beginn": "2026-11-24T20:00",
+   "dauer": 165,
+   "groesse": "L",
+   "art": "Konzert",
+   "abgesagt": false
+  },
+  {
+   "ort": "Gloria",
+   "stand": "Neumarkt",
+   "titel": "GLORIA singt – Laura Brümmer und Sven Bensmann",
+   "zusatz": "",
+   "beginn": "2026-11-24T20:00",
+   "dauer": 165,
+   "groesse": "M",
+   "art": "Konzert",
+   "abgesagt": false
+  },
   {
    "ort": "LANXESS arena",
    "stand": "Lanxess Arena",
@@ -12,6 +80,85 @@
    "zusatz": "",
    "beginn": "2026-11-25T19:30",
    "dauer": 165,
+   "groesse": "XL",
+   "art": "Konzert/Show",
+   "abgesagt": false
+  },
+  {
+   "ort": "Volksbühne Am Rudolfplatz",
+   "stand": "Rudolfplatz",
+   "titel": "Mathias Richling – KI – Keine Identität",
+   "zusatz": "",
+   "beginn": "2026-11-25T19:30",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Theater",
+   "abgesagt": false
+  },
+  {
+   "ort": "Carlswerk Victoria",
+   "stand": "Schanzenstr.",
+   "titel": "Mighty Oaks – Tour 2026",
+   "zusatz": "",
+   "beginn": "2026-11-25T20:00",
+   "dauer": 165,
+   "groesse": "L",
+   "art": "Konzert",
+   "abgesagt": false
+  },
+  {
+   "ort": "Theater am Tanzbrunnen",
+   "stand": "Tanzbrunnen",
+   "titel": "Niklas Kolorz – Evolution Live",
+   "zusatz": "",
+   "beginn": "2026-11-25T20:00",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Theater",
+   "abgesagt": false
+  },
+  {
+   "ort": "Live Music Hall",
+   "stand": "Helios",
+   "titel": "Dominik Hartz – verstr!ckt Tour 2026",
+   "zusatz": "",
+   "beginn": "2026-11-25T20:00",
+   "dauer": 165,
+   "groesse": "M",
+   "art": "Konzert",
+   "abgesagt": false
+  },
+  {
+   "ort": "Essigfabrik",
+   "stand": "Drehbrücke",
+   "titel": "Boy Harsher – Supports: Choir Boy + Curses",
+   "zusatz": "",
+   "beginn": "2026-11-25T20:00",
+   "dauer": 165,
+   "groesse": "M",
+   "art": "Konzert",
+   "abgesagt": false
+  },
+  {
+   "ort": "Gloria",
+   "stand": "Neumarkt",
+   "titel": "Fortuna Ehrenfeld – Jubiläumstour – 10 Jahre Fortuna",
+   "zusatz": "",
+   "beginn": "2026-11-25T20:00",
+   "dauer": 165,
+   "groesse": "M",
+   "art": "Konzert",
+   "abgesagt": false
+  },
+  {
+   "ort": "Kölner Philharmonie",
+   "stand": "Philharmonie",
+   "titel": "Cuarteto Quiroga",
+   "zusatz": "",
+   "beginn": "2026-11-25T20:00",
+   "dauer": 165,
+   "groesse": "L",
+   "art": "Konzert",
    "abgesagt": false
   },
   {
@@ -21,6 +168,118 @@
    "zusatz": "",
    "beginn": "2026-11-26T19:20",
    "dauer": 165,
+   "groesse": "XL",
+   "art": "Konzert/Show",
+   "abgesagt": false
+  },
+  {
+   "ort": "Essigfabrik",
+   "stand": "Drehbrücke",
+   "titel": "Allt – European Tour 2026",
+   "zusatz": "",
+   "beginn": "2026-11-26T19:30",
+   "dauer": 165,
+   "groesse": "M",
+   "art": "Konzert",
+   "abgesagt": false
+  },
+  {
+   "ort": "Theater am Tanzbrunnen",
+   "stand": "Tanzbrunnen",
+   "titel": "Dominik Eulberg – Prachtliebe und Wunderfakten",
+   "zusatz": "",
+   "beginn": "2026-11-26T20:00",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Theater",
+   "abgesagt": false
+  },
+  {
+   "ort": "Die Kantine",
+   "stand": "Kantine",
+   "titel": "Sevendust | Support: Overgrown",
+   "zusatz": "",
+   "beginn": "2026-11-26T20:00",
+   "dauer": 165,
+   "groesse": "M",
+   "art": "Konzert",
+   "abgesagt": false
+  },
+  {
+   "ort": "Live Music Hall",
+   "stand": "Helios",
+   "titel": "Murda – UZAY TOUR",
+   "zusatz": "",
+   "beginn": "2026-11-26T20:00",
+   "dauer": 165,
+   "groesse": "M",
+   "art": "Konzert",
+   "abgesagt": false
+  },
+  {
+   "ort": "Carlswerk Victoria",
+   "stand": "Schanzenstr.",
+   "titel": "Lil Peep – 30th Birthday Celebration",
+   "zusatz": "",
+   "beginn": "2026-11-26T20:00",
+   "dauer": 165,
+   "groesse": "L",
+   "art": "Konzert",
+   "abgesagt": false
+  },
+  {
+   "ort": "Schauspiel Köln im Depot",
+   "stand": "Schanzenstr.",
+   "titel": "Combat des lianes",
+   "zusatz": "",
+   "beginn": "2026-11-26T20:00",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Theater",
+   "abgesagt": false
+  },
+  {
+   "ort": "Gloria",
+   "stand": "Neumarkt",
+   "titel": "Fortuna Ehrenfeld – Jubiläumstour – 10 Jahre Fortuna",
+   "zusatz": "",
+   "beginn": "2026-11-26T20:00",
+   "dauer": 165,
+   "groesse": "M",
+   "art": "Konzert",
+   "abgesagt": false
+  },
+  {
+   "ort": "Kölner Philharmonie",
+   "stand": "Philharmonie",
+   "titel": "#round2 – Nyokabi Kariũki",
+   "zusatz": "",
+   "beginn": "2026-11-26T21:00",
+   "dauer": 165,
+   "groesse": "L",
+   "art": "Konzert",
+   "abgesagt": false
+  },
+  {
+   "ort": "Palastzelt Schanzenviertel",
+   "stand": "Schanzenstr.",
+   "titel": "11. Kölner Weihnachtscircus",
+   "zusatz": "",
+   "beginn": "2026-11-27T15:30",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Show",
+   "abgesagt": false
+  },
+  {
+   "ort": "Essigfabrik",
+   "stand": "Drehbrücke",
+   "titel": "Ankor & Self Deception – Co-Headlinetour 2026",
+   "zusatz": "",
+   "beginn": "2026-11-27T19:00",
+   "dauer": 165,
+   "groesse": "M",
+   "art": "Konzert",
    "abgesagt": false
   },
   {
@@ -30,6 +289,140 @@
    "zusatz": "",
    "beginn": "2026-11-27T19:30",
    "dauer": 150,
+   "groesse": "XL",
+   "art": "Sport",
+   "abgesagt": false
+  },
+  {
+   "ort": "Carlswerk Victoria",
+   "stand": "Schanzenstr.",
+   "titel": "dARTAGNAN – special guests: Storm Seeker & Doppelbock",
+   "zusatz": "",
+   "beginn": "2026-11-27T19:30",
+   "dauer": 165,
+   "groesse": "L",
+   "art": "Konzert",
+   "abgesagt": false
+  },
+  {
+   "ort": "Oper Köln",
+   "stand": "Tanzbrunnen",
+   "titel": "Kain und Abel",
+   "zusatz": "",
+   "beginn": "2026-11-27T19:30",
+   "dauer": 180,
+   "groesse": "M",
+   "art": "Oper",
+   "abgesagt": false
+  },
+  {
+   "ort": "Palastzelt Schanzenviertel",
+   "stand": "Schanzenstr.",
+   "titel": "11. Kölner Weihnachtscircus",
+   "zusatz": "",
+   "beginn": "2026-11-27T19:30",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Show",
+   "abgesagt": false
+  },
+  {
+   "ort": "Die Kantine",
+   "stand": "Kantine",
+   "titel": "Umse x Megaloh x Lakmann",
+   "zusatz": "",
+   "beginn": "2026-11-27T20:00",
+   "dauer": 165,
+   "groesse": "M",
+   "art": "Konzert",
+   "abgesagt": false
+  },
+  {
+   "ort": "Schauspiel Köln im Depot",
+   "stand": "Schanzenstr.",
+   "titel": "Combat des lianes",
+   "zusatz": "",
+   "beginn": "2026-11-27T20:00",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Theater",
+   "abgesagt": false
+  },
+  {
+   "ort": "Schauspiel Köln",
+   "stand": "Schanzenstr.",
+   "titel": "Die Holländerinnen",
+   "zusatz": "",
+   "beginn": "2026-11-27T20:00",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Theater",
+   "abgesagt": false
+  },
+  {
+   "ort": "Kölner Philharmonie",
+   "stand": "Philharmonie",
+   "titel": "WDR Sinfonieorchester | Monumental – Wagner & Bruckner",
+   "zusatz": "",
+   "beginn": "2026-11-27T20:00",
+   "dauer": 165,
+   "groesse": "L",
+   "art": "Konzert",
+   "abgesagt": false
+  },
+  {
+   "ort": "Gloria",
+   "stand": "Neumarkt",
+   "titel": "Nico Gomez – Safe Songs Tour 2026",
+   "zusatz": "",
+   "beginn": "2026-11-27T20:00",
+   "dauer": 165,
+   "groesse": "M",
+   "art": "Konzert",
+   "abgesagt": false
+  },
+  {
+   "ort": "Live Music Hall",
+   "stand": "Helios",
+   "titel": "Musical Rave",
+   "zusatz": "",
+   "beginn": "2026-11-27T20:00",
+   "dauer": 165,
+   "groesse": "M",
+   "art": "Konzert",
+   "abgesagt": false
+  },
+  {
+   "ort": "Galopprennbahn Weidenpesch",
+   "stand": "Scharnhorst",
+   "titel": "Flohmarkt an der Galopprennbahn",
+   "zusatz": "",
+   "beginn": "2026-11-28T08:00",
+   "dauer": 360,
+   "groesse": "M",
+   "art": "Markt",
+   "abgesagt": false
+  },
+  {
+   "ort": "Palastzelt Schanzenviertel",
+   "stand": "Schanzenstr.",
+   "titel": "11. Kölner Weihnachtscircus",
+   "zusatz": "",
+   "beginn": "2026-11-28T14:30",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Show",
+   "abgesagt": false
+  },
+  {
+   "ort": "RheinEnergieStadion",
+   "stand": "Müngersdorf",
+   "titel": "1. FC Köln – SV 07 Elversberg",
+   "zusatz": "Fußball",
+   "beginn": "2026-11-28T15:30",
+   "dauer": 115,
+   "groesse": "XL",
+   "art": "Fußball",
    "abgesagt": false
   },
   {
@@ -39,6 +432,151 @@
    "zusatz": "",
    "beginn": "2026-11-28T16:00",
    "dauer": 165,
+   "groesse": "XL",
+   "art": "Konzert/Show",
+   "abgesagt": false
+  },
+  {
+   "ort": "Oper Köln",
+   "stand": "Tanzbrunnen",
+   "titel": "Hoffmanns Erzählungen",
+   "zusatz": "",
+   "beginn": "2026-11-28T18:00",
+   "dauer": 180,
+   "groesse": "M",
+   "art": "Oper",
+   "abgesagt": false
+  },
+  {
+   "ort": "Palastzelt Schanzenviertel",
+   "stand": "Schanzenstr.",
+   "titel": "11. Kölner Weihnachtscircus",
+   "zusatz": "",
+   "beginn": "2026-11-28T19:00",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Show",
+   "abgesagt": false
+  },
+  {
+   "ort": "Essigfabrik",
+   "stand": "Drehbrücke",
+   "titel": "Health – Conflict : Europe 2026 | Supports: Vowws & Doodseskader",
+   "zusatz": "",
+   "beginn": "2026-11-28T19:30",
+   "dauer": 165,
+   "groesse": "M",
+   "art": "Konzert",
+   "abgesagt": false
+  },
+  {
+   "ort": "Schauspiel Köln",
+   "stand": "Schanzenstr.",
+   "titel": "Kaspar",
+   "zusatz": "",
+   "beginn": "2026-11-28T19:30",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Theater",
+   "abgesagt": false
+  },
+  {
+   "ort": "Die Kantine",
+   "stand": "Kantine",
+   "titel": "April Art – Tour 2026 – special guest: Dymytry Paradox",
+   "zusatz": "",
+   "beginn": "2026-11-28T20:00",
+   "dauer": 165,
+   "groesse": "M",
+   "art": "Konzert",
+   "abgesagt": false
+  },
+  {
+   "ort": "Carlswerk Victoria",
+   "stand": "Schanzenstr.",
+   "titel": "Portugal. The Man – The Denali Tour",
+   "zusatz": "",
+   "beginn": "2026-11-28T20:00",
+   "dauer": 165,
+   "groesse": "L",
+   "art": "Konzert",
+   "abgesagt": false
+  },
+  {
+   "ort": "Schauspiel Köln",
+   "stand": "Schanzenstr.",
+   "titel": "Moneyland",
+   "zusatz": "",
+   "beginn": "2026-11-28T20:00",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Theater",
+   "abgesagt": false
+  },
+  {
+   "ort": "Kölner Philharmonie",
+   "stand": "Philharmonie",
+   "titel": "WDR Sinfonieorchester | Monumental – Wagner & Bruckner",
+   "zusatz": "",
+   "beginn": "2026-11-28T20:00",
+   "dauer": 165,
+   "groesse": "L",
+   "art": "Konzert",
+   "abgesagt": false
+  },
+  {
+   "ort": "Gloria",
+   "stand": "Neumarkt",
+   "titel": "Ray Collins Hot Club",
+   "zusatz": "",
+   "beginn": "2026-11-28T20:00",
+   "dauer": 165,
+   "groesse": "M",
+   "art": "Konzert",
+   "abgesagt": false
+  },
+  {
+   "ort": "Galopprennbahn Weidenpesch",
+   "stand": "Scharnhorst",
+   "titel": "Flohmarkt an der Galopprennbahn",
+   "zusatz": "",
+   "beginn": "2026-11-29T11:00",
+   "dauer": 300,
+   "groesse": "M",
+   "art": "Markt",
+   "abgesagt": false
+  },
+  {
+   "ort": "Kölner Philharmonie",
+   "stand": "Philharmonie",
+   "titel": "Familienkonzert »Jauchzet, frohlocket!« mit Bachs Weihnachtsoratorium",
+   "zusatz": "",
+   "beginn": "2026-11-29T11:00",
+   "dauer": 165,
+   "groesse": "L",
+   "art": "Konzert",
+   "abgesagt": false
+  },
+  {
+   "ort": "Palastzelt Schanzenviertel",
+   "stand": "Schanzenstr.",
+   "titel": "11. Kölner Weihnachtscircus",
+   "zusatz": "",
+   "beginn": "2026-11-29T13:00",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Show",
+   "abgesagt": false
+  },
+  {
+   "ort": "Sportpark Höhenberg",
+   "stand": "Höhenberg",
+   "titel": "Viktoria Köln – Fortuna Köln",
+   "zusatz": "Fußball",
+   "beginn": "2026-11-29T13:30",
+   "dauer": 115,
+   "groesse": "M",
+   "art": "Fußball",
    "abgesagt": false
   },
   {
@@ -48,6 +586,217 @@
    "zusatz": "",
    "beginn": "2026-11-29T14:00",
    "dauer": 150,
+   "groesse": "XL",
+   "art": "Sport",
+   "abgesagt": false
+  },
+  {
+   "ort": "Kölner Philharmonie",
+   "stand": "Philharmonie",
+   "titel": "Familienkonzert »Jauchzet, frohlocket!« mit Bachs Weihnachtsoratorium",
+   "zusatz": "",
+   "beginn": "2026-11-29T14:00",
+   "dauer": 165,
+   "groesse": "L",
+   "art": "Konzert",
+   "abgesagt": false
+  },
+  {
+   "ort": "Palastzelt Schanzenviertel",
+   "stand": "Schanzenstr.",
+   "titel": "11. Kölner Weihnachtscircus",
+   "zusatz": "",
+   "beginn": "2026-11-29T17:00",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Show",
+   "abgesagt": false
+  },
+  {
+   "ort": "Oper Köln",
+   "stand": "Tanzbrunnen",
+   "titel": "Der Rosenkavalier",
+   "zusatz": "",
+   "beginn": "2026-11-29T18:00",
+   "dauer": 180,
+   "groesse": "M",
+   "art": "Oper",
+   "abgesagt": false
+  },
+  {
+   "ort": "Schauspiel Köln",
+   "stand": "Schanzenstr.",
+   "titel": "Pinocchio",
+   "zusatz": "",
+   "beginn": "2026-11-29T18:00",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Theater",
+   "abgesagt": false
+  },
+  {
+   "ort": "Theater am Tanzbrunnen",
+   "stand": "Tanzbrunnen",
+   "titel": "Stimmen im Kopf – Die Abgründe der menschlichen Psyche",
+   "zusatz": "",
+   "beginn": "2026-11-29T19:00",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Theater",
+   "abgesagt": false
+  },
+  {
+   "ort": "Schauspiel Köln",
+   "stand": "Schanzenstr.",
+   "titel": "#Motherfuckinghood",
+   "zusatz": "",
+   "beginn": "2026-11-29T19:00",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Theater",
+   "abgesagt": false
+  },
+  {
+   "ort": "Gloria",
+   "stand": "Neumarkt",
+   "titel": "Springmaus Improvisationstheater – Merry Christmaus",
+   "zusatz": "",
+   "beginn": "2026-11-29T19:00",
+   "dauer": 165,
+   "groesse": "M",
+   "art": "Konzert",
+   "abgesagt": false
+  },
+  {
+   "ort": "Carlswerk Victoria",
+   "stand": "Schanzenstr.",
+   "titel": "Kingfishr | Support: Tadhg Nolan",
+   "zusatz": "",
+   "beginn": "2026-11-29T20:00",
+   "dauer": 165,
+   "groesse": "L",
+   "art": "Konzert",
+   "abgesagt": false
+  },
+  {
+   "ort": "Live Music Hall",
+   "stand": "Helios",
+   "titel": "Mammoth | With special guest: Florence Black",
+   "zusatz": "",
+   "beginn": "2026-11-29T20:00",
+   "dauer": 165,
+   "groesse": "M",
+   "art": "Konzert",
+   "abgesagt": false
+  },
+  {
+   "ort": "Palladium Köln",
+   "stand": "Schanzenstr.",
+   "titel": "EsDeeKid – Council House Rat Tour",
+   "zusatz": "",
+   "beginn": "2026-11-29T20:00",
+   "dauer": 165,
+   "groesse": "L",
+   "art": "Konzert",
+   "abgesagt": false
+  },
+  {
+   "ort": "Kölner Philharmonie",
+   "stand": "Philharmonie",
+   "titel": "Beatrice Rana | Chamber Orchestra of Europe | Yannick Nézet-Séguin",
+   "zusatz": "",
+   "beginn": "2026-11-29T20:00",
+   "dauer": 165,
+   "groesse": "L",
+   "art": "Konzert",
+   "abgesagt": false
+  },
+  {
+   "ort": "Volksbühne Am Rudolfplatz",
+   "stand": "Rudolfplatz",
+   "titel": "Theater 12: Usjerechnet Helligovend – Eine kölsche Weihnachtskomödie mit Musik",
+   "zusatz": "",
+   "beginn": "2026-11-30T19:00",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Theater",
+   "abgesagt": false
+  },
+  {
+   "ort": "Palladium Köln",
+   "stand": "Schanzenstr.",
+   "titel": "Berq – Tour 2026 – 2. Zusatzshow | Support: Emma Rose",
+   "zusatz": "",
+   "beginn": "2026-11-30T20:00",
+   "dauer": 165,
+   "groesse": "L",
+   "art": "Konzert",
+   "abgesagt": false
+  },
+  {
+   "ort": "Die Kantine",
+   "stand": "Kantine",
+   "titel": "Tiffany Day – HALO TOUR EUROPE",
+   "zusatz": "",
+   "beginn": "2026-11-30T20:00",
+   "dauer": 165,
+   "groesse": "M",
+   "art": "Konzert",
+   "abgesagt": false
+  },
+  {
+   "ort": "Kölner Philharmonie",
+   "stand": "Philharmonie",
+   "titel": "Andreas Scholl | Accademia Bizantina | Alessandro Tampieri",
+   "zusatz": "",
+   "beginn": "2026-11-30T20:00",
+   "dauer": 165,
+   "groesse": "L",
+   "art": "Konzert",
+   "abgesagt": false
+  },
+  {
+   "ort": "Gloria",
+   "stand": "Neumarkt",
+   "titel": "David Kebekus – Sensible Inhalte",
+   "zusatz": "",
+   "beginn": "2026-11-30T20:00",
+   "dauer": 165,
+   "groesse": "M",
+   "art": "Konzert",
+   "abgesagt": false
+  },
+  {
+   "ort": "Schauspiel Köln",
+   "stand": "Schanzenstr.",
+   "titel": "Pinocchio",
+   "zusatz": "",
+   "beginn": "2026-12-01T10:30",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Theater",
+   "abgesagt": false
+  },
+  {
+   "ort": "Volksbühne Am Rudolfplatz",
+   "stand": "Rudolfplatz",
+   "titel": "Theater 12: Usjerechnet Helligovend – Eine kölsche Weihnachtskomödie mit Musik",
+   "zusatz": "",
+   "beginn": "2026-12-01T19:00",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Theater",
+   "abgesagt": false
+  },
+  {
+   "ort": "Schauspiel Köln",
+   "stand": "Schanzenstr.",
+   "titel": "Tag und Nacht",
+   "zusatz": "",
+   "beginn": "2026-12-01T19:30",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Theater",
    "abgesagt": false
   },
   {
@@ -57,6 +806,41 @@
    "zusatz": "",
    "beginn": "2026-12-01T20:00",
    "dauer": 165,
+   "groesse": "XL",
+   "art": "Konzert/Show",
+   "abgesagt": false
+  },
+  {
+   "ort": "Palladium Köln",
+   "stand": "Schanzenstr.",
+   "titel": "Berq – Tour 2026 – Zusatzshow | Support: Majan",
+   "zusatz": "",
+   "beginn": "2026-12-01T20:00",
+   "dauer": 165,
+   "groesse": "L",
+   "art": "Konzert",
+   "abgesagt": false
+  },
+  {
+   "ort": "Schauspiel Köln",
+   "stand": "Schanzenstr.",
+   "titel": "Pinocchio",
+   "zusatz": "",
+   "beginn": "2026-12-02T10:30",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Theater",
+   "abgesagt": false
+  },
+  {
+   "ort": "Palastzelt Schanzenviertel",
+   "stand": "Schanzenstr.",
+   "titel": "11. Kölner Weihnachtscircus",
+   "zusatz": "",
+   "beginn": "2026-12-02T15:30",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Show",
    "abgesagt": false
   },
   {
@@ -66,6 +850,129 @@
    "zusatz": "",
    "beginn": "2026-12-02T19:00",
    "dauer": 165,
+   "groesse": "XL",
+   "art": "Sport",
+   "abgesagt": false
+  },
+  {
+   "ort": "Carlswerk Victoria",
+   "stand": "Schanzenstr.",
+   "titel": "VOILÀ – presents MOONBLOOM: Where Music Meets Magic",
+   "zusatz": "",
+   "beginn": "2026-12-02T19:00",
+   "dauer": 165,
+   "groesse": "L",
+   "art": "Konzert",
+   "abgesagt": false
+  },
+  {
+   "ort": "Volksbühne Am Rudolfplatz",
+   "stand": "Rudolfplatz",
+   "titel": "Theater 12: Usjerechnet Helligovend – Eine kölsche Weihnachtskomödie mit Musik",
+   "zusatz": "",
+   "beginn": "2026-12-02T19:00",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Theater",
+   "abgesagt": false
+  },
+  {
+   "ort": "Oper Köln",
+   "stand": "Tanzbrunnen",
+   "titel": "Hoffmanns Erzählungen",
+   "zusatz": "",
+   "beginn": "2026-12-02T19:30",
+   "dauer": 180,
+   "groesse": "M",
+   "art": "Oper",
+   "abgesagt": false
+  },
+  {
+   "ort": "Palastzelt Schanzenviertel",
+   "stand": "Schanzenstr.",
+   "titel": "11. Kölner Weihnachtscircus",
+   "zusatz": "",
+   "beginn": "2026-12-02T19:30",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Show",
+   "abgesagt": false
+  },
+  {
+   "ort": "Palladium Köln",
+   "stand": "Schanzenstr.",
+   "titel": "Berq – Tour 2026 | Support: Majan",
+   "zusatz": "",
+   "beginn": "2026-12-02T20:00",
+   "dauer": 165,
+   "groesse": "L",
+   "art": "Konzert",
+   "abgesagt": false
+  },
+  {
+   "ort": "Die Kantine",
+   "stand": "Kantine",
+   "titel": "JAS – So Schön Verloren Tour 2026",
+   "zusatz": "",
+   "beginn": "2026-12-02T20:00",
+   "dauer": 165,
+   "groesse": "M",
+   "art": "Konzert",
+   "abgesagt": false
+  },
+  {
+   "ort": "Live Music Hall",
+   "stand": "Helios",
+   "titel": "Druckluft – Jahresabschlusskonzert",
+   "zusatz": "",
+   "beginn": "2026-12-02T20:00",
+   "dauer": 165,
+   "groesse": "M",
+   "art": "Konzert",
+   "abgesagt": false
+  },
+  {
+   "ort": "Kölner Philharmonie",
+   "stand": "Philharmonie",
+   "titel": "London Philharmonic Orchestra",
+   "zusatz": "",
+   "beginn": "2026-12-02T20:00",
+   "dauer": 165,
+   "groesse": "L",
+   "art": "Konzert",
+   "abgesagt": false
+  },
+  {
+   "ort": "Gloria",
+   "stand": "Neumarkt",
+   "titel": "Tobias Mann & Philip Simon – Grundlos gute Laune – Der Kabarett-Podcast LIVE",
+   "zusatz": "",
+   "beginn": "2026-12-02T20:00",
+   "dauer": 165,
+   "groesse": "M",
+   "art": "Konzert",
+   "abgesagt": false
+  },
+  {
+   "ort": "Schauspiel Köln",
+   "stand": "Schanzenstr.",
+   "titel": "Pinocchio",
+   "zusatz": "",
+   "beginn": "2026-12-03T10:30",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Theater",
+   "abgesagt": false
+  },
+  {
+   "ort": "Palastzelt Schanzenviertel",
+   "stand": "Schanzenstr.",
+   "titel": "11. Kölner Weihnachtscircus",
+   "zusatz": "",
+   "beginn": "2026-12-03T15:30",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Show",
    "abgesagt": false
   },
   {
@@ -75,6 +982,151 @@
    "zusatz": "",
    "beginn": "2026-12-03T19:30",
    "dauer": 165,
+   "groesse": "XL",
+   "art": "Konzert/Show",
+   "abgesagt": false
+  },
+  {
+   "ort": "Live Music Hall",
+   "stand": "Helios",
+   "titel": "Chapo102 – Tour ins Blaue 2026",
+   "zusatz": "",
+   "beginn": "2026-12-03T19:30",
+   "dauer": 165,
+   "groesse": "M",
+   "art": "Konzert",
+   "abgesagt": false
+  },
+  {
+   "ort": "Schauspiel Köln",
+   "stand": "Schanzenstr.",
+   "titel": "Baby,dont give up – Monchi liest",
+   "zusatz": "",
+   "beginn": "2026-12-03T19:30",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Theater",
+   "abgesagt": false
+  },
+  {
+   "ort": "Palastzelt Schanzenviertel",
+   "stand": "Schanzenstr.",
+   "titel": "11. Kölner Weihnachtscircus",
+   "zusatz": "",
+   "beginn": "2026-12-03T19:30",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Show",
+   "abgesagt": false
+  },
+  {
+   "ort": "Die Kantine",
+   "stand": "Kantine",
+   "titel": "Zimmer90 – Arthouse Tour 2026",
+   "zusatz": "",
+   "beginn": "2026-12-03T20:00",
+   "dauer": 165,
+   "groesse": "M",
+   "art": "Konzert",
+   "abgesagt": false
+  },
+  {
+   "ort": "Carlswerk Victoria",
+   "stand": "Schanzenstr.",
+   "titel": "Tori Kelly – God Must Really Love Me Europe Tour",
+   "zusatz": "",
+   "beginn": "2026-12-03T20:00",
+   "dauer": 165,
+   "groesse": "L",
+   "art": "Konzert",
+   "abgesagt": false
+  },
+  {
+   "ort": "Theater am Tanzbrunnen",
+   "stand": "Tanzbrunnen",
+   "titel": "MAYBEBOP",
+   "zusatz": "",
+   "beginn": "2026-12-03T20:00",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Theater",
+   "abgesagt": false
+  },
+  {
+   "ort": "Gloria",
+   "stand": "Neumarkt",
+   "titel": "Guildo Horn & Die Orthopädischen Strümpfe – Weihnachten mit Guildo",
+   "zusatz": "",
+   "beginn": "2026-12-03T20:00",
+   "dauer": 165,
+   "groesse": "M",
+   "art": "Konzert",
+   "abgesagt": false
+  },
+  {
+   "ort": "Schauspiel Köln",
+   "stand": "Schanzenstr.",
+   "titel": "Die Holländerinnen",
+   "zusatz": "",
+   "beginn": "2026-12-03T20:00",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Theater",
+   "abgesagt": false
+  },
+  {
+   "ort": "Palastzelt Schanzenviertel",
+   "stand": "Schanzenstr.",
+   "titel": "11. Kölner Weihnachtscircus",
+   "zusatz": "",
+   "beginn": "2026-12-04T15:30",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Show",
+   "abgesagt": false
+  },
+  {
+   "ort": "Die Kantine",
+   "stand": "Kantine",
+   "titel": "Julia Meladin – Rosarote Mauer Tour 2026",
+   "zusatz": "",
+   "beginn": "2026-12-04T19:30",
+   "dauer": 165,
+   "groesse": "M",
+   "art": "Konzert",
+   "abgesagt": false
+  },
+  {
+   "ort": "Oper Köln",
+   "stand": "Tanzbrunnen",
+   "titel": "Hoffmanns Erzählungen",
+   "zusatz": "",
+   "beginn": "2026-12-04T19:30",
+   "dauer": 180,
+   "groesse": "M",
+   "art": "Oper",
+   "abgesagt": false
+  },
+  {
+   "ort": "Schauspiel Köln",
+   "stand": "Schanzenstr.",
+   "titel": "Die Deutsche Bahn AG",
+   "zusatz": "",
+   "beginn": "2026-12-04T19:30",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Theater",
+   "abgesagt": false
+  },
+  {
+   "ort": "Palastzelt Schanzenviertel",
+   "stand": "Schanzenstr.",
+   "titel": "11. Kölner Weihnachtscircus",
+   "zusatz": "",
+   "beginn": "2026-12-04T19:30",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Show",
    "abgesagt": false
   },
   {
@@ -84,6 +1136,195 @@
    "zusatz": "",
    "beginn": "2026-12-04T20:00",
    "dauer": 165,
+   "groesse": "XL",
+   "art": "Konzert/Show",
+   "abgesagt": false
+  },
+  {
+   "ort": "Carlswerk Victoria",
+   "stand": "Schanzenstr.",
+   "titel": "ITCHY – 25 YEARS – the Tour",
+   "zusatz": "",
+   "beginn": "2026-12-04T20:00",
+   "dauer": 165,
+   "groesse": "L",
+   "art": "Konzert",
+   "abgesagt": false
+  },
+  {
+   "ort": "Theater am Tanzbrunnen",
+   "stand": "Tanzbrunnen",
+   "titel": "Kölsche Weihnacht 2026",
+   "zusatz": "",
+   "beginn": "2026-12-04T20:00",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Theater",
+   "abgesagt": false
+  },
+  {
+   "ort": "Essigfabrik",
+   "stand": "Drehbrücke",
+   "titel": "Zuna – MELE7 3 Tour 2026",
+   "zusatz": "",
+   "beginn": "2026-12-04T20:00",
+   "dauer": 165,
+   "groesse": "M",
+   "art": "Konzert",
+   "abgesagt": false
+  },
+  {
+   "ort": "Gloria",
+   "stand": "Neumarkt",
+   "titel": "Guildo Horn & Die Orthopädischen Strümpfe – Weihnachten mit Guildo",
+   "zusatz": "",
+   "beginn": "2026-12-04T20:00",
+   "dauer": 165,
+   "groesse": "M",
+   "art": "Konzert",
+   "abgesagt": false
+  },
+  {
+   "ort": "Schauspiel Köln",
+   "stand": "Schanzenstr.",
+   "titel": "Moneyland",
+   "zusatz": "",
+   "beginn": "2026-12-04T20:00",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Theater",
+   "abgesagt": false
+  },
+  {
+   "ort": "Galopprennbahn Weidenpesch",
+   "stand": "Scharnhorst",
+   "titel": "Flohmarkt an der Galopprennbahn",
+   "zusatz": "",
+   "beginn": "2026-12-05T08:00",
+   "dauer": 360,
+   "groesse": "M",
+   "art": "Markt",
+   "abgesagt": false
+  },
+  {
+   "ort": "Theater am Tanzbrunnen",
+   "stand": "Tanzbrunnen",
+   "titel": "Kölsche Weihnacht 2026",
+   "zusatz": "",
+   "beginn": "2026-12-05T14:00",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Theater",
+   "abgesagt": false
+  },
+  {
+   "ort": "Palastzelt Schanzenviertel",
+   "stand": "Schanzenstr.",
+   "titel": "11. Kölner Weihnachtscircus",
+   "zusatz": "",
+   "beginn": "2026-12-05T15:00",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Show",
+   "abgesagt": false
+  },
+  {
+   "ort": "Schauspiel Köln im Depot",
+   "stand": "Schanzenstr.",
+   "titel": "We need you",
+   "zusatz": "",
+   "beginn": "2026-12-05T16:00",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Theater",
+   "abgesagt": false
+  },
+  {
+   "ort": "Oper Köln",
+   "stand": "Tanzbrunnen",
+   "titel": "Sing Halleluja!",
+   "zusatz": "",
+   "beginn": "2026-12-05T18:00",
+   "dauer": 180,
+   "groesse": "M",
+   "art": "Oper",
+   "abgesagt": false
+  },
+  {
+   "ort": "Palladium Köln",
+   "stand": "Schanzenstr.",
+   "titel": "Thrown",
+   "zusatz": "",
+   "beginn": "2026-12-05T19:00",
+   "dauer": 165,
+   "groesse": "L",
+   "art": "Konzert",
+   "abgesagt": false
+  },
+  {
+   "ort": "Essigfabrik",
+   "stand": "Drehbrücke",
+   "titel": "Terror",
+   "zusatz": "",
+   "beginn": "2026-12-05T19:00",
+   "dauer": 165,
+   "groesse": "M",
+   "art": "Konzert",
+   "abgesagt": false
+  },
+  {
+   "ort": "Gloria",
+   "stand": "Neumarkt",
+   "titel": "Guildo Horn & Die Orthopädischen Strümpfe – Weihnachten mit Guildo",
+   "zusatz": "",
+   "beginn": "2026-12-05T19:00",
+   "dauer": 165,
+   "groesse": "M",
+   "art": "Konzert",
+   "abgesagt": false
+  },
+  {
+   "ort": "Kölner Philharmonie",
+   "stand": "Philharmonie",
+   "titel": "WDR Sinfonieorchester & WDR Rundfunkchor | Halleluja – Händels Messias",
+   "zusatz": "",
+   "beginn": "2026-12-05T19:00",
+   "dauer": 165,
+   "groesse": "L",
+   "art": "Konzert",
+   "abgesagt": false
+  },
+  {
+   "ort": "Palastzelt Schanzenviertel",
+   "stand": "Schanzenstr.",
+   "titel": "11. Kölner Weihnachtscircus",
+   "zusatz": "",
+   "beginn": "2026-12-05T19:00",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Show",
+   "abgesagt": false
+  },
+  {
+   "ort": "Live Music Hall",
+   "stand": "Helios",
+   "titel": "Ein Rosenkavalier – Indie Schlager Herzen",
+   "zusatz": "",
+   "beginn": "2026-12-05T19:30",
+   "dauer": 165,
+   "groesse": "M",
+   "art": "Konzert",
+   "abgesagt": false
+  },
+  {
+   "ort": "Schauspiel Köln",
+   "stand": "Schanzenstr.",
+   "titel": "Kaspar",
+   "zusatz": "",
+   "beginn": "2026-12-05T19:30",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Theater",
    "abgesagt": false
   },
   {
@@ -93,6 +1334,173 @@
    "zusatz": "",
    "beginn": "2026-12-05T20:00",
    "dauer": 165,
+   "groesse": "XL",
+   "art": "Konzert/Show",
+   "abgesagt": false
+  },
+  {
+   "ort": "Carlswerk Victoria",
+   "stand": "Schanzenstr.",
+   "titel": "Chuck Ragan, Frank Turner, Tim Barry & Ben Nichols – The Revival Tour",
+   "zusatz": "",
+   "beginn": "2026-12-05T20:00",
+   "dauer": 165,
+   "groesse": "L",
+   "art": "Konzert",
+   "abgesagt": false
+  },
+  {
+   "ort": "Theater am Tanzbrunnen",
+   "stand": "Tanzbrunnen",
+   "titel": "Kölsche Weihnacht 2026",
+   "zusatz": "",
+   "beginn": "2026-12-05T20:00",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Theater",
+   "abgesagt": false
+  },
+  {
+   "ort": "Schauspiel Köln",
+   "stand": "Schanzenstr.",
+   "titel": "Endspiel",
+   "zusatz": "",
+   "beginn": "2026-12-05T20:00",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Theater",
+   "abgesagt": false
+  },
+  {
+   "ort": "Flora",
+   "stand": "Zoo Bedarfs",
+   "titel": "Antikmarkt in der Flora",
+   "zusatz": "",
+   "beginn": "2026-12-06T11:00",
+   "dauer": 420,
+   "groesse": "M",
+   "art": "Markt",
+   "abgesagt": false
+  },
+  {
+   "ort": "Schauspiel Köln",
+   "stand": "Schanzenstr.",
+   "titel": "Pinocchio",
+   "zusatz": "",
+   "beginn": "2026-12-06T11:00",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Theater",
+   "abgesagt": false
+  },
+  {
+   "ort": "Oper Köln",
+   "stand": "Tanzbrunnen",
+   "titel": "Sing Halleluja!",
+   "zusatz": "",
+   "beginn": "2026-12-06T11:00",
+   "dauer": 180,
+   "groesse": "M",
+   "art": "Oper",
+   "abgesagt": false
+  },
+  {
+   "ort": "Kölner Philharmonie",
+   "stand": "Philharmonie",
+   "titel": "Schicksalsschläge",
+   "zusatz": "",
+   "beginn": "2026-12-06T11:00",
+   "dauer": 165,
+   "groesse": "L",
+   "art": "Konzert",
+   "abgesagt": false
+  },
+  {
+   "ort": "Palastzelt Schanzenviertel",
+   "stand": "Schanzenstr.",
+   "titel": "11. Kölner Weihnachtscircus",
+   "zusatz": "",
+   "beginn": "2026-12-06T13:00",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Show",
+   "abgesagt": false
+  },
+  {
+   "ort": "Theater am Tanzbrunnen",
+   "stand": "Tanzbrunnen",
+   "titel": "Kölsche Weihnacht 2026",
+   "zusatz": "",
+   "beginn": "2026-12-06T14:00",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Theater",
+   "abgesagt": false
+  },
+  {
+   "ort": "Gloria",
+   "stand": "Neumarkt",
+   "titel": "Guildo Horn & Die Orthopädischen Strümpfe – Weihnachten mit Guildo",
+   "zusatz": "",
+   "beginn": "2026-12-06T16:00",
+   "dauer": 165,
+   "groesse": "M",
+   "art": "Konzert",
+   "abgesagt": false
+  },
+  {
+   "ort": "Schauspiel Köln",
+   "stand": "Schanzenstr.",
+   "titel": "Pinocchio",
+   "zusatz": "",
+   "beginn": "2026-12-06T17:00",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Theater",
+   "abgesagt": false
+  },
+  {
+   "ort": "Palastzelt Schanzenviertel",
+   "stand": "Schanzenstr.",
+   "titel": "11. Kölner Weihnachtscircus",
+   "zusatz": "",
+   "beginn": "2026-12-06T17:00",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Show",
+   "abgesagt": false
+  },
+  {
+   "ort": "Oper Köln",
+   "stand": "Tanzbrunnen",
+   "titel": "Kain und Abel",
+   "zusatz": "",
+   "beginn": "2026-12-06T18:00",
+   "dauer": 180,
+   "groesse": "M",
+   "art": "Oper",
+   "abgesagt": false
+  },
+  {
+   "ort": "Kölner Philharmonie",
+   "stand": "Philharmonie",
+   "titel": "Francesca Pia Vitale | Freiburger Barockorchester | Pablo Heras-Casado",
+   "zusatz": "",
+   "beginn": "2026-12-06T18:00",
+   "dauer": 165,
+   "groesse": "L",
+   "art": "Konzert",
+   "abgesagt": false
+  },
+  {
+   "ort": "Schauspiel Köln",
+   "stand": "Schanzenstr.",
+   "titel": "Monster",
+   "zusatz": "",
+   "beginn": "2026-12-06T18:00",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Theater",
    "abgesagt": false
   },
   {
@@ -102,6 +1510,96 @@
    "zusatz": "",
    "beginn": "2026-12-06T19:00",
    "dauer": 165,
+   "groesse": "XL",
+   "art": "Konzert/Show",
+   "abgesagt": false
+  },
+  {
+   "ort": "Palladium Köln",
+   "stand": "Schanzenstr.",
+   "titel": "Filow – Live 2026",
+   "zusatz": "",
+   "beginn": "2026-12-06T19:00",
+   "dauer": 165,
+   "groesse": "L",
+   "art": "Konzert",
+   "abgesagt": false
+  },
+  {
+   "ort": "Carlswerk Victoria",
+   "stand": "Schanzenstr.",
+   "titel": "VERIVERY – EUROPE TOUR 2026 GIVE ME FIVE, KEEP THAT VIBE",
+   "zusatz": "",
+   "beginn": "2026-12-06T19:30",
+   "dauer": 165,
+   "groesse": "L",
+   "art": "Konzert",
+   "abgesagt": false
+  },
+  {
+   "ort": "Schauspiel Köln",
+   "stand": "Schanzenstr.",
+   "titel": "Pinocchio",
+   "zusatz": "",
+   "beginn": "2026-12-07T10:30",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Theater",
+   "abgesagt": false
+  },
+  {
+   "ort": "Kölner Philharmonie",
+   "stand": "Philharmonie",
+   "titel": "Ein Haydn-Spaß",
+   "zusatz": "",
+   "beginn": "2026-12-07T12:00",
+   "dauer": 165,
+   "groesse": "L",
+   "art": "Konzert",
+   "abgesagt": false
+  },
+  {
+   "ort": "Volksbühne Am Rudolfplatz",
+   "stand": "Rudolfplatz",
+   "titel": "Björn Heuser – Janz besinnlich",
+   "zusatz": "",
+   "beginn": "2026-12-07T15:30",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Theater",
+   "abgesagt": false
+  },
+  {
+   "ort": "Schauspiel Köln",
+   "stand": "Schanzenstr.",
+   "titel": "Isabel Schayani & Michel Friedman",
+   "zusatz": "",
+   "beginn": "2026-12-07T19:30",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Theater",
+   "abgesagt": false
+  },
+  {
+   "ort": "Theater am Tanzbrunnen",
+   "stand": "Tanzbrunnen",
+   "titel": "Brings – Das Weihnachtskonzert 3.0",
+   "zusatz": "",
+   "beginn": "2026-12-07T19:30",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Theater",
+   "abgesagt": false
+  },
+  {
+   "ort": "Volksbühne Am Rudolfplatz",
+   "stand": "Rudolfplatz",
+   "titel": "Björn Heuser – Janz besinnlich",
+   "zusatz": "",
+   "beginn": "2026-12-07T19:30",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Theater",
    "abgesagt": false
   },
   {
@@ -111,6 +1609,52 @@
    "zusatz": "",
    "beginn": "2026-12-07T20:00",
    "dauer": 165,
+   "groesse": "XL",
+   "art": "Konzert/Show",
+   "abgesagt": false
+  },
+  {
+   "ort": "Kölner Philharmonie",
+   "stand": "Philharmonie",
+   "titel": "Schicksalsschläge",
+   "zusatz": "",
+   "beginn": "2026-12-07T20:00",
+   "dauer": 165,
+   "groesse": "L",
+   "art": "Konzert",
+   "abgesagt": false
+  },
+  {
+   "ort": "Volksbühne Am Rudolfplatz",
+   "stand": "Rudolfplatz",
+   "titel": "Springmaus – Merry Christmaus",
+   "zusatz": "",
+   "beginn": "2026-12-08T15:30",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Theater",
+   "abgesagt": false
+  },
+  {
+   "ort": "Schauspiel Köln im Depot",
+   "stand": "Schanzenstr.",
+   "titel": "COMMUNITY QUEER EYE",
+   "zusatz": "",
+   "beginn": "2026-12-08T19:00",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Theater",
+   "abgesagt": false
+  },
+  {
+   "ort": "Schauspiel Köln",
+   "stand": "Schanzenstr.",
+   "titel": "That night follows day",
+   "zusatz": "",
+   "beginn": "2026-12-08T19:00",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Theater",
    "abgesagt": false
   },
   {
@@ -120,6 +1664,217 @@
    "zusatz": "",
    "beginn": "2026-12-08T19:30",
    "dauer": 150,
+   "groesse": "XL",
+   "art": "Sport",
+   "abgesagt": false
+  },
+  {
+   "ort": "Theater am Tanzbrunnen",
+   "stand": "Tanzbrunnen",
+   "titel": "Brings – Das Weihnachtskonzert 3.0",
+   "zusatz": "",
+   "beginn": "2026-12-08T19:30",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Theater",
+   "abgesagt": false
+  },
+  {
+   "ort": "Volksbühne Am Rudolfplatz",
+   "stand": "Rudolfplatz",
+   "titel": "Springmaus – Merry Christmaus",
+   "zusatz": "",
+   "beginn": "2026-12-08T19:30",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Theater",
+   "abgesagt": false
+  },
+  {
+   "ort": "Schauspiel Köln",
+   "stand": "Schanzenstr.",
+   "titel": "In bester Lage",
+   "zusatz": "",
+   "beginn": "2026-12-08T19:30",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Theater",
+   "abgesagt": false
+  },
+  {
+   "ort": "Palladium Köln",
+   "stand": "Schanzenstr.",
+   "titel": "Elif – Live Tour 2026",
+   "zusatz": "",
+   "beginn": "2026-12-08T20:00",
+   "dauer": 165,
+   "groesse": "L",
+   "art": "Konzert",
+   "abgesagt": false
+  },
+  {
+   "ort": "Carlswerk Victoria",
+   "stand": "Schanzenstr.",
+   "titel": "frytz – ZEIT TEILEN Tour 2026",
+   "zusatz": "",
+   "beginn": "2026-12-08T20:00",
+   "dauer": 165,
+   "groesse": "L",
+   "art": "Konzert",
+   "abgesagt": false
+  },
+  {
+   "ort": "Live Music Hall",
+   "stand": "Helios",
+   "titel": "Zebrahead – Drunk and sh-tty in every City + Special Guests: Punkrock Factory",
+   "zusatz": "",
+   "beginn": "2026-12-08T20:00",
+   "dauer": 165,
+   "groesse": "M",
+   "art": "Konzert",
+   "abgesagt": false
+  },
+  {
+   "ort": "Kölner Philharmonie",
+   "stand": "Philharmonie",
+   "titel": "Schicksalsschläge",
+   "zusatz": "",
+   "beginn": "2026-12-08T20:00",
+   "dauer": 165,
+   "groesse": "L",
+   "art": "Konzert",
+   "abgesagt": false
+  },
+  {
+   "ort": "Volksbühne Am Rudolfplatz",
+   "stand": "Rudolfplatz",
+   "titel": "Nicht nur zur Weihnachtszeit -Johanna Gastdorf, Jan-Gregor Kremp, Leo Gastdorf",
+   "zusatz": "",
+   "beginn": "2026-12-09T13:00",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Theater",
+   "abgesagt": false
+  },
+  {
+   "ort": "Palastzelt Schanzenviertel",
+   "stand": "Schanzenstr.",
+   "titel": "11. Kölner Weihnachtscircus",
+   "zusatz": "",
+   "beginn": "2026-12-09T15:30",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Show",
+   "abgesagt": false
+  },
+  {
+   "ort": "Kölner Philharmonie",
+   "stand": "Philharmonie",
+   "titel": "Julien Chauvin & Le Concert de la Loge",
+   "zusatz": "",
+   "beginn": "2026-12-09T19:00",
+   "dauer": 165,
+   "groesse": "L",
+   "art": "Konzert",
+   "abgesagt": false
+  },
+  {
+   "ort": "E-Werk Köln",
+   "stand": "E-Werk",
+   "titel": "Stunksitzung 2026",
+   "zusatz": "",
+   "beginn": "2026-12-09T19:30",
+   "dauer": 165,
+   "groesse": "L",
+   "art": "Konzert",
+   "abgesagt": false
+  },
+  {
+   "ort": "Theater am Tanzbrunnen",
+   "stand": "Tanzbrunnen",
+   "titel": "Brings – Das Weihnachtskonzert 3.0",
+   "zusatz": "",
+   "beginn": "2026-12-09T19:30",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Theater",
+   "abgesagt": false
+  },
+  {
+   "ort": "Volksbühne Am Rudolfplatz",
+   "stand": "Rudolfplatz",
+   "titel": "PAM PENGCO – PAM PENGCOs COMEDY YOUNGSTARS",
+   "zusatz": "",
+   "beginn": "2026-12-09T19:30",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Theater",
+   "abgesagt": false
+  },
+  {
+   "ort": "Schauspiel Köln",
+   "stand": "Schanzenstr.",
+   "titel": "Vergeltung",
+   "zusatz": "",
+   "beginn": "2026-12-09T19:30",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Theater",
+   "abgesagt": false
+  },
+  {
+   "ort": "Palastzelt Schanzenviertel",
+   "stand": "Schanzenstr.",
+   "titel": "11. Kölner Weihnachtscircus",
+   "zusatz": "",
+   "beginn": "2026-12-09T19:30",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Show",
+   "abgesagt": false
+  },
+  {
+   "ort": "Carlswerk Victoria",
+   "stand": "Schanzenstr.",
+   "titel": "Kodaline – Farewell Tour + Support: Bertie Newman",
+   "zusatz": "",
+   "beginn": "2026-12-09T20:00",
+   "dauer": 165,
+   "groesse": "L",
+   "art": "Konzert",
+   "abgesagt": false
+  },
+  {
+   "ort": "Schauspiel Köln im Depot",
+   "stand": "Schanzenstr.",
+   "titel": "Choreia",
+   "zusatz": "",
+   "beginn": "2026-12-09T20:00",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Theater",
+   "abgesagt": false
+  },
+  {
+   "ort": "Gloria",
+   "stand": "Neumarkt",
+   "titel": "NightWash Live",
+   "zusatz": "",
+   "beginn": "2026-12-09T20:00",
+   "dauer": 165,
+   "groesse": "M",
+   "art": "Konzert",
+   "abgesagt": false
+  },
+  {
+   "ort": "Schauspiel Köln",
+   "stand": "Schanzenstr.",
+   "titel": "#Motherfuckinghood",
+   "zusatz": "",
+   "beginn": "2026-12-09T20:00",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Theater",
    "abgesagt": false
   },
   {
@@ -129,6 +1884,19 @@
    "zusatz": "",
    "beginn": "2026-12-10T20:00",
    "dauer": 165,
+   "groesse": "XL",
+   "art": "Konzert/Show",
+   "abgesagt": false
+  },
+  {
+   "ort": "Sportpark Höhenberg",
+   "stand": "Höhenberg",
+   "titel": "Viktoria Köln – Fortuna Düsseldorf",
+   "zusatz": "Fußball",
+   "beginn": "2026-12-11T19:00",
+   "dauer": 115,
+   "groesse": "M",
+   "art": "Fußball",
    "abgesagt": false
   },
   {
@@ -138,6 +1906,19 @@
    "zusatz": "",
    "beginn": "2026-12-11T19:30",
    "dauer": 150,
+   "groesse": "XL",
+   "art": "Sport",
+   "abgesagt": false
+  },
+  {
+   "ort": "RheinEnergieStadion",
+   "stand": "Müngersdorf",
+   "titel": "1. FC Köln – RB Leipzig",
+   "zusatz": "Fußball",
+   "beginn": "2026-12-12T15:30",
+   "dauer": 115,
+   "groesse": "XL",
+   "art": "Fußball",
    "abgesagt": false
   },
   {
@@ -147,6 +1928,8 @@
    "zusatz": "",
    "beginn": "2026-12-12T20:00",
    "dauer": 165,
+   "groesse": "XL",
+   "art": "Konzert/Show",
    "abgesagt": false
   },
   {
@@ -156,6 +1939,8 @@
    "zusatz": "",
    "beginn": "2026-12-13T19:00",
    "dauer": 165,
+   "groesse": "XL",
+   "art": "Konzert/Show",
    "abgesagt": false
   },
   {
@@ -165,6 +1950,8 @@
    "zusatz": "",
    "beginn": "2026-12-15T19:30",
    "dauer": 150,
+   "groesse": "XL",
+   "art": "Sport",
    "abgesagt": false
   },
   {
@@ -174,6 +1961,8 @@
    "zusatz": "",
    "beginn": "2026-12-16T19:00",
    "dauer": 165,
+   "groesse": "XL",
+   "art": "Konzert/Show",
    "abgesagt": false
   },
   {
@@ -183,6 +1972,19 @@
    "zusatz": "",
    "beginn": "2026-12-17T19:15",
    "dauer": 165,
+   "groesse": "XL",
+   "art": "Konzert/Show",
+   "abgesagt": false
+  },
+  {
+   "ort": "Sportpark Höhenberg",
+   "stand": "Höhenberg",
+   "titel": "Viktoria Köln – SV Waldhof Mannheim",
+   "zusatz": "Fußball",
+   "beginn": "2026-12-18T19:00",
+   "dauer": 115,
+   "groesse": "M",
+   "art": "Fußball",
    "abgesagt": false
   },
   {
@@ -192,6 +1994,8 @@
    "zusatz": "",
    "beginn": "2026-12-18T19:30",
    "dauer": 165,
+   "groesse": "XL",
+   "art": "Konzert/Show",
    "abgesagt": false
   },
   {
@@ -201,6 +2005,8 @@
    "zusatz": "",
    "beginn": "2026-12-19T18:30",
    "dauer": 165,
+   "groesse": "XL",
+   "art": "Konzert/Show",
    "abgesagt": false
   },
   {
@@ -210,6 +2016,8 @@
    "zusatz": "",
    "beginn": "2026-12-20T14:00",
    "dauer": 150,
+   "groesse": "XL",
+   "art": "Sport",
    "abgesagt": false
   },
   {
@@ -219,6 +2027,8 @@
    "zusatz": "",
    "beginn": "2026-12-22T20:00",
    "dauer": 165,
+   "groesse": "XL",
+   "art": "Konzert/Show",
    "abgesagt": false
   },
   {
@@ -228,6 +2038,8 @@
    "zusatz": "",
    "beginn": "2026-12-23T19:30",
    "dauer": 150,
+   "groesse": "XL",
+   "art": "Sport",
    "abgesagt": false
   },
   {
@@ -237,6 +2049,8 @@
    "zusatz": "",
    "beginn": "2026-12-28T20:30",
    "dauer": 165,
+   "groesse": "XL",
+   "art": "Konzert/Show",
    "abgesagt": false
   },
   {
@@ -246,6 +2060,8 @@
    "zusatz": "",
    "beginn": "2026-12-29T19:30",
    "dauer": 150,
+   "groesse": "XL",
+   "art": "Sport",
    "abgesagt": false
   },
   {
@@ -255,6 +2071,8 @@
    "zusatz": "",
    "beginn": "2026-12-31T13:00",
    "dauer": 150,
+   "groesse": "XL",
+   "art": "Sport",
    "abgesagt": false
   },
   {
@@ -264,6 +2082,8 @@
    "zusatz": "",
    "beginn": "2027-01-02T18:30",
    "dauer": 210,
+   "groesse": "XL",
+   "art": "Konzert/Show",
    "abgesagt": false
   },
   {
@@ -273,6 +2093,8 @@
    "zusatz": "",
    "beginn": "2027-01-03T16:00",
    "dauer": 210,
+   "groesse": "XL",
+   "art": "Konzert/Show",
    "abgesagt": false
   },
   {
@@ -282,6 +2104,8 @@
    "zusatz": "",
    "beginn": "2027-01-05T19:30",
    "dauer": 150,
+   "groesse": "XL",
+   "art": "Sport",
    "abgesagt": false
   },
   {
@@ -291,6 +2115,8 @@
    "zusatz": "",
    "beginn": "2027-01-06T19:15",
    "dauer": 165,
+   "groesse": "XL",
+   "art": "Konzert/Show",
    "abgesagt": false
   },
   {
@@ -300,6 +2126,8 @@
    "zusatz": "",
    "beginn": "2027-01-07T18:00",
    "dauer": 210,
+   "groesse": "XL",
+   "art": "Konzert/Show",
    "abgesagt": false
   },
   {
@@ -309,6 +2137,8 @@
    "zusatz": "",
    "beginn": "2027-01-08T18:30",
    "dauer": 210,
+   "groesse": "XL",
+   "art": "Konzert/Show",
    "abgesagt": false
   },
   {
@@ -318,6 +2148,19 @@
    "zusatz": "",
    "beginn": "2027-01-09T11:30",
    "dauer": 210,
+   "groesse": "XL",
+   "art": "Konzert/Show",
+   "abgesagt": false
+  },
+  {
+   "ort": "RheinEnergieStadion",
+   "stand": "Müngersdorf",
+   "titel": "1. FC Köln – SC Freiburg",
+   "zusatz": "Fußball",
+   "beginn": "2027-01-09T15:30",
+   "dauer": 115,
+   "groesse": "XL",
+   "art": "Fußball",
    "abgesagt": false
   },
   {
@@ -327,6 +2170,8 @@
    "zusatz": "",
    "beginn": "2027-01-09T18:30",
    "dauer": 210,
+   "groesse": "XL",
+   "art": "Konzert/Show",
    "abgesagt": false
   },
   {
@@ -336,6 +2181,8 @@
    "zusatz": "",
    "beginn": "2027-01-10T16:00",
    "dauer": 165,
+   "groesse": "XL",
+   "art": "Konzert/Show",
    "abgesagt": false
   },
   {
@@ -345,6 +2192,8 @@
    "zusatz": "",
    "beginn": "2027-01-11T20:00",
    "dauer": 165,
+   "groesse": "XL",
+   "art": "Konzert/Show",
    "abgesagt": false
   },
   {
@@ -354,6 +2203,19 @@
    "zusatz": "",
    "beginn": "2027-01-12T20:00",
    "dauer": 165,
+   "groesse": "XL",
+   "art": "Konzert/Show",
+   "abgesagt": false
+  },
+  {
+   "ort": "RheinEnergieStadion",
+   "stand": "Müngersdorf",
+   "titel": "1. FC Köln – Borussia Dortmund",
+   "zusatz": "Fußball",
+   "beginn": "2027-01-12T20:30",
+   "dauer": 115,
+   "groesse": "XL",
+   "art": "Fußball",
    "abgesagt": false
   },
   {
@@ -363,6 +2225,8 @@
    "zusatz": "",
    "beginn": "2027-01-13T20:00",
    "dauer": 165,
+   "groesse": "XL",
+   "art": "Konzert/Show",
    "abgesagt": false
   },
   {
@@ -372,6 +2236,8 @@
    "zusatz": "",
    "beginn": "2027-01-14T18:00",
    "dauer": 210,
+   "groesse": "XL",
+   "art": "Konzert/Show",
    "abgesagt": false
   },
   {
@@ -381,6 +2247,8 @@
    "zusatz": "",
    "beginn": "2027-01-15T18:30",
    "dauer": 210,
+   "groesse": "XL",
+   "art": "Konzert/Show",
    "abgesagt": false
   },
   {
@@ -390,6 +2258,8 @@
    "zusatz": "",
    "beginn": "2027-01-16T11:30",
    "dauer": 210,
+   "groesse": "XL",
+   "art": "Konzert/Show",
    "abgesagt": false
   },
   {
@@ -399,6 +2269,8 @@
    "zusatz": "",
    "beginn": "2027-01-16T18:30",
    "dauer": 210,
+   "groesse": "XL",
+   "art": "Konzert/Show",
    "abgesagt": false
   },
   {
@@ -408,6 +2280,8 @@
    "zusatz": "",
    "beginn": "2027-01-20T15:30",
    "dauer": 135,
+   "groesse": "XL",
+   "art": "Sport",
    "abgesagt": false
   },
   {
@@ -417,6 +2291,8 @@
    "zusatz": "",
    "beginn": "2027-01-21T15:30",
    "dauer": 135,
+   "groesse": "XL",
+   "art": "Sport",
    "abgesagt": false
   },
   {
@@ -426,6 +2302,19 @@
    "zusatz": "",
    "beginn": "2027-01-22T15:30",
    "dauer": 135,
+   "groesse": "XL",
+   "art": "Sport",
+   "abgesagt": false
+  },
+  {
+   "ort": "LANXESS arena",
+   "stand": "Lanxess Arena",
+   "titel": "IHF MEN’S HANDBALL WORLD CHAMPIONSHIP 2027",
+   "zusatz": "",
+   "beginn": "2027-01-23T15:30",
+   "dauer": 135,
+   "groesse": "XL",
+   "art": "Sport",
    "abgesagt": false
   }
  ],
