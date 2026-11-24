@@ -1,19 +1,10 @@
 {
- "stand": "2026-11-24T22:41:53.997Z",
+ "stand": "2026-11-24T23:14:09.272Z",
  "quellen": [
   "https://www.lanxess-arena.de/events-tickets/eventkalender",
   "https://www.koelnmesse.de/aktuelle-termine/alle-messen/"
  ],
  "veranstaltungen": [
-  {
-   "ort": "LANXESS arena",
-   "stand": "Lanxess Arena",
-   "titel": "Kölner Haie - Nürnberg Ice Tigers",
-   "zusatz": "",
-   "beginn": "2026-11-24T19:30",
-   "dauer": 150,
-   "abgesagt": false
-  },
   {
    "ort": "LANXESS arena",
    "stand": "Lanxess Arena",
