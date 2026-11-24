@@ -299,3 +299,150 @@ window.HALTEPLAETZE_GEO = [
   [50.91758, 6.95237], // Zentrale
   [50.93064, 6.94070], // Zülpicher Platz
 ];
+
+// Umfeld je Platz, aus OpenStreetMap gezählt (Umkreis meist 400 m): [[Anzahl je Art], [auffällige Namen]]
+// Arten: bahnhof, hotel, klinik, bahnbetrieb, event, nacht, restaurant, buero, versicherung, industrie, pflege, arzt, einkauf, uni
+window.HALTEPLAETZE_UMFELD = [
+  [[0,0,0,0,2,0,1,7,4,0,0,0,0,0],["Südstadion","Kino-Hole","Barmenia Gothaer Versicherungen"]], // B. K. Allee
+  [[0,0,0,0,0,0,3,1,0,0,0,0,0,0],[]], // Bayenthalgürtel
+  [[0,0,0,0,0,0,4,13,0,0,0,0,0,0],[]], // Bonotel
+  [[0,0,0,0,0,1,4,1,0,0,0,0,0,0],[]], // Brühler Anna
+  [[0,1,0,0,1,0,1,2,1,0,0,0,0,0],["Japanisches Kulturinstitut","Continentale Kundendienst-Centrum Köln","Best Western Plus Hotel Köln City"]], // Conti
+  [[0,0,0,0,1,0,0,0,0,0,0,0,0,0],["Brunosaal"]], // Geisberg
+  [[0,0,2,0,1,1,10,19,0,0,0,0,0,0],["St. Hildegardis Krankenhaus","Evangelisches Krankenhaus Köln-Weyertal","Japanisches Kulturinstitut"]], // Hildegardis
+  [[0,0,1,0,1,0,0,0,0,0,0,0,0,0],["St.-Elisabeth-Krankenhaus Hohenlind","Caritas-Akademie Köln-Hohenlind"]], // Hohenlind
+  [[0,2,1,1,1,1,3,5,2,0,0,0,0,0],["Sana Dreifaltigkeits-Krankenhaus","An einem Tisch","KVB-Betriebshof West","Barmer","Stadtwald-Hotel"]], // Hültzstr.
+  [[0,0,2,0,1,0,3,2,0,0,0,0,0,0],["ATOS Orthoparc Klinik Köln","ATOS","NetCologne Stadion"]], // Junkersdorf
+  [[0,0,0,0,4,3,7,23,0,0,0,0,0,0],["Alte Mensa","Kino-Hole"]], // Justiz
+  [[0,1,0,1,3,2,9,4,2,0,0,0,0,0],["Brunosaal","Kissfriend","Köln Eifeltor","DEVK Berater Siegfried Schanz","day8hotel"]], // Klettenberggürtel
+  [[0,1,0,0,0,0,0,0,0,0,0,0,0,0],["Hotel Röttgen Haus"]], // Kölnberg
+  [[0,1,0,0,0,0,0,1,0,2,0,0,0,0],["B&B Hotel Köln-West","Antalis"]], // Marsdorf
+  null, // Maternusplatz
+  [[0,0,0,0,0,0,10,2,0,0,0,0,0,0],[]], // Müngersdorf
+  [[0,0,0,0,0,0,0,0,0,0,0,0,0,0],[]], // Rondorf
+  [[0,0,0,2,3,3,8,13,0,0,0,0,0,0],["Der dritte Raum","Freies Werkstatt Theater","Güterbahnhof Bonntor"]], // Koblenzer Str.
+  [[0,0,0,0,5,6,23,6,2,0,1,0,0,0],["Freiraum Salon","Kissfriend","HUK"]], // Siebengebirgsallee
+  [[0,2,0,0,0,2,8,6,1,0,1,0,0,0],["Hotel Haus Schwan","Leonardo Royal Hotel Köln - Am Stadtwald"]], // Stadtwald
+  [[0,1,1,0,3,1,20,12,1,0,0,0,0,0],["Universitätsklinikum Köln","Kreativ Studio","Malschule Karola Fels","Debeka","Hotel Ariana"]], // Stelzmann
+  [[1,5,0,0,6,40,39,19,0,0,0,0,0,0],["Köln Süd","Greatlive Loftlocation","Off Broadway","Hotel Mado","Elite Hotel"]], // Südbahnhof
+  [[0,0,0,0,0,0,4,1,0,0,0,0,0,0],[]], // Südfriedhof
+  [[0,1,0,0,1,0,4,2,1,0,0,0,0,0],["Hoch2Werk","Gothaer Versicherung","Hotel Falderhof"]], // Sürth
+  [[0,0,0,0,3,3,9,18,0,0,0,0,0,0],["Alte Mensa","Casamax Theater"]], // Unicenter
+  [[0,2,1,0,2,0,13,8,1,0,0,0,0,0],["Universitätsklinikum Köln","Kreativ Studio","Malschule Karola Fels","Debeka","Hotel Ariana"]], // Uniklinik
+  [[0,0,0,1,2,1,5,4,0,0,4,0,0,0],["An einem Tisch","Ezgi Center","KVB-Betriebshof West"]], // Voigtel
+  [[0,1,0,0,0,1,8,4,0,0,2,0,0,0],["Hotel Germania"]], // Weiden
+  [[0,0,0,0,0,0,2,0,0,0,0,0,0,0],[]], // Weißer Str.
+  [[0,0,0,1,1,3,12,4,1,0,1,0,0,0],["Halle Zollstock","Köln Eifeltor","Provinzial-Versicherung"]], // Zollstock
+  [[0,1,0,0,1,0,12,2,1,0,1,0,0,0],["Kreativ Studio","Debeka","Hotel Ariana"]], // Zülpicher Hof
+  [[1,0,0,0,2,1,0,0,0,1,0,0,0,0],["Köln Geldernstraße/Parkgürtel","Bezirkssportanlage Nippes","Studio Trafique","ZEG Zweirad-Einkaufs-Genossenschaft eG"]], // Bilderstöckchen
+  [[0,1,0,0,0,0,0,2,0,2,1,0,0,0],["Hotel Wilms","Diestelmann Luther"]], // Bocklemünd
+  [[0,0,0,0,0,0,1,8,0,1,0,0,0,0],["Herling Baubeschlag GmbH"]], // Butzweiler
+  [[2,0,1,0,0,1,1,3,0,0,0,0,0,0],["Köln-Chorweiler","Chorweiler","Ärztehaus Chorweiler"]], // Chorweiler
+  [[0,1,1,0,2,1,2,1,0,0,0,0,0,0],["Tagesklinik Pionierstraße","LATIBUL","Villa Bodinus"]], // Colonia
+  [[1,1,2,0,4,10,23,27,2,1,2,0,0,0],["Köln-Ehrenfeld","Sankt Franzikus-Hospital","KfH-Nierenzentrum","artheater","Urania Theater"]], // Ehrenfeldgürtel
+  [[0,1,0,0,1,5,15,26,2,1,0,0,0,0],["Loft","Provinzial Ali Öztas","Weltempfänger"]], // Franz Geuer
+  [[1,0,2,0,5,13,25,19,3,1,2,0,0,0],["Köln-Ehrenfeld","Sankt Franzikus-Hospital","KfH-Nierenzentrum","artheater","Urania Theater"]], // Franziskus
+  [[1,4,2,0,8,19,17,23,0,3,2,0,0,0],["Köln-Ehrenfeld","KfH-Nierenzentrum","Sankt Franzikus-Hospital","Zentrum für Alte Musik Köln","Cinenova"]], // Helios
+  [[0,1,1,0,0,1,2,0,0,0,0,0,0,0],["Heilig Geist-Krankenhaus"]], // Herforder
+  [[1,0,0,1,2,2,2,1,0,4,0,0,0,0],["Köln-Nippes","Alte Wursterei, disdance project","XPOST","Köln Hbf, Bft Köln Bbf","\"Odonien\" - Kunst-und Kulturpark"]], // Hornstr.
+  [[0,0,0,0,0,0,2,1,0,0,0,0,0,0],[]], // Karl Bosch
+  [[0,1,0,0,3,6,9,27,1,0,1,0,0,0],["Zauberschule & Theater","was wir lieben","Provinzial","Boardinghome Nippes"]], // Kempener
+  [[0,0,1,0,3,8,19,15,3,1,0,0,0,0],["Sankt Franzikus-Hospital","Phoenix Kultur- und Integrationszentrum","artheater","Norman Tontsch - Allianz Hauptvertretung","Hutfabrik-Flemming"]], // Lenauplatz
+  [[0,0,0,0,1,1,3,5,0,4,0,0,0,0],["Alte Wursterei, disdance project","\"Odonien\" - Kunst-und Kulturpark"]], // Liebig
+  [[1,0,0,0,0,3,2,1,0,0,0,0,0,0],["Köln-Longerich"]], // Longerich
+  [[0,2,0,1,0,1,3,7,0,3,0,0,0,0],["Köln-Ehrenfeld Gbf","B&B Hotel Köln-Ehrenfeld","West End Hotel","STEINERT GmbH"]], // Maarweg
+  [[0,1,0,0,3,6,9,27,1,0,1,0,0,0],["Zauberschule & Theater","was wir lieben","Provinzial","Boardinghome Nippes"]], // Neuss./Gürtel
+  [[0,0,0,1,0,0,0,1,0,0,2,0,0,0],["KVB-Hauptwerkstatt Weidenpesch"]], // Neuss./Sollmann
+  [[0,2,1,2,0,2,5,1,0,0,1,0,0,0],["St. Agatha Krankenhaus","Güterbahnhof Niehl","Hotel-Restaurant Bürgerhof","Miramar"]], // Niehl
+  [[0,1,0,0,0,2,3,5,1,0,0,0,0,0],["Latio"]], // Pesch
+  [[0,0,0,0,1,5,2,16,0,2,1,0,0,0],["Loft","EFRA Lichtwerbung"]], // Peter Bauer
+  [[0,0,0,0,0,0,2,15,0,2,0,0,0,0],["Blastrac"]], // Rich.-Byrd
+  [[0,0,1,0,4,0,4,3,0,0,0,0,0,0],["Tagesklinik Pionierstraße","Villa Bodinus","LATIBUL"]], // Riehl
+  [[0,2,0,0,2,12,21,10,0,1,0,0,0,0],["Zauberschule & Theater","Kulturkirche Köln","1st floor hotel","Hotel Stadt Viersen","Kemmerling KG"]], // Scharnhorst
+  [[1,1,2,0,4,10,23,27,2,1,2,0,0,0],["Köln-Ehrenfeld","Sankt Franzikus-Hospital","KfH-Nierenzentrum","artheater","Urania Theater"]], // Subbelrath
+  [[0,0,0,0,2,1,4,6,0,4,0,0,0,0],["Alte Wursterei, disdance project","Loft","EFRA Lichtwerbung"]], // SVA
+  null, // Widdersdorf
+  [[0,1,0,2,1,2,4,10,1,2,1,0,0,0],["Güterbahnhof Bickendorf","AXA - Celik & Kollegen","Hotel Anke"]], // Wilh-Mauser
+  [[1,1,0,0,0,0,2,0,0,0,0,0,0,0],["Köln-Worringen","Haus Odendahl"]], // Worringen S-Bahn
+  [[0,0,0,0,3,0,2,0,0,0,0,0,0,0],["Zoo Event","Flora"]], // Zoo Bedarfs
+  [[0,0,0,0,0,0,1,5,0,0,0,0,0,0],[]], // ABC-Tower
+  [[0,0,0,0,0,0,3,1,0,0,2,0,0,0],[]], // Brück
+  [[1,1,0,0,0,4,0,3,1,16,0,0,0,0],["Köln-Buchforst","Provinzial - Lars Lessenich","Leonardo Hotel","Acla-Werke"]], // Buchforst
+  [[0,1,0,0,0,6,6,3,0,0,0,0,0,0],["PLAZA Premium Köln"]], // Clevischer Ring
+  [[0,0,0,0,0,2,10,2,1,0,3,0,0,0],["Allianz"]], // Dellbrück
+  [[2,13,0,1,1,6,12,22,1,0,1,0,0,0],["Köln Messe/Deutz","Köln Messe/Deutz (tief)","Zentrum zeitgenössische Stadtentwicklung","Bahnhof Köln Messe/Deutz","Techniker Krankenkasse"]], // Deutz Bhf
+  [[0,6,0,5,3,0,3,6,0,0,0,0,0,0],["Messe Köln","LANXESS arena","Alte Wagenhalle","Dorint An der Messe","Hotel Radisson Blu"]], // Dorint Messe
+  [[0,0,0,0,0,0,3,2,1,0,0,0,0,0],["Allianz"]], // Dünnwald
+  [[0,0,0,1,0,1,3,4,1,0,1,0,0,0],["Rangierbahnhof Gremberg","Continentale"]], // Ensen
+  [[0,12,1,2,2,7,9,25,4,0,0,0,0,0],["Eduardus-Krankenhaus","LANXESS arena","Zentrum zeitgenössische Stadtentwicklung","Bahnhof Köln Messe/Deutz","Debeka-Servicebüro Köln"]], // Gotenring
+  null, // Grengel
+  [[0,0,0,2,0,5,2,6,1,1,0,0,0,0],["Köln-Kalk Nord","Ergo","Kronenbrot"]], // Höhenberg
+  null, // Höhenhaus
+  [[0,1,0,0,2,2,3,1,1,0,0,0,0,0],["Cassiopeia Theater","Mietkneipe","AXA Thomas Frank","Hotel Zagreb"]], // Holweide
+  [[0,0,1,0,0,0,1,2,0,0,0,0,0,0],["Krankenhaus Holweide"]], // Holweide
+  [[0,1,0,1,0,1,5,1,0,0,0,0,0,0],["Köln-Kalk","Ars Vivendi"]], // Humboldt
+  null, // Hyatt
+  [[1,1,1,1,2,3,10,9,0,2,0,0,0,0],["Köln Trimbornstraße","MY HEALTH & BEAUTY","Halle Kalk","Kulturhof Kalk","Köln-Kalk"]], // Kalk Karree
+  [[1,4,1,1,1,10,11,4,0,1,0,0,0,0],["Köln Trimbornstraße","MY HEALTH & BEAUTY","Halle Kalk","Köln Deutzerfeld","Hotel Arena"]], // Kalk Post
+  [[1,4,1,1,3,11,15,9,1,1,0,0,0,0],["Köln Trimbornstraße","MY HEALTH & BEAUTY","Halle Kalk","Kulturhof Kalk","Köln-Kalk"]], // Kapelle
+  [[1,4,1,1,3,11,15,9,1,1,0,0,0,0],["Köln Trimbornstraße","MY HEALTH & BEAUTY","Halle Kalk","Kulturhof Kalk","Köln-Kalk"]], // Kaufhof Kalk
+  [[0,0,1,0,0,0,0,0,0,0,0,0,0,0],["Krankenhaus Köln-Merheim"]], // Klinikum
+  [[0,0,0,0,0,0,4,3,2,0,0,0,0,0],["DEVK-Büro mit Sparda-Filaile"]], // Königsforst
+  [[0,0,0,1,0,1,1,0,0,1,0,0,0,0],["KVB Betriebshof Merheim"]], // Merheim
+  [[1,1,0,0,0,5,7,7,0,14,0,0,0,0],["Köln-Mülheim","Köln City Hotel","Acla-Werke"]], // Mülheim Bhf
+  [[0,4,1,0,0,7,7,19,3,0,2,0,0,0],["LVR-Klinik Köln, Mülheim","Concordia Versicherungen","Hotel Kaiser am Wienerplatz","the niu Mill"]], // Ostheim
+  [[0,0,0,2,0,3,3,6,0,1,2,0,0,0],["Köln-Deutz Hafen","Schütte"]], // Poll
+  [[1,0,1,1,0,0,0,0,0,0,1,0,0,0],["Köln Steinstraße","Krankenhaus Porz am Rhein","DB Cargo Werk Köln-Gremberg"]], // Porz-Krhs.
+  [[1,1,1,0,1,1,9,24,3,0,1,0,0,0],["Porz (Rhein)","promenta Tagesklinik","Kino in der Glashütte","Provinzial","Garner"]], // Porz-Mitte
+  [[0,4,0,4,2,0,2,5,0,0,0,0,0,0],["PALASTZELT AN DER ZOOBRÜCKE","Messe Köln","Betriebswerk Köln-Deutzerfeld","Ibis Hotel Köln Messe","Ibis Budget Köln Messe"]], // Radisson
+  [[1,3,0,1,1,1,5,9,1,3,0,0,0,0],["Köln-Dellbrück","Slide Cologne","Bahnhof Dellbrück","Generali Subdirektion Pilgram","UHU-Gästehaus"]], // S-Bahn Dellbrück
+  [[0,1,0,0,6,3,17,12,1,0,0,0,0,0],["Schauspiel Köln im Depot 1 und 2","Schauspiel Köln Grotte","AOK","Moxy"]], // Schanzenstr.
+  [[1,0,0,0,0,2,1,0,0,0,0,0,0,0],["Köln-Stammheim"]], // Stammheim
+  [[0,0,0,0,0,1,0,1,0,0,3,0,0,0],[]], // Straßburger
+  [[0,1,0,0,0,1,3,6,2,0,0,0,0,0],["AXA Center","SMARTY Hotel"]], // Urbach
+  [[0,0,0,0,0,1,2,0,0,1,1,0,0,0],["Kronenbrot"]], // Vingst
+  [[2,9,0,5,2,5,10,17,2,0,0,0,0,0],["Köln Messe/Deutz","Köln Messe/Deutz (tief)","LANXESS arena","Zentrum zeitgenössische Stadtentwicklung","Bahnhof Köln Messe/Deutz"]], // W.-Brandt-Platz
+  [[2,1,0,0,2,0,1,0,0,0,0,0,0,0],["Wahn S-Bahn","Porz-Wahn","Gut Eltzhof / Theatermuseum","aegidium","Loginn"]], // Wahn (Bhf)
+  [[0,4,1,0,0,7,7,19,3,0,2,0,0,0],["LVR-Klinik Köln, Mülheim","Concordia Versicherungen","Hotel Kaiser am Wienerplatz","the niu Mill"]], // Wiener Platz
+  null, // Zündorf
+  [[2,35,2,0,15,33,84,34,1,0,0,0,0,0],["Köln Hauptbahnhof","Breslauer Platz/Hbf","Lasikwelt Augenlaserzentrum","Ärztehaus Heumarkt","Klaus-von-Bismarck-Saal"]], // Am Hof
+  null, // Barbarossaplatz
+  [[0,16,4,0,11,6,38,37,6,0,2,0,0,0],["Reisepraxis Köln","PAN Klinik am Neumarkt","Theater am Dom","Oper der Stadt Köln","Barmenia Versicherungen"]], // Breite Str.
+  [[1,9,2,0,17,37,82,19,1,0,0,0,0,0],["Köln West","Privatklinik Dr. Stettner","T-Klinik am Rudolfplatz","Theaterpädagisches Zentrum","Hinterhofsalon"]], // Brüsseler
+  [[2,32,1,0,15,14,51,37,1,0,1,0,0,0],["Köln Hauptbahnhof","Breslauer Platz/Hbf","Lasikwelt Augenlaserzentrum","Klaus-von-Bismarck-Saal","Museum für Angewandte Kunst"]], // Burgmauer
+  [[0,6,2,2,8,30,69,26,2,0,1,0,0,0],["Tagesklink Alteburger Straße","Kunsthaus Kat18","Altes Pfandhaus","Güterbahnhof Bonntor","Allianz Wirtz"]], // Chlodwigplatz
+  null, // Barcelo, Hotel
+  [[0,18,3,0,14,35,63,45,5,0,2,0,0,0],["Tagesklinik am Friesenplatz","Reisepraxis Köln","Kabarett Klüngelpütz","Gloria Theater","Allianz Davide Ciaccia"]], // Helenenstr.
+  null, // Ebertplatz
+  [[0,15,1,0,16,55,74,38,1,1,0,0,0,0],["Tagesklinik am Friesenplatz","Rex am Ring","Scala-Theater","Scor","Ruby Ella"]], // Friesenplatz
+  [[0,15,2,0,5,13,19,47,6,0,0,0,0,0],["Tagesklinik am Hansaring","Tagesklinik am Friesenplatz","Erstes Kölner Wohnzimmertheater","Residenz - ASTOR Film Lounge","HUK-Coburg"]], // Gereonsdriesch
+  [[0,17,3,0,22,43,94,36,2,0,0,0,0,0],["Privatklinik Dr. Stettner","T-Klinik am Rudolfplatz","Hohenzollern Saal","SMS - Secret Magic Show - Zaubertheater","Barmenia Versicherung - Frank Kramer"]], // Habsburgerring
+  [[1,9,2,0,8,49,67,18,1,0,0,0,0,0],["Köln Süd","Klinik am Ring","MVZ für Gefäßmedizin und Venenchirurgie","NightWash Club","Off Broadway"]], // Herz Jesu
+  [[0,34,2,0,12,52,72,44,1,0,0,0,0,0],["Ärztehaus Heumarkt","Beginenfenster","Hänneschen-Theater","IKK classic","Maritim Hotel"]], // Heumarkt
+  [[2,27,2,0,9,8,24,19,1,0,0,0,0,0],["Breslauer Platz/Hbf","Köln Hauptbahnhof","MVZ St. Marien","St. Marien-Hospital","Kokett Bar"]], // Hilton Köln
+  [[0,13,1,0,16,54,71,38,1,1,0,0,0,0],["Tagesklinik am Friesenplatz","Rex am Ring","Scala-Theater","Scor","Ruby Ella"]], // Hohenzollernring
+  [[2,27,2,0,9,8,24,19,1,0,0,0,0,0],["Breslauer Platz/Hbf","Köln Hauptbahnhof","MVZ St. Marien","St. Marien-Hospital","Kokett Bar"]], // Johannis
+  [[0,9,3,0,8,8,27,38,3,1,0,0,0,0],["Tagesklinik am Hansaring","Forum Klinik","Residenz - ASTOR Film Lounge","Erstes Kölner Wohnzimmertheater","Debeka"]], // K.-W.-Ring
+  [[0,16,4,0,14,27,44,46,3,0,0,0,0,0],["Ärztehaus Heumarkt","Lasikwelt Augenlaserzentrum","Gürzenich","Anno 1858","IKK classic"]], // Kaufhof
+  [[0,6,0,0,4,2,14,21,2,0,1,0,0,0],["Literaturhaus Köln","Wolkenburg","Allianz Global Corporate & Spec","Koncept Hotel International","Premier Inn Köln City Süd"]], // Kaygasse
+  [[0,14,5,0,16,51,105,40,3,0,0,0,0,0],["Tagesklinik am Friesenplatz","Reisepraxis Köln","7th Space Köln","Filmpalast Köln","Barmenia Versicherung - Frank Kramer"]], // Kettengasse
+  [[0,0,2,2,8,3,6,18,0,0,1,0,0,0],["MV-Zentrum für Onkologie und Hämatologie","Orangerie","Theater am Sachsenring - TAS","Köln Bonntor"]], // Kleingedank
+  [[0,22,2,0,8,43,44,43,1,0,0,0,0,0],["Ärztehaus Heumarkt","Anno 1858","Beginenfenster","IKK classic","Hotel zur Malzmühle"]], // Maritim
+  [[0,9,3,0,8,8,27,38,3,1,0,0,0,0],["Tagesklinik am Hansaring","Forum Klinik","Residenz - ASTOR Film Lounge","Erstes Kölner Wohnzimmertheater","Debeka"]], // Mediapark
+  [[0,9,4,0,16,44,68,30,2,0,0,0,0,0],["MVZ für Gefäßmedizin und Venenchirurgie","Klinik am Ring","NightWash Club","theater im hof","Techniker Krankenkasse"]], // Mozart
+  [[2,31,2,0,13,42,82,30,2,0,0,0,0,0],["Köln Hauptbahnhof","Breslauer Platz/Hbf","Ärztehaus Heumarkt","Lasikwelt Augenlaserzentrum","Senftöpfchen"]], // Mühlengasse
+  [[0,6,4,0,13,4,41,38,7,0,0,0,0,0],["ARTEMIS Augen- und Laserklinik Köln","PAN Klinik am Neumarkt","Schauspielhaus Köln","Außenspielstätte am Offenbachplatz","Barmer"]], // Neumarkt
+  [[0,15,4,0,14,4,36,34,5,0,2,0,0,0],["Lasikwelt Augenlaserzentrum","ARTEMIS Augen- und Laserklinik Köln","Außenspielstätte am Offenbachplatz","Oper der Stadt Köln","Barmenia Versicherungen"]], // Oper
+  [[2,28,1,0,11,38,72,23,2,0,0,0,0,0],["Breslauer Platz/Hbf","Köln Hauptbahnhof","Ärztehaus Heumarkt","Kölner Philharmonie","Senftöpfchen"]], // Philharmonie
+  [[0,17,3,0,22,43,94,36,2,0,0,0,0,0],["Privatklinik Dr. Stettner","T-Klinik am Rudolfplatz","Hohenzollern Saal","SMS - Secret Magic Show - Zaubertheater","Barmenia Versicherung - Frank Kramer"]], // Pilgrimstr.
+  [[0,3,0,0,2,5,11,11,2,0,0,0,0,0],["Metropolis","Horizont Theater","Mecure","Mercure Hotel"]], // Reichensperger
+  [[0,18,2,0,16,48,86,52,4,0,0,0,0,0],["Tagesklinik am Friesenplatz","Reisepraxis Köln","Rex am Ring","Scala-Theater","Allianz Davide Ciaccia"]], // Renaissance
+  [[0,11,2,0,9,12,10,39,2,0,1,0,0,0],["Ärztehaus Heumarkt","Bel Etage","Anno 1858","Nürnberger Versicherung","Hotel Lyskirchen"]], // Rheinau
+  [[0,18,2,0,12,43,71,50,4,0,0,0,0,0],["Tagesklinik am Friesenplatz","Reisepraxis Köln","Rex am Ring","Scala-Theater","Allianz Davide Ciaccia"]], // Römergasse
+  [[0,12,3,0,21,36,81,39,6,0,0,0,0,0],["T-Klinik am Rudolfplatz","Privatklinik Dr. Stettner","7th Space Köln","Kino 813","Barmenia Versicherung - Frank Kramer"]], // Rudolfplatz
+  [[0,4,1,0,7,5,12,10,1,0,2,0,0,0],["Odeon","Kunsthaus Rhenania","Nürnberger Versicherung","Mercure Severinshof","Premier Inn Köln City Süd"]], // Severinshof
+  [[0,15,2,0,5,15,15,37,3,0,2,0,0,0],["Ärztehaus Heumarkt","Bariton Lounge","Literaturhaus Köln","Provinzial","Hotel Heinzelmännchen"]], // Waidmarkt
+  [[0,4,1,0,5,14,41,20,1,0,1,0,0,0],["Klinik am Ring","Wolkenburg","NightWash Club","Allianz","Ibis Köln Centrum"]], // Weyerstr.
+  [[0,2,0,2,4,4,2,7,0,0,0,0,0,0],["COMEDIA Theater","Orangerie","Köln Bonntor","Hotel Christina","TAGUNGS- UND GÄSTEHAUS ST. GEORG"]], // Zentrale
+  [[1,9,2,0,8,49,67,18,1,0,0,0,0,0],["Köln Süd","Klinik am Ring","MVZ für Gefäßmedizin und Venenchirurgie","NightWash Club","Off Broadway"]], // Zülpicher Platz
+];
