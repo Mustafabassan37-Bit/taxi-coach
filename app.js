@@ -16,6 +16,9 @@ const DEFAULTS = {
   shifts: [],   // { id, start, end }
   rides: [],    // { id, shiftId, t, amount, tip, pay, place, src }
   costs: [],    // { id, t, amount, kind }
+  waits: [],    // { id, t, place, min } – am Halteplatz gewartet und ohne Fahrgast weggefahren
+  stand: null,  // { name, since } – hier stehe ich gerade
+  trip: null,   // { place, wait, start } – laufende Fahrt ab einem Halteplatz
   check: { day: '', done: {} },
   last: { pay: 'Bar', src: 'Halteplatz' }
 };
@@ -48,7 +51,7 @@ function merge(d) {
   }
   if (Array.isArray(ds.places) && ds.places.join('|') === OLD_PLACES.join('|')) s.settings.places = DEFAULTS.settings.places.slice();
   delete s.settings.tariffIsExample;
-  ['shifts', 'rides', 'costs'].forEach(k => { if (!Array.isArray(s[k])) s[k] = []; });
+  ['shifts', 'rides', 'costs', 'waits'].forEach(k => { if (!Array.isArray(s[k])) s[k] = []; });
   if (!s.check || typeof s.check !== 'object') s.check = { day: '', done: {} };
   s.last = Object.assign({}, DEFAULTS.last, d.last || {});
   return s;
@@ -62,6 +65,14 @@ function save() {
 let S = load();
 let tab = 'heute';
 let period = 'woche';
+
+// Halteplätze aus halteplaetze.js: [Kanal, Nr., Name, Zone, Lage, Plätze, Rufsäule, Zeiten]
+const HP = (window.HALTEPLAETZE || []).map(a => ({
+  ch: a[0], nr: a[1], name: a[2], zone: a[3], lage: a[4], n: a[5], rs: !!a[6], hrs: a[7] || ''
+}));
+const CHANNELS = { 1: 'Süd und West', 2: 'Nord und Ehrenfeld', 3: 'Rechtsrheinisch', 4: 'Innenstadt' };
+let hpQuery = '';
+let hpChan = 0;
 
 /* ---------- Helfer ---------- */
 
@@ -357,7 +368,34 @@ function viewToday() {
   const perH = hrs > 0.05 ? rev / hrs : 0;
   const goal = S.settings.goal;
   const pct = goal > 0 ? Math.min(100, rev / goal * 100) : 0;
-  const idleMin = Math.floor((now - (rides[0] ? rides[0].t : sh.start)) / 60000);
+  const idleSince = S.stand ? S.stand.since : (rides[0] ? rides[0].t : sh.start);
+  const idleMin = Math.floor((now - idleSince) / 60000);
+  const mins = t => Math.max(0, Math.floor((now - t) / 60000));
+
+  // Drei Zustände: Fahrt läuft / stehe am Halteplatz / frei
+  let actionBlock;
+  if (S.trip) {
+    actionBlock = `<section class="card hint good">
+        <h2>Fahrt läuft seit ${mins(S.trip.start)} Min</h2>
+        <p>Ab <b>${esc(S.trip.place)}</b> · gewartet ${S.trip.wait} Min</p>
+        <div class="stack">
+          <button class="btn primary big" data-act="tripEnd">Fahrt beenden – Preis eintragen</button>
+          <button class="btn ghost" data-act="tripCancel">Fahrt verwerfen</button>
+        </div></section>`;
+  } else if (S.stand) {
+    actionBlock = `<section class="card hint">
+        <h2>Du stehst an: ${esc(S.stand.name)}</h2>
+        <p>Seit ${mins(S.stand.since)} Min</p>
+        <div class="stack">
+          <button class="btn primary big" data-act="tripStart">Fahrgast eingestiegen</button>
+          <div class="row"><button class="btn" data-act="standPick">Platz wechseln</button>
+          <button class="btn" data-act="standLeave">Platz verlassen</button></div>
+        </div></section>`;
+  } else {
+    actionBlock = `<div class="stack" style="margin-bottom:14px">
+        <button class="btn primary big" data-act="standPick">📍 Ich stehe an einem Halteplatz</button>
+        <button class="btn" data-act="rideNew">＋ Fahrt ohne Halteplatz eintragen</button></div>`;
+  }
 
   let goalLine = '';
   if (goal > 0) {
@@ -367,7 +405,7 @@ function viewToday() {
   }
 
   const adv = slotAdvice(now);
-  const idleCard = idleMin >= 20
+  const idleCard = S.trip ? '' : idleMin >= 20
     ? `<section class="card hint warn"><h2>Seit ${idleMin} Minuten keine Fahrt</h2>
         <p>Wechsle den Standort. Jetzt gut: <b>${esc(adv.places[0])}</b> oder <b>${esc(adv.places[1])}</b>.</p></section>`
     : `<section class="card hint"><h2>Tipp für jetzt: ${esc(adv.title)}</h2>
@@ -385,13 +423,13 @@ function viewToday() {
       <div class="kpi"><div class="label">Trinkgeld</div><div class="value">${eur0(tips)}</div></div>
       <div class="kpi"><div class="label">Schichtdauer</div><div class="value" style="font-size:20px">${dur(now - sh.start)}</div></div>
     </div>
-    <button class="btn primary big" data-act="rideNew" style="margin-bottom:14px">＋ Fahrt eintragen</button>
+    ${actionBlock}
     ${idleCard}
     <section class="card">
       <h2>Fahrten dieser Schicht</h2>
       ${rides.length ? `<ul class="list">${rides.map(r => `<li>
           <div class="grow"><div>${esc(r.place || 'Ohne Ort')}</div>
-            <div class="sub">${hhmm(r.t)} · ${esc(r.pay)} · ${esc(r.src)}</div></div>
+            <div class="sub">${hhmm(r.t)} · ${esc(r.pay)} · ${esc(r.src)}${r.wait != null ? ' · gewartet ' + r.wait + ' Min' : ''}</div></div>
           <div class="amt">${eur(r.amount)}${r.tip ? `<div class="sub">+ ${eur(r.tip)}</div>` : ''}</div>
           <button class="x" data-act="rideDel" data-id="${r.id}" aria-label="Fahrt löschen">✕</button>
         </li>`).join('')}</ul>` : '<p class="muted">Noch keine Fahrt eingetragen.</p>'}
@@ -399,22 +437,29 @@ function viewToday() {
     <button class="btn danger" data-act="shiftEnd">Schicht beenden</button>`;
 }
 
-function rideForm() {
+function rideForm(trip) {
   const pays = ['Bar', 'Karte', 'App'];
   const srcs = ['Halteplatz', 'Winker', 'Funk', 'App', 'Stammkunde'];
-  return `<h2>Fahrt eintragen</h2>
-    <form data-form="ride" autocomplete="off">
+  const lastSrc = trip ? 'Halteplatz' : S.last.src;
+  const names = [...new Set(HP.map(p => p.name))];
+  const placeBlock = trip
+    ? `<p>Einstieg: <b>${esc(trip.place)}</b> · gewartet ${trip.wait} Min · Fahrt ${Math.max(0, Math.round((Date.now() - trip.start) / 60000))} Min</p>`
+    : `<span class="muted small">Wo ist der Fahrgast eingestiegen?</span>
+      <div class="chips">${S.settings.places.map(p => `<label class="chip"><input type="radio" name="place" value="${esc(p)}"><span>${esc(p)}</span></label>`).join('')}</div>
+      <label class="f"><span>Anderer Ort oder Halteplatz – tippen zum Suchen (wird gemerkt)</span>
+        <input name="placeNew" type="text" maxlength="40" list="hpNames"></label>
+      <datalist id="hpNames">${names.map(n => `<option value="${esc(n)}">`).join('')}</datalist>`;
+  return `<h2>${trip ? 'Fahrt beenden' : 'Fahrt eintragen'}</h2>
+    <form data-form="ride" data-trip="${trip ? 1 : 0}" autocomplete="off">
       <label class="f"><span>Fahrpreis in Euro</span>
         <input class="money" name="amount" type="text" inputmode="decimal" placeholder="0,00" autofocus required></label>
       <label class="f"><span>Trinkgeld in Euro (freiwillig)</span>
         <input name="tip" type="text" inputmode="decimal" placeholder="0,00"></label>
       <span class="muted small">Bezahlt mit</span>
       <div class="seg">${pays.map(p => `<label class="chip"><input type="radio" name="pay" value="${p}" ${S.last.pay === p ? 'checked' : ''}><span>${p}</span></label>`).join('')}</div>
-      <span class="muted small">Wo ist der Fahrgast eingestiegen?</span>
-      <div class="chips">${S.settings.places.map(p => `<label class="chip"><input type="radio" name="place" value="${esc(p)}"><span>${esc(p)}</span></label>`).join('')}</div>
-      <label class="f"><span>Anderer Ort (wird gemerkt)</span><input name="placeNew" type="text" maxlength="40"></label>
+      ${placeBlock}
       <span class="muted small">Wie kam die Fahrt?</span>
-      <div class="chips">${srcs.map(p => `<label class="chip"><input type="radio" name="src" value="${p}" ${S.last.src === p ? 'checked' : ''}><span>${p}</span></label>`).join('')}</div>
+      <div class="chips">${srcs.map(p => `<label class="chip"><input type="radio" name="src" value="${p}" ${lastSrc === p ? 'checked' : ''}><span>${p}</span></label>`).join('')}</div>
       <div class="row">
         <button type="button" class="btn ghost" data-act="sheetClose">Abbrechen</button>
         <button type="submit" class="btn primary">Speichern</button>
@@ -484,6 +529,7 @@ function viewCoach() {
       <p class="muted small">Allgemeine Erfahrungswerte. Deine eigenen Zahlen unten sind genauer, sobald genug Fahrten eingetragen sind.</p>
     </section>
     ${season ? `<section class="card hint warn"><h2>Gerade in Köln: ${esc(season.title)}</h2><p>${esc(season.text)}</p></section>` : ''}
+    ${standCard(now)}
     ${bestCard}
     <section class="card">
       <h2>Deine starken Zeiten</h2>
@@ -495,6 +541,140 @@ function viewCoach() {
       <h2>${TIPS.length} Regeln für mehr Umsatz in Köln</h2>
       <ol class="tips">${TIPS.map(t => `<li>${esc(t)}</li>`).join('')}</ol>
     </section>`;
+}
+
+/* ---------- Halteplätze: Standort, Rangliste, Verzeichnis ---------- */
+
+// Standort verlassen: Wartezeit ohne Fahrgast merken, damit sie in der Rangliste mitzählt
+function closeStand() {
+  if (!S.stand) return;
+  const min = Math.round((Date.now() - S.stand.since) / 60000);
+  if (min >= 1) S.waits.push({ id: uid(), t: S.stand.since, place: S.stand.name, min });
+  S.stand = null;
+}
+
+function standListHtml(query) {
+  const q = query.trim().toLowerCase();
+  const btn = (name, sub) => `<li><button type="button" class="btn pick" data-act="standSet" data-name="${esc(name)}">
+      <span>${esc(name)}</span>${sub ? `<span class="sub">${esc(sub)}</span>` : ''}</button></li>`;
+  if (!q) {
+    return `<p class="muted small">Meine Orte – oder oben tippen, um alle ${HP.length} Halteplätze zu durchsuchen.</p>
+      <ul class="list picks">${S.settings.places.map(p => btn(p, '')).join('')}</ul>`;
+  }
+  const seen = new Set();
+  const own = S.settings.places.filter(p => p.toLowerCase().includes(q));
+  own.forEach(p => seen.add(p));
+  const hits = HP.filter(p => (p.name + ' ' + p.lage).toLowerCase().includes(q) && !seen.has(p.name) && seen.add(p.name)).slice(0, 30);
+  if (!own.length && !hits.length) return '<p class="muted">Nichts gefunden.</p>';
+  return `<ul class="list picks">${own.map(p => btn(p, 'Mein Ort')).join('')}${hits.map(p => btn(p.name, p.lage + ' · Zone ' + p.zone)).join('')}</ul>`;
+}
+
+function standSheet() {
+  return `<h2>Wo stehst du?</h2>
+    <label class="f"><input id="standSearch" type="text" placeholder="Halteplatz oder Straße suchen" autocomplete="off"></label>
+    <div id="standList">${standListHtml('')}</div>
+    <button type="button" class="btn ghost" data-act="sheetClose" style="margin-top:10px">Abbrechen</button>`;
+}
+
+// Je Ort: Fahrten, Umsatz, Wartezeit (auch vergebliche) und Fahrzeit – nur Fahrten mit gemessener Wartezeit
+function standStats(filter) {
+  const m = new Map();
+  const get = k => {
+    let o = m.get(k);
+    if (!o) { o = { place: k, rides: 0, rev: 0, wait: 0, dur: 0 }; m.set(k, o); }
+    return o;
+  };
+  for (const r of S.rides) {
+    if (r.wait == null || !r.place || (filter && !filter(r.t))) continue;
+    const o = get(r.place);
+    o.rides++; o.rev += r.amount; o.wait += r.wait; o.dur += r.dur || 0;
+  }
+  for (const w of S.waits) {
+    if (filter && !filter(w.t)) continue;
+    get(w.place).wait += w.min;
+  }
+  return [...m.values()].map(o => Object.assign(o, {
+    perHour: o.wait + o.dur > 0 ? o.rev / ((o.wait + o.dur) / 60) : 0,
+    avgWait: o.rides ? o.wait / o.rides : null
+  }));
+}
+
+// Gleiche Tageszeit (± 2 Stunden) und gleicher Tagestyp (Wochenende / Werktag)
+function slotFilter(now) {
+  const h = new Date(now).getHours();
+  const weekend = t => { const d = dow(t), hr = new Date(t).getHours(); return d === 5 || d === 6 || (d === 4 && hr >= 18); };
+  const wk = weekend(now);
+  return t => { const diff = Math.abs(new Date(t).getHours() - h); return Math.min(diff, 24 - diff) <= 2 && weekend(t) === wk; };
+}
+
+const MIN_RIDES = 3; // ab so vielen Fahrten kommt ein Platz in die Rangliste
+
+function standCard(now) {
+  const rank = f => standStats(f).filter(o => o.rides >= MIN_RIDES).sort((a, b) => b.perHour - a.perHour);
+  const slot = rank(slotFilter(now));
+  const useSlot = slot.length >= 2;
+  const list = useSlot ? slot : rank(null);
+  const tracked = standStats(null).length;
+  if (!list.length) {
+    return `<section class="card">
+      <h2>Umsatzstärkste Halteplätze</h2>
+      <p class="muted">Noch keine Rangliste. So misst die App: Tippe unter „Heute“ auf <b>Ich stehe an einem Halteplatz</b>, dann auf <b>Fahrgast eingestiegen</b> und am Ende auf <b>Fahrt beenden</b>.</p>
+      <p class="muted small">Ab ${MIN_RIDES} Fahrten erscheint ein Platz hier.${tracked ? ` Bisher ${tracked} ${tracked === 1 ? 'Platz' : 'Plätze'} mit ersten Daten.` : ''}</p>
+    </section>`;
+  }
+  return `<section class="card hint good">
+    <h2>Umsatzstärkste Halteplätze ${useSlot ? 'um diese Uhrzeit' : 'insgesamt'}</h2>
+    <table class="t">
+      <tr><th>Platz</th><th>Fahrten</th><th>Ø Warten</th><th>€ / Std</th></tr>
+      ${list.slice(0, 10).map((o, i) => `<tr><td>${i + 1}. ${esc(o.place)}</td><td>${o.rides}</td>
+        <td>${Math.round(o.avgWait)} Min</td><td><b>${eur0(o.perHour)}</b></td></tr>`).join('')}
+    </table>
+    <p class="muted small" style="margin-top:8px">€ / Std = Umsatz geteilt durch Wartezeit plus Fahrzeit. Auch vergebliches Warten zählt mit. Je mehr Fahrten, desto verlässlicher.</p>
+  </section>`;
+}
+
+function hpMatches() {
+  const q = hpQuery.trim().toLowerCase();
+  return HP.filter(p => (!hpChan || p.ch === hpChan) &&
+    (!q || (p.name + ' ' + p.lage + ' zone ' + p.zone + ' ' + (p.nr || '')).toLowerCase().includes(q)));
+}
+
+function hpListHtml() {
+  const list = hpMatches();
+  if (!list.length) return '<p class="muted">Kein Halteplatz gefunden.</p>';
+  return `<ul class="list hp">${list.map(p => {
+    const fav = S.settings.places.includes(p.name);
+    const meta = ['Kanal ' + p.ch, 'Zone ' + p.zone, p.nr ? 'Nr. ' + p.nr : '', p.n ? p.n + ' Plätze' : '',
+      p.rs ? 'Rufsäule' : '', p.hrs ? 'nur ' + p.hrs + ' Uhr' : ''].filter(Boolean).join(' · ');
+    const dest = encodeURIComponent(p.lage + ', ' + p.name + ', Köln');
+    return `<li>
+      <div class="grow"><div><b>${esc(p.name)}</b></div><div class="sub">${esc(p.lage)}</div><div class="sub">${esc(meta)}</div></div>
+      <button class="x star ${fav ? 'on' : ''}" data-act="hpFav" data-name="${esc(p.name)}"
+        aria-label="${fav ? 'Aus meinen Orten entfernen' : 'Zu meinen Orten hinzufügen'}">${fav ? '★' : '☆'}</button>
+      <a class="btn route" href="https://www.google.com/maps/dir/?api=1&amp;destination=${dest}" target="_blank" rel="noopener">Route</a>
+    </li>`;
+  }).join('')}</ul>`;
+}
+
+function hpInfoText() {
+  const n = hpMatches().length;
+  return n + (n === 1 ? ' Halteplatz' : ' Halteplätze') + (hpChan ? ' · Kanal ' + hpChan + ': ' + CHANNELS[hpChan] : '');
+}
+
+function updateHp() {
+  const list = $('#hpList');
+  if (!list) return;
+  list.innerHTML = hpListHtml();
+  $('#hpInfo').textContent = hpInfoText();
+}
+
+function viewPlaces() {
+  if (!HP.length) return '<section class="card"><p class="muted">Die Halteplatzliste ist auf diesem Gerät nicht geladen.</p></section>';
+  return `<label class="f"><input id="hpSearch" type="text" placeholder="Halteplatz, Straße oder Zone suchen" value="${esc(hpQuery)}" autocomplete="off"></label>
+    <div class="chips">${[0, 1, 2, 3, 4].map(c => `<label class="chip"><input type="radio" name="hpChan" value="${c}" ${hpChan === c ? 'checked' : ''}><span>${c ? 'Kanal ' + c : 'Alle'}</span></label>`).join('')}</div>
+    <p class="muted small" id="hpInfo">${esc(hpInfoText())}</p>
+    <section class="card" id="hpList">${hpListHtml()}</section>
+    <p class="muted small">Halteplatzliste TAXI RUF Köln, Stand Januar 2023. Mit ☆ kommt ein Platz in „Meine Orte“ und ist dann mit einem Tipp wählbar. „Route“ öffnet Google Maps.</p>`;
 }
 
 /* ---------- Ansicht: Zahlen ---------- */
@@ -728,9 +908,10 @@ function csvCell(v) {
 
 function exportCsv() {
   const de = n => (n || 0).toFixed(2).replace('.', ',');
-  const rows = [['Datum', 'Uhrzeit', 'Fahrpreis', 'Trinkgeld', 'Zahlart', 'Einstieg', 'Quelle']];
+  const rows = [['Datum', 'Uhrzeit', 'Fahrpreis', 'Trinkgeld', 'Zahlart', 'Einstieg', 'Quelle', 'Wartezeit Min', 'Fahrzeit Min']];
   S.rides.slice().sort((a, b) => a.t - b.t).forEach(r =>
-    rows.push([dayKey(r.t).split('-').reverse().join('.'), hhmm(r.t), de(r.amount), de(r.tip), r.pay, r.place, r.src]));
+    rows.push([dayKey(r.t).split('-').reverse().join('.'), hhmm(r.t), de(r.amount), de(r.tip), r.pay, r.place, r.src,
+      r.wait == null ? '' : r.wait, r.dur == null ? '' : r.dur]));
   download('taxi-fahrten-' + dayKey(Date.now()) + '.csv', '﻿' + rows.map(r => r.map(csvCell).join(';')).join('\r\n'), 'text/csv;charset=utf-8');
 }
 
@@ -739,6 +920,7 @@ function exportCsv() {
 const VIEWS = {
   heute: { title: 'Heute', render: viewToday },
   coach: { title: 'Coach', render: viewCoach },
+  plaetze: { title: 'Halteplätze', render: viewPlaces },
   zahlen: { title: 'Zahlen', render: viewNumbers },
   rechner: { title: 'Rechner', render: viewCalc },
   mehr: { title: 'Mehr', render: viewMore }
@@ -765,11 +947,41 @@ const ACTIONS = {
   },
   shiftEnd() {
     const sh = activeShift();
-    if (!sh || !confirm('Schicht jetzt beenden?')) return;
+    if (!sh) return;
+    if (S.trip) return toast('Bitte zuerst die laufende Fahrt beenden');
+    if (!confirm('Schicht jetzt beenden?')) return;
+    closeStand();
     sh.end = Date.now();
     save(); render(); toast('Schicht beendet');
   },
   rideNew() { openSheet(rideForm()); },
+  standPick() { if (activeShift()) openSheet(standSheet()); },
+  standSet(el) {
+    closeStand();
+    S.stand = { name: el.dataset.name, since: Date.now() };
+    save(); closeSheet(); render(); toast('Du stehst an: ' + el.dataset.name);
+  },
+  standLeave() { closeStand(); save(); render(); },
+  tripStart() {
+    if (!S.stand) return;
+    const now = Date.now();
+    S.trip = { place: S.stand.name, wait: Math.max(0, Math.round((now - S.stand.since) / 60000)), start: now };
+    S.stand = null;
+    save(); render(); toast('Gute Fahrt!');
+  },
+  tripEnd() { if (S.trip) openSheet(rideForm(S.trip)); },
+  tripCancel() {
+    if (!confirm('Laufende Fahrt verwerfen? Sie wird nicht gespeichert.')) return;
+    S.trip = null;
+    save(); render();
+  },
+  hpFav(el) {
+    const name = el.dataset.name;
+    const i = S.settings.places.indexOf(name);
+    if (i >= 0) S.settings.places.splice(i, 1); else S.settings.places.push(name);
+    save(); updateHp();
+    toast(i >= 0 ? name + ' entfernt' : name + ' ist jetzt in „Meine Orte“');
+  },
   rideDel(el) {
     if (!confirm('Diese Fahrt löschen?')) return;
     S.rides = S.rides.filter(r => r.id !== el.dataset.id);
@@ -802,12 +1014,25 @@ const FORMS = {
     if (!sh) { closeSheet(); return toast('Bitte zuerst eine Schicht starten'); }
     const amount = num(f.amount.value);
     if (amount <= 0) { f.amount.focus(); return toast('Bitte den Fahrpreis eintragen'); }
-    const custom = f.placeNew.value.trim();
-    const place = custom || (f.place && f.place.value) || '';
-    if (custom && !S.settings.places.some(p => p.toLowerCase() === custom.toLowerCase())) S.settings.places.push(custom);
+    const trip = f.dataset.trip === '1' ? S.trip : null;
+    let place;
+    if (trip) {
+      place = trip.place;
+    } else {
+      const custom = f.placeNew.value.trim();
+      place = custom || (f.place && f.place.value) || '';
+      if (custom && !S.settings.places.some(p => p.toLowerCase() === custom.toLowerCase())) S.settings.places.push(custom);
+    }
     const pay = f.pay.value || 'Bar';
     const src = f.src.value || 'Halteplatz';
-    S.rides.push({ id: uid(), shiftId: sh.id, t: Date.now(), amount, tip: Math.max(0, num(f.tip.value)), pay, place, src });
+    const now = Date.now();
+    const ride = { id: uid(), shiftId: sh.id, t: now, amount, tip: Math.max(0, num(f.tip.value)), pay, place, src };
+    if (trip) {   // Fahrt ab Halteplatz: Warte- und Fahrzeit merken, daraus entsteht die Rangliste
+      ride.wait = trip.wait;
+      ride.dur = Math.max(0, Math.round((now - trip.start) / 60000));
+      S.trip = null;
+    }
+    S.rides.push(ride);
     S.last = { pay, src };
     save(); closeSheet(); render(); toast('Fahrt gespeichert: ' + eur(amount));
   },
@@ -858,6 +1083,7 @@ document.addEventListener('change', e => {
     save(); render(); return;
   }
   if (t.name === 'period') { period = t.value; render(); return; }
+  if (t.name === 'hpChan') { hpChan = Number(t.value); updateHp(); return; }
   if (t.id === 'importFile' && t.files[0]) {
     const reader = new FileReader();
     reader.onload = () => {
@@ -875,6 +1101,8 @@ document.addEventListener('change', e => {
 
 document.addEventListener('input', e => {
   if (['calcKm', 'calcWait', 'calcLarge'].includes(e.target.id)) updateCalc();
+  if (e.target.id === 'hpSearch') { hpQuery = e.target.value; updateHp(); }
+  if (e.target.id === 'standSearch') $('#standList').innerHTML = standListHtml(e.target.value);
 });
 
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && sheetOpen()) closeSheet(); });
