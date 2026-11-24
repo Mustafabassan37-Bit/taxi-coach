@@ -62,11 +62,11 @@ async function arena() {
     if (seen.has(key)) continue;
     seen.add(key);
     const unter = t2.trim();
-    out.push({
+    out.push(mitPos({
       ort: 'LANXESS arena', stand: 'Lanxess Arena', titel, zusatz: /^(tickets?|details?)$/i.test(unter) ? '' : unter,
       beginn: iso(+y, +mo, +d, +h, +mi), dauer: dauerMin(titel + ' ' + unter), groesse: 'XL',
       art: /haie|handball|final4|eishockey|darts/i.test(titel) ? 'Sport' : 'Konzert/Show', abgesagt: /abgesagt|verlegt/i.test(unter)
-    });
+    }, 'lanxess'));
   }
   return out;
 }
@@ -86,7 +86,7 @@ async function messe() {
     const key = titel + d1 + m1;
     if (seen.has(key)) continue;
     seen.add(key);
-    out.push({ ort: 'Koelnmesse', titel, von: iso(vonY, +m1, +d1).slice(0, 10), bis: iso(bisY, +m2, +d2).slice(0, 10) });
+    out.push(mitPos({ ort: 'Koelnmesse', titel, von: iso(vonY, +m1, +d1).slice(0, 10), bis: iso(bisY, +m2, +d2).slice(0, 10) }, 'koelnmesse'));
   }
   return out;
 }
@@ -112,11 +112,11 @@ async function fussball() {
       for (const m of spiele) {
         if (!v.name.test(m.team1.teamName)) continue;   // nur Heimspiele
         const d = new Date(m.matchDateTime);             // Ortszeit Köln ohne Zonenangabe
-        out.push({
+        out.push(mitPos({
           ort: v.ort, stand: v.stand, titel: `${m.team1.teamName} – ${m.team2.teamName}`, zusatz: 'Fußball',
           beginn: m.matchDateTime.slice(0, 16), dauer: 115, groesse: v.groesse, art: 'Fußball', abgesagt: false,
           _d: d
-        });
+        }, v.ort === 'RheinEnergieStadion' ? 'rheinenergiestadion' : 'sportpark höhenberg'));
       }
     }
   }
@@ -152,6 +152,22 @@ const ORTE = [
   ['flora', 'M', 'Zoo Bedarfs', 'Veranstaltung'],
   ['rhein roxy', 'M', 'Rhein Roxy', 'Party']
 ];
+// Position jedes Veranstaltungsorts [Breite, Länge] – einmalig über OpenStreetMap ermittelt und geprüft.
+// Die App sucht damit die nächsten Taxistände.
+const POS = {
+  'lanxess': [50.9385, 6.98288], 'koelnmesse': [50.94827, 6.98394], 'rheinenergiestadion': [50.93351, 6.87512],
+  'sportpark höhenberg': [50.94511, 7.03047], 'tanzbrunnen': [50.94582, 6.97036], 'theater am tanzbrunnen': [50.94589, 6.97042],
+  'palladium': [50.96898, 7.01682], 'e-werk': [50.96962, 7.0166], 'philharmonie': [50.94062, 6.96082],
+  'carlswerk': [50.96494, 7.01254], 'musical dome': [50.94283, 6.96172], 'halle tor 2': [50.94877, 6.88013],
+  'bootshaus': [50.9517, 6.98195], 'galopprennbahn': [50.98137, 6.95628], 'live music hall': [50.94932, 6.90948],
+  'gloria': [50.93753, 6.9449], 'kantine': [50.99833, 6.93699], 'essigfabrik': [50.92471, 6.97808],
+  'volksbühne': [50.93636, 6.9368], 'oper köln': [50.94607, 6.97351], 'schauspiel köln': [50.96644, 7.01339],
+  'palastzelt': [50.9678, 7.0156],   // Palastzelt Schanzenviertel (Mülheim), ungefähr
+  'gürzenich': [50.93662, 6.95882], 'sartory': [50.94085, 6.94306], 'stadthalle mülheim': [50.95988, 7.00502],
+  'flora': [50.96018, 6.97071], 'rhein roxy': [50.89949, 6.98688]
+};
+const mitPos = (e, key) => (POS[key] ? Object.assign(e, { lat: POS[key][0], lon: POS[key][1] }) : e);
+
 const DAUER = { Konzert: 165, Theater: 150, Oper: 180, Musical: 165, Show: 150, Party: 300, Pferderennen: 300, Veranstaltung: 180 };
 
 async function koelnDe(von, bis) {
@@ -177,11 +193,11 @@ async function koelnDe(von, bis) {
       const beginn = e.start_date.replace(' ', 'T').slice(0, 16);
       const start = new Date(beginn), ende = new Date(e.end_date.replace(' ', 'T'));
       const min = Math.round((ende - start) / 60000);
-      out.push({
+      out.push(mitPos({
         ort: venue, stand: hit[2], titel, zusatz: '', beginn,
         dauer: min >= 45 && min <= 600 ? min : DAUER[hit[3]] || 165,
         groesse: markt ? 'M' : hit[1], art: markt ? 'Markt' : hit[3], abgesagt: false
-      });
+      }, hit[0]));
     }
     url = j.next_rest_url || null;
     if (url) await new Promise(r => setTimeout(r, 2100));   // koeln.de bittet um 2 Sekunden Abstand

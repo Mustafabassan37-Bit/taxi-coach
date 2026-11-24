@@ -1426,7 +1426,27 @@ function exportCsv() {
 
 /* ---------- Ansicht: Woche – wo sammeln sich in den nächsten Tagen Menschen? ---------- */
 
-let week = { days: 3, showM: false, wx: null, wxAt: 0 };
+let week = { days: 3, showM: false, wx: null, wxAt: 0, open: '' };
+
+// Die nächsten Taxistände zu einem Ort (Luftlinie)
+function standsNear(lat, lon, n = 4) {
+  return HP.filter(p => p.pos).map(p => ({ p, d: distM([lat, lon], p.pos) })).sort((a, b) => a.d - b.d).slice(0, n);
+}
+
+const mapsDir = (lat, lon) => `https://www.google.com/maps/dir/?api=1&amp;destination=${lat},${lon}`;
+
+// Aufgeklappte Liste unter einer Veranstaltung
+function nearHtml(lat, lon, ab) {
+  const me = posFresh() ? [myPos.lat, myPos.lon] : null;
+  return `<div class="near">
+    <div class="muted small">Taxistände in der Nähe${ab ? ` – am besten ab ${ab} dort sein` : ''}:</div>
+    <ul class="list">${standsNear(lat, lon).map((x, i) => `<li>
+      <span class="rank">${i + 1}</span>
+      <div class="grow"><div><b>${esc(x.p.name)}</b> <span class="muted small">${fmtDist(x.d)}</span></div>
+        <div class="sub">${esc(x.p.lage)}${x.p.note ? ' · nur ' + esc(x.p.note) : ''}${x.p.hrs ? ' · nur ' + esc(x.p.hrs) + ' Uhr' : ''}${me ? ' · von dir ' + fmtDist(distM(me, x.p.pos)) : ''}</div></div>
+      <a class="btn route" href="${mapsDir(x.p.pos[0], x.p.pos[1])}" target="_blank" rel="noopener">Route</a></li>`).join('')}</ul>
+  </div>`;
+}
 const GROESSE = { XL: 'Riesig', L: 'Groß', M: 'Mittel' };
 
 // Feiertage in NRW (fest und von Ostern abhängig)
@@ -1482,27 +1502,48 @@ function viewWeek() {
   const peaks = x => {
     const ends = x.big.slice().sort((p, q) => p.end - q.end);
     if (!ends.length) return '';
-    return `<p class="peak">🔥 <b>Schlusszeiten:</b> ${ends.map(y => `${hhmm(y.end)} ${esc(y.e.stand)}`).join(' · ')}</p>`;
+    const near = y => (y.e.lat != null ? standsNear(y.e.lat, y.e.lon, 1)[0].p.name : y.e.stand);
+    return `<p class="peak">🔥 <b>Schlusszeiten:</b> ${ends.map(y => `${hhmm(y.end)} ${esc(near(y))}`).join(' · ')}</p>`;
   };
 
-  const row = y => `<li>
-      <span class="badge g${y.e.groesse || 'XL'}">${GROESSE[y.e.groesse || 'XL']}</span>
-      <div class="grow"><div><b>${hhmm(y.start)}</b> ${esc(y.e.titel)}</div>
-        <div class="sub">${esc(y.e.ort)}${y.e.art ? ' · ' + esc(y.e.art) : ''} · Ende ca. ${hhmm(y.end)}</div>
-        <div class="sub">→ Halteplatz <b>${esc(y.e.stand)}</b> ab ${hhmm(y.end - 20 * 60000)}</div></div></li>`;
+  // Antippen klappt die nächsten Taxistände auf
+  const row = y => {
+    const key = y.e.beginn + '|' + y.e.titel + '|' + y.e.ort;
+    const open = week.open === key && y.e.lat != null;
+    const first = y.e.lat != null ? standsNear(y.e.lat, y.e.lon, 1)[0] : null;
+    return `<li class="ev ${open ? 'open' : ''}">
+      <button type="button" class="evbtn" data-act="evOpen" data-k="${esc(key)}" aria-expanded="${open}">
+        <span class="badge g${y.e.groesse || 'XL'}">${GROESSE[y.e.groesse || 'XL']}</span>
+        <span class="grow"><span class="evt"><b>${hhmm(y.start)}</b> ${esc(y.e.titel)}</span>
+          <span class="sub">${esc(y.e.ort)}${y.e.art ? ' · ' + esc(y.e.art) : ''} · Ende ca. ${hhmm(y.end)}</span>
+          <span class="sub">🚕 ${first ? `${esc(first.p.name)} ${fmtDist(first.d)}` : esc(y.e.stand)} ${y.e.lat != null ? `<span class="more">${open ? '▲ zu' : '▼ alle Stände'}</span>` : ''}</span></span>
+      </button>
+      ${open ? nearHtml(y.e.lat, y.e.lon, hhmm(y.end - 20 * 60000)) : ''}</li>`;
+  };
 
   const dayCard = (x, i) => {
     const notes = [];
     if (x.holiday) notes.push(`🎉 ${x.holiday}`);
     if (x.season) notes.push(`🎄 ${x.season.title}`);
-    x.messen.forEach(m => notes.push(`🏢 Messe ${esc(m.titel)} (bis ${dm(parseLocal(m.bis))}): Anreise 7–10 Uhr, Schluss 16–19 Uhr → Messe Nord/Süd`));
+    const messeRows = x.messen.map(m => {
+      const key = 'messe|' + m.titel + '|' + x.a;
+      const open = week.open === key && m.lat != null;
+      return `<li class="ev ${open ? 'open' : ''}">
+        <button type="button" class="evbtn" data-act="evOpen" data-k="${esc(key)}" aria-expanded="${open}">
+          <span class="badge gXL">Messe</span>
+          <span class="grow"><span class="evt"><b>${esc(m.titel)}</b> (bis ${dm(parseLocal(m.bis))})</span>
+            <span class="sub">Anreise 7–10 Uhr · Schluss 16–19 Uhr</span>
+            <span class="sub">🚕 Messe Nord / Messe Süd ${m.lat != null ? `<span class="more">${open ? '▲ zu' : '▼ alle Stände'}</span>` : ''}</span></span>
+        </button>
+        ${open ? nearHtml(m.lat, m.lon, '') : ''}</li>`;
+    }).join('');
     if ([4, 5].includes(dow(x.a))) notes.push('🌙 Ausgeh-Nacht: Ringe, Zülpicher Str., Altstadt');   // Freitag, Samstag
     if (x.wx && x.wx.rain >= 3) notes.push('🌧️ Viel Regen angesagt – mehr Fahrgäste, besonders abends');
     const hidden = x.list.length - x.shown.length;
     return `<section class="card">${head(x, i)}
       ${notes.map(n => `<p class="small">${n}</p>`).join('')}
       ${peaks(x)}
-      ${x.shown.length ? `<ul class="list">${x.shown.map(row).join('')}</ul>` : '<p class="muted">Keine großen Veranstaltungen.</p>'}
+      ${messeRows || x.shown.length ? `<ul class="list">${messeRows}${x.shown.map(row).join('')}</ul>` : '<p class="muted">Keine großen Veranstaltungen.</p>'}
       ${hidden > 0 ? `<p class="muted small">+ ${hidden} kleinere Veranstaltung${hidden === 1 ? '' : 'en'} (oben „auch kleinere“ antippen)</p>` : ''}
     </section>`;
   };
@@ -1513,6 +1554,7 @@ function viewWeek() {
       <label class="chip"><input type="checkbox" name="weekShowM" ${week.showM ? 'checked' : ''}><span>auch kleinere</span></label>
     </div>
     ${days.map(dayCard).join('')}
+    <p class="muted small">Tippe auf eine Veranstaltung, um die Taxistände in der Nähe zu sehen (Luftlinie).</p>
     <p class="muted small">${stand}. Quellen: LANXESS arena, Koelnmesse, OpenLigaDB (Fußball), koeln.de (große Veranstaltungsorte), Wetter: Open-Meteo. Endzeiten und Größe sind geschätzt.</p>`;
 }
 
@@ -1613,6 +1655,12 @@ const ACTIONS = {
   settings() { openSheet(settingsForm()); },
   routePick(el) { pickRouteAlt(Number(el.dataset.i)); },
   hereAgain() { locateHere(true); },
+  evOpen(el) {
+    const y = window.scrollY;
+    week.open = week.open === el.dataset.k ? '' : el.dataset.k;
+    render();
+    window.scrollTo(0, y);   // nicht nach oben springen
+  },
   aiAsk() { askAi(); },
   aiKeyDel() {
     if (!confirm('KI-Schlüssel von diesem Gerät löschen?')) return;

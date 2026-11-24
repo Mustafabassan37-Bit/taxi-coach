@@ -1,5 +1,5 @@
 {
- "stand": "2026-11-24T23:24:08.052Z",
+ "stand": "2026-11-24T23:28:56.325Z",
  "quellen": [
   "https://www.lanxess-arena.de/events-tickets/eventkalender",
   "https://www.koelnmesse.de/aktuelle-termine/alle-messen/",
@@ -7,50 +7,6 @@
   "https://www.koeln.de/veranstaltungen/"
  ],
  "veranstaltungen": [
-  {
-   "ort": "Carlswerk Victoria",
-   "stand": "Schanzenstr.",
-   "titel": "Freya Skye – Stars Align Tour | Support: Alex Sampson",
-   "zusatz": "",
-   "beginn": "2026-11-23T20:00",
-   "dauer": 165,
-   "groesse": "L",
-   "art": "Konzert",
-   "abgesagt": false
-  },
-  {
-   "ort": "Die Kantine",
-   "stand": "Kantine",
-   "titel": "Strangelove – The DEPECHE MODE Experience",
-   "zusatz": "",
-   "beginn": "2026-11-23T20:00",
-   "dauer": 165,
-   "groesse": "M",
-   "art": "Konzert",
-   "abgesagt": false
-  },
-  {
-   "ort": "Gloria",
-   "stand": "Neumarkt",
-   "titel": "Karlitoz – Die Karlitoz Supershow",
-   "zusatz": "",
-   "beginn": "2026-11-23T20:00",
-   "dauer": 165,
-   "groesse": "M",
-   "art": "Konzert",
-   "abgesagt": false
-  },
-  {
-   "ort": "Kölner Philharmonie",
-   "stand": "Philharmonie",
-   "titel": "Wiener Symphoniker",
-   "zusatz": "",
-   "beginn": "2026-11-23T20:00",
-   "dauer": 165,
-   "groesse": "L",
-   "art": "Konzert",
-   "abgesagt": false
-  },
   {
    "ort": "Volksbühne Am Rudolfplatz",
    "stand": "Rudolfplatz",
@@ -60,7 +16,9 @@
    "dauer": 150,
    "groesse": "M",
    "art": "Theater",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.93636,
+   "lon": 6.9368
   },
   {
    "ort": "Theater am Tanzbrunnen",
@@ -71,7 +29,9 @@
    "dauer": 150,
    "groesse": "M",
    "art": "Theater",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.94589,
+   "lon": 6.97042
   },
   {
    "ort": "Die Kantine",
@@ -82,7 +42,9 @@
    "dauer": 165,
    "groesse": "M",
    "art": "Konzert",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.99833,
+   "lon": 6.93699
   },
   {
    "ort": "Carlswerk Victoria",
@@ -93,7 +55,9 @@
    "dauer": 165,
    "groesse": "L",
    "art": "Konzert",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.96494,
+   "lon": 7.01254
   },
   {
    "ort": "Kölner Philharmonie",
@@ -104,7 +68,9 @@
    "dauer": 165,
    "groesse": "L",
    "art": "Konzert",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.94062,
+   "lon": 6.96082
   },
   {
    "ort": "Gloria",
@@ -115,7 +81,9 @@
    "dauer": 165,
    "groesse": "M",
    "art": "Konzert",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.93753,
+   "lon": 6.9449
   },
   {
    "ort": "LANXESS arena",
@@ -126,7 +94,9 @@
    "dauer": 165,
    "groesse": "XL",
    "art": "Konzert/Show",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.9385,
+   "lon": 6.98288
   },
   {
    "ort": "Volksbühne Am Rudolfplatz",
@@ -137,7 +107,9 @@
    "dauer": 150,
    "groesse": "M",
    "art": "Theater",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.93636,
+   "lon": 6.9368
   },
   {
    "ort": "Carlswerk Victoria",
@@ -148,7 +120,9 @@
    "dauer": 165,
    "groesse": "L",
    "art": "Konzert",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.96494,
+   "lon": 7.01254
   },
   {
    "ort": "Theater am Tanzbrunnen",
@@ -159,7 +133,9 @@
    "dauer": 150,
    "groesse": "M",
    "art": "Theater",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.94589,
+   "lon": 6.97042
   },
   {
    "ort": "Live Music Hall",
@@ -170,7 +146,9 @@
    "dauer": 165,
    "groesse": "M",
    "art": "Konzert",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.94932,
+   "lon": 6.90948
   },
   {
    "ort": "Essigfabrik",
@@ -181,7 +159,9 @@
    "dauer": 165,
    "groesse": "M",
    "art": "Konzert",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.92471,
+   "lon": 6.97808
   },
   {
    "ort": "Gloria",
@@ -192,7 +172,9 @@
    "dauer": 165,
    "groesse": "M",
    "art": "Konzert",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.93753,
+   "lon": 6.9449
   },
   {
    "ort": "Kölner Philharmonie",
@@ -203,7 +185,9 @@
    "dauer": 165,
    "groesse": "L",
    "art": "Konzert",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.94062,
+   "lon": 6.96082
   },
   {
    "ort": "LANXESS arena",
@@ -214,7 +198,9 @@
    "dauer": 165,
    "groesse": "XL",
    "art": "Konzert/Show",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.9385,
+   "lon": 6.98288
   },
   {
    "ort": "Essigfabrik",
@@ -225,7 +211,9 @@
    "dauer": 165,
    "groesse": "M",
    "art": "Konzert",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.92471,
+   "lon": 6.97808
   },
   {
    "ort": "Theater am Tanzbrunnen",
@@ -236,7 +224,9 @@
    "dauer": 150,
    "groesse": "M",
    "art": "Theater",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.94589,
+   "lon": 6.97042
   },
   {
    "ort": "Die Kantine",
@@ -247,7 +237,9 @@
    "dauer": 165,
    "groesse": "M",
    "art": "Konzert",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.99833,
+   "lon": 6.93699
   },
   {
    "ort": "Live Music Hall",
@@ -258,7 +250,9 @@
    "dauer": 165,
    "groesse": "M",
    "art": "Konzert",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.94932,
+   "lon": 6.90948
   },
   {
    "ort": "Carlswerk Victoria",
@@ -269,7 +263,9 @@
    "dauer": 165,
    "groesse": "L",
    "art": "Konzert",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.96494,
+   "lon": 7.01254
   },
   {
    "ort": "Schauspiel Köln im Depot",
@@ -280,7 +276,9 @@
    "dauer": 150,
    "groesse": "M",
    "art": "Theater",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.96644,
+   "lon": 7.01339
   },
   {
    "ort": "Gloria",
@@ -291,7 +289,9 @@
    "dauer": 165,
    "groesse": "M",
    "art": "Konzert",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.93753,
+   "lon": 6.9449
   },
   {
    "ort": "Kölner Philharmonie",
@@ -302,7 +302,9 @@
    "dauer": 165,
    "groesse": "L",
    "art": "Konzert",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.94062,
+   "lon": 6.96082
   },
   {
    "ort": "Palastzelt Schanzenviertel",
@@ -313,7 +315,9 @@
    "dauer": 150,
    "groesse": "M",
    "art": "Show",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.9678,
+   "lon": 7.0156
   },
   {
    "ort": "Essigfabrik",
@@ -324,7 +328,9 @@
    "dauer": 165,
    "groesse": "M",
    "art": "Konzert",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.92471,
+   "lon": 6.97808
   },
   {
    "ort": "LANXESS arena",
@@ -335,7 +341,9 @@
    "dauer": 150,
    "groesse": "XL",
    "art": "Sport",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.9385,
+   "lon": 6.98288
   },
   {
    "ort": "Carlswerk Victoria",
@@ -346,7 +354,9 @@
    "dauer": 165,
    "groesse": "L",
    "art": "Konzert",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.96494,
+   "lon": 7.01254
   },
   {
    "ort": "Oper Köln",
@@ -357,7 +367,9 @@
    "dauer": 180,
    "groesse": "M",
    "art": "Oper",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.94607,
+   "lon": 6.97351
   },
   {
    "ort": "Palastzelt Schanzenviertel",
@@ -368,7 +380,9 @@
    "dauer": 150,
    "groesse": "M",
    "art": "Show",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.9678,
+   "lon": 7.0156
   },
   {
    "ort": "Die Kantine",
@@ -379,7 +393,9 @@
    "dauer": 165,
    "groesse": "M",
    "art": "Konzert",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.99833,
+   "lon": 6.93699
   },
   {
    "ort": "Schauspiel Köln im Depot",
@@ -390,7 +406,9 @@
    "dauer": 150,
    "groesse": "M",
    "art": "Theater",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.96644,
+   "lon": 7.01339
   },
   {
    "ort": "Schauspiel Köln",
@@ -401,7 +419,9 @@
    "dauer": 150,
    "groesse": "M",
    "art": "Theater",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.96644,
+   "lon": 7.01339
   },
   {
    "ort": "Kölner Philharmonie",
@@ -412,7 +432,9 @@
    "dauer": 165,
    "groesse": "L",
    "art": "Konzert",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.94062,
+   "lon": 6.96082
   },
   {
    "ort": "Gloria",
@@ -423,7 +445,9 @@
    "dauer": 165,
    "groesse": "M",
    "art": "Konzert",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.93753,
+   "lon": 6.9449
   },
   {
    "ort": "Live Music Hall",
@@ -434,7 +458,9 @@
    "dauer": 165,
    "groesse": "M",
    "art": "Konzert",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.94932,
+   "lon": 6.90948
   },
   {
    "ort": "Galopprennbahn Weidenpesch",
@@ -445,7 +471,9 @@
    "dauer": 360,
    "groesse": "M",
    "art": "Markt",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.98137,
+   "lon": 6.95628
   },
   {
    "ort": "Palastzelt Schanzenviertel",
@@ -456,7 +484,9 @@
    "dauer": 150,
    "groesse": "M",
    "art": "Show",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.9678,
+   "lon": 7.0156
   },
   {
    "ort": "RheinEnergieStadion",
@@ -467,7 +497,9 @@
    "dauer": 115,
    "groesse": "XL",
    "art": "Fußball",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.93351,
+   "lon": 6.87512
   },
   {
    "ort": "LANXESS arena",
@@ -478,7 +510,9 @@
    "dauer": 165,
    "groesse": "XL",
    "art": "Konzert/Show",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.9385,
+   "lon": 6.98288
   },
   {
    "ort": "Oper Köln",
@@ -489,7 +523,9 @@
    "dauer": 180,
    "groesse": "M",
    "art": "Oper",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.94607,
+   "lon": 6.97351
   },
   {
    "ort": "Palastzelt Schanzenviertel",
@@ -500,7 +536,9 @@
    "dauer": 150,
    "groesse": "M",
    "art": "Show",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.9678,
+   "lon": 7.0156
   },
   {
    "ort": "Essigfabrik",
@@ -511,7 +549,9 @@
    "dauer": 165,
    "groesse": "M",
    "art": "Konzert",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.92471,
+   "lon": 6.97808
   },
   {
    "ort": "Schauspiel Köln",
@@ -522,7 +562,9 @@
    "dauer": 150,
    "groesse": "M",
    "art": "Theater",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.96644,
+   "lon": 7.01339
   },
   {
    "ort": "Die Kantine",
@@ -533,7 +575,9 @@
    "dauer": 165,
    "groesse": "M",
    "art": "Konzert",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.99833,
+   "lon": 6.93699
   },
   {
    "ort": "Carlswerk Victoria",
@@ -544,7 +588,9 @@
    "dauer": 165,
    "groesse": "L",
    "art": "Konzert",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.96494,
+   "lon": 7.01254
   },
   {
    "ort": "Schauspiel Köln",
@@ -555,7 +601,9 @@
    "dauer": 150,
    "groesse": "M",
    "art": "Theater",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.96644,
+   "lon": 7.01339
   },
   {
    "ort": "Kölner Philharmonie",
@@ -566,7 +614,9 @@
    "dauer": 165,
    "groesse": "L",
    "art": "Konzert",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.94062,
+   "lon": 6.96082
   },
   {
    "ort": "Gloria",
@@ -577,7 +627,9 @@
    "dauer": 165,
    "groesse": "M",
    "art": "Konzert",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.93753,
+   "lon": 6.9449
   },
   {
    "ort": "Galopprennbahn Weidenpesch",
@@ -588,7 +640,9 @@
    "dauer": 300,
    "groesse": "M",
    "art": "Markt",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.98137,
+   "lon": 6.95628
   },
   {
    "ort": "Kölner Philharmonie",
@@ -599,7 +653,9 @@
    "dauer": 165,
    "groesse": "L",
    "art": "Konzert",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.94062,
+   "lon": 6.96082
   },
   {
    "ort": "Palastzelt Schanzenviertel",
@@ -610,7 +666,9 @@
    "dauer": 150,
    "groesse": "M",
    "art": "Show",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.9678,
+   "lon": 7.0156
   },
   {
    "ort": "Sportpark Höhenberg",
@@ -621,7 +679,9 @@
    "dauer": 115,
    "groesse": "M",
    "art": "Fußball",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.94511,
+   "lon": 7.03047
   },
   {
    "ort": "LANXESS arena",
@@ -632,7 +692,9 @@
    "dauer": 150,
    "groesse": "XL",
    "art": "Sport",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.9385,
+   "lon": 6.98288
   },
   {
    "ort": "Kölner Philharmonie",
@@ -643,7 +705,9 @@
    "dauer": 165,
    "groesse": "L",
    "art": "Konzert",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.94062,
+   "lon": 6.96082
   },
   {
    "ort": "Palastzelt Schanzenviertel",
@@ -654,7 +718,9 @@
    "dauer": 150,
    "groesse": "M",
    "art": "Show",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.9678,
+   "lon": 7.0156
   },
   {
    "ort": "Oper Köln",
@@ -665,7 +731,9 @@
    "dauer": 180,
    "groesse": "M",
    "art": "Oper",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.94607,
+   "lon": 6.97351
   },
   {
    "ort": "Schauspiel Köln",
@@ -676,7 +744,9 @@
    "dauer": 150,
    "groesse": "M",
    "art": "Theater",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.96644,
+   "lon": 7.01339
   },
   {
    "ort": "Theater am Tanzbrunnen",
@@ -687,7 +757,9 @@
    "dauer": 150,
    "groesse": "M",
    "art": "Theater",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.94589,
+   "lon": 6.97042
   },
   {
    "ort": "Schauspiel Köln",
@@ -698,7 +770,9 @@
    "dauer": 150,
    "groesse": "M",
    "art": "Theater",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.96644,
+   "lon": 7.01339
   },
   {
    "ort": "Gloria",
@@ -709,7 +783,9 @@
    "dauer": 165,
    "groesse": "M",
    "art": "Konzert",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.93753,
+   "lon": 6.9449
   },
   {
    "ort": "Carlswerk Victoria",
@@ -720,7 +796,9 @@
    "dauer": 165,
    "groesse": "L",
    "art": "Konzert",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.96494,
+   "lon": 7.01254
   },
   {
    "ort": "Live Music Hall",
@@ -731,7 +809,9 @@
    "dauer": 165,
    "groesse": "M",
    "art": "Konzert",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.94932,
+   "lon": 6.90948
   },
   {
    "ort": "Palladium Köln",
@@ -742,7 +822,9 @@
    "dauer": 165,
    "groesse": "L",
    "art": "Konzert",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.96898,
+   "lon": 7.01682
   },
   {
    "ort": "Kölner Philharmonie",
@@ -753,7 +835,9 @@
    "dauer": 165,
    "groesse": "L",
    "art": "Konzert",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.94062,
+   "lon": 6.96082
   },
   {
    "ort": "Volksbühne Am Rudolfplatz",
@@ -764,7 +848,9 @@
    "dauer": 150,
    "groesse": "M",
    "art": "Theater",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.93636,
+   "lon": 6.9368
   },
   {
    "ort": "Palladium Köln",
@@ -775,7 +861,9 @@
    "dauer": 165,
    "groesse": "L",
    "art": "Konzert",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.96898,
+   "lon": 7.01682
   },
   {
    "ort": "Die Kantine",
@@ -786,7 +874,9 @@
    "dauer": 165,
    "groesse": "M",
    "art": "Konzert",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.99833,
+   "lon": 6.93699
   },
   {
    "ort": "Kölner Philharmonie",
@@ -797,7 +887,9 @@
    "dauer": 165,
    "groesse": "L",
    "art": "Konzert",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.94062,
+   "lon": 6.96082
   },
   {
    "ort": "Gloria",
@@ -808,7 +900,9 @@
    "dauer": 165,
    "groesse": "M",
    "art": "Konzert",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.93753,
+   "lon": 6.9449
   },
   {
    "ort": "Schauspiel Köln",
@@ -819,7 +913,9 @@
    "dauer": 150,
    "groesse": "M",
    "art": "Theater",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.96644,
+   "lon": 7.01339
   },
   {
    "ort": "Volksbühne Am Rudolfplatz",
@@ -830,7 +926,9 @@
    "dauer": 150,
    "groesse": "M",
    "art": "Theater",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.93636,
+   "lon": 6.9368
   },
   {
    "ort": "Schauspiel Köln",
@@ -841,7 +939,9 @@
    "dauer": 150,
    "groesse": "M",
    "art": "Theater",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.96644,
+   "lon": 7.01339
   },
   {
    "ort": "LANXESS arena",
@@ -852,7 +952,9 @@
    "dauer": 165,
    "groesse": "XL",
    "art": "Konzert/Show",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.9385,
+   "lon": 6.98288
   },
   {
    "ort": "Palladium Köln",
@@ -863,7 +965,9 @@
    "dauer": 165,
    "groesse": "L",
    "art": "Konzert",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.96898,
+   "lon": 7.01682
   },
   {
    "ort": "Schauspiel Köln",
@@ -874,7 +978,9 @@
    "dauer": 150,
    "groesse": "M",
    "art": "Theater",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.96644,
+   "lon": 7.01339
   },
   {
    "ort": "Palastzelt Schanzenviertel",
@@ -885,7 +991,9 @@
    "dauer": 150,
    "groesse": "M",
    "art": "Show",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.9678,
+   "lon": 7.0156
   },
   {
    "ort": "LANXESS arena",
@@ -896,7 +1004,9 @@
    "dauer": 165,
    "groesse": "XL",
    "art": "Sport",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.9385,
+   "lon": 6.98288
   },
   {
    "ort": "Carlswerk Victoria",
@@ -907,7 +1017,9 @@
    "dauer": 165,
    "groesse": "L",
    "art": "Konzert",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.96494,
+   "lon": 7.01254
   },
   {
    "ort": "Volksbühne Am Rudolfplatz",
@@ -918,7 +1030,9 @@
    "dauer": 150,
    "groesse": "M",
    "art": "Theater",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.93636,
+   "lon": 6.9368
   },
   {
    "ort": "Oper Köln",
@@ -929,7 +1043,9 @@
    "dauer": 180,
    "groesse": "M",
    "art": "Oper",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.94607,
+   "lon": 6.97351
   },
   {
    "ort": "Palastzelt Schanzenviertel",
@@ -940,7 +1056,9 @@
    "dauer": 150,
    "groesse": "M",
    "art": "Show",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.9678,
+   "lon": 7.0156
   },
   {
    "ort": "Palladium Köln",
@@ -951,7 +1069,9 @@
    "dauer": 165,
    "groesse": "L",
    "art": "Konzert",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.96898,
+   "lon": 7.01682
   },
   {
    "ort": "Die Kantine",
@@ -962,7 +1082,9 @@
    "dauer": 165,
    "groesse": "M",
    "art": "Konzert",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.99833,
+   "lon": 6.93699
   },
   {
    "ort": "Live Music Hall",
@@ -973,7 +1095,9 @@
    "dauer": 165,
    "groesse": "M",
    "art": "Konzert",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.94932,
+   "lon": 6.90948
   },
   {
    "ort": "Kölner Philharmonie",
@@ -984,7 +1108,9 @@
    "dauer": 165,
    "groesse": "L",
    "art": "Konzert",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.94062,
+   "lon": 6.96082
   },
   {
    "ort": "Gloria",
@@ -995,7 +1121,9 @@
    "dauer": 165,
    "groesse": "M",
    "art": "Konzert",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.93753,
+   "lon": 6.9449
   },
   {
    "ort": "Schauspiel Köln",
@@ -1006,7 +1134,9 @@
    "dauer": 150,
    "groesse": "M",
    "art": "Theater",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.96644,
+   "lon": 7.01339
   },
   {
    "ort": "Palastzelt Schanzenviertel",
@@ -1017,7 +1147,9 @@
    "dauer": 150,
    "groesse": "M",
    "art": "Show",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.9678,
+   "lon": 7.0156
   },
   {
    "ort": "LANXESS arena",
@@ -1028,7 +1160,9 @@
    "dauer": 165,
    "groesse": "XL",
    "art": "Konzert/Show",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.9385,
+   "lon": 6.98288
   },
   {
    "ort": "Live Music Hall",
@@ -1039,7 +1173,9 @@
    "dauer": 165,
    "groesse": "M",
    "art": "Konzert",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.94932,
+   "lon": 6.90948
   },
   {
    "ort": "Schauspiel Köln",
@@ -1050,7 +1186,9 @@
    "dauer": 150,
    "groesse": "M",
    "art": "Theater",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.96644,
+   "lon": 7.01339
   },
   {
    "ort": "Palastzelt Schanzenviertel",
@@ -1061,7 +1199,9 @@
    "dauer": 150,
    "groesse": "M",
    "art": "Show",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.9678,
+   "lon": 7.0156
   },
   {
    "ort": "Die Kantine",
@@ -1072,7 +1212,9 @@
    "dauer": 165,
    "groesse": "M",
    "art": "Konzert",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.99833,
+   "lon": 6.93699
   },
   {
    "ort": "Carlswerk Victoria",
@@ -1083,7 +1225,9 @@
    "dauer": 165,
    "groesse": "L",
    "art": "Konzert",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.96494,
+   "lon": 7.01254
   },
   {
    "ort": "Theater am Tanzbrunnen",
@@ -1094,7 +1238,9 @@
    "dauer": 150,
    "groesse": "M",
    "art": "Theater",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.94589,
+   "lon": 6.97042
   },
   {
    "ort": "Gloria",
@@ -1105,7 +1251,9 @@
    "dauer": 165,
    "groesse": "M",
    "art": "Konzert",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.93753,
+   "lon": 6.9449
   },
   {
    "ort": "Schauspiel Köln",
@@ -1116,7 +1264,9 @@
    "dauer": 150,
    "groesse": "M",
    "art": "Theater",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.96644,
+   "lon": 7.01339
   },
   {
    "ort": "Palastzelt Schanzenviertel",
@@ -1127,7 +1277,9 @@
    "dauer": 150,
    "groesse": "M",
    "art": "Show",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.9678,
+   "lon": 7.0156
   },
   {
    "ort": "Die Kantine",
@@ -1138,7 +1290,9 @@
    "dauer": 165,
    "groesse": "M",
    "art": "Konzert",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.99833,
+   "lon": 6.93699
   },
   {
    "ort": "Oper Köln",
@@ -1149,7 +1303,9 @@
    "dauer": 180,
    "groesse": "M",
    "art": "Oper",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.94607,
+   "lon": 6.97351
   },
   {
    "ort": "Schauspiel Köln",
@@ -1160,7 +1316,9 @@
    "dauer": 150,
    "groesse": "M",
    "art": "Theater",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.96644,
+   "lon": 7.01339
   },
   {
    "ort": "Palastzelt Schanzenviertel",
@@ -1171,7 +1329,9 @@
    "dauer": 150,
    "groesse": "M",
    "art": "Show",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.9678,
+   "lon": 7.0156
   },
   {
    "ort": "LANXESS arena",
@@ -1182,7 +1342,9 @@
    "dauer": 165,
    "groesse": "XL",
    "art": "Konzert/Show",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.9385,
+   "lon": 6.98288
   },
   {
    "ort": "Carlswerk Victoria",
@@ -1193,7 +1355,9 @@
    "dauer": 165,
    "groesse": "L",
    "art": "Konzert",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.96494,
+   "lon": 7.01254
   },
   {
    "ort": "Theater am Tanzbrunnen",
@@ -1204,7 +1368,9 @@
    "dauer": 150,
    "groesse": "M",
    "art": "Theater",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.94589,
+   "lon": 6.97042
   },
   {
    "ort": "Essigfabrik",
@@ -1215,7 +1381,9 @@
    "dauer": 165,
    "groesse": "M",
    "art": "Konzert",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.92471,
+   "lon": 6.97808
   },
   {
    "ort": "Gloria",
@@ -1226,7 +1394,9 @@
    "dauer": 165,
    "groesse": "M",
    "art": "Konzert",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.93753,
+   "lon": 6.9449
   },
   {
    "ort": "Schauspiel Köln",
@@ -1237,7 +1407,9 @@
    "dauer": 150,
    "groesse": "M",
    "art": "Theater",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.96644,
+   "lon": 7.01339
   },
   {
    "ort": "Galopprennbahn Weidenpesch",
@@ -1248,7 +1420,9 @@
    "dauer": 360,
    "groesse": "M",
    "art": "Markt",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.98137,
+   "lon": 6.95628
   },
   {
    "ort": "Theater am Tanzbrunnen",
@@ -1259,7 +1433,9 @@
    "dauer": 150,
    "groesse": "M",
    "art": "Theater",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.94589,
+   "lon": 6.97042
   },
   {
    "ort": "Palastzelt Schanzenviertel",
@@ -1270,7 +1446,9 @@
    "dauer": 150,
    "groesse": "M",
    "art": "Show",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.9678,
+   "lon": 7.0156
   },
   {
    "ort": "Schauspiel Köln im Depot",
@@ -1281,7 +1459,9 @@
    "dauer": 150,
    "groesse": "M",
    "art": "Theater",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.96644,
+   "lon": 7.01339
   },
   {
    "ort": "Oper Köln",
@@ -1292,7 +1472,9 @@
    "dauer": 180,
    "groesse": "M",
    "art": "Oper",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.94607,
+   "lon": 6.97351
   },
   {
    "ort": "Palladium Köln",
@@ -1303,7 +1485,9 @@
    "dauer": 165,
    "groesse": "L",
    "art": "Konzert",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.96898,
+   "lon": 7.01682
   },
   {
    "ort": "Essigfabrik",
@@ -1314,7 +1498,9 @@
    "dauer": 165,
    "groesse": "M",
    "art": "Konzert",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.92471,
+   "lon": 6.97808
   },
   {
    "ort": "Gloria",
@@ -1325,7 +1511,9 @@
    "dauer": 165,
    "groesse": "M",
    "art": "Konzert",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.93753,
+   "lon": 6.9449
   },
   {
    "ort": "Kölner Philharmonie",
@@ -1336,7 +1524,9 @@
    "dauer": 165,
    "groesse": "L",
    "art": "Konzert",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.94062,
+   "lon": 6.96082
   },
   {
    "ort": "Palastzelt Schanzenviertel",
@@ -1347,7 +1537,9 @@
    "dauer": 150,
    "groesse": "M",
    "art": "Show",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.9678,
+   "lon": 7.0156
   },
   {
    "ort": "Live Music Hall",
@@ -1358,7 +1550,9 @@
    "dauer": 165,
    "groesse": "M",
    "art": "Konzert",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.94932,
+   "lon": 6.90948
   },
   {
    "ort": "Schauspiel Köln",
@@ -1369,7 +1563,9 @@
    "dauer": 150,
    "groesse": "M",
    "art": "Theater",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.96644,
+   "lon": 7.01339
   },
   {
    "ort": "LANXESS arena",
@@ -1380,7 +1576,9 @@
    "dauer": 165,
    "groesse": "XL",
    "art": "Konzert/Show",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.9385,
+   "lon": 6.98288
   },
   {
    "ort": "Carlswerk Victoria",
@@ -1391,7 +1589,9 @@
    "dauer": 165,
    "groesse": "L",
    "art": "Konzert",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.96494,
+   "lon": 7.01254
   },
   {
    "ort": "Theater am Tanzbrunnen",
@@ -1402,7 +1602,9 @@
    "dauer": 150,
    "groesse": "M",
    "art": "Theater",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.94589,
+   "lon": 6.97042
   },
   {
    "ort": "Schauspiel Köln",
@@ -1413,7 +1615,9 @@
    "dauer": 150,
    "groesse": "M",
    "art": "Theater",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.96644,
+   "lon": 7.01339
   },
   {
    "ort": "Flora",
@@ -1424,7 +1628,9 @@
    "dauer": 420,
    "groesse": "M",
    "art": "Markt",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.96018,
+   "lon": 6.97071
   },
   {
    "ort": "Schauspiel Köln",
@@ -1435,7 +1641,9 @@
    "dauer": 150,
    "groesse": "M",
    "art": "Theater",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.96644,
+   "lon": 7.01339
   },
   {
    "ort": "Oper Köln",
@@ -1446,7 +1654,9 @@
    "dauer": 180,
    "groesse": "M",
    "art": "Oper",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.94607,
+   "lon": 6.97351
   },
   {
    "ort": "Kölner Philharmonie",
@@ -1457,7 +1667,9 @@
    "dauer": 165,
    "groesse": "L",
    "art": "Konzert",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.94062,
+   "lon": 6.96082
   },
   {
    "ort": "Palastzelt Schanzenviertel",
@@ -1468,7 +1680,9 @@
    "dauer": 150,
    "groesse": "M",
    "art": "Show",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.9678,
+   "lon": 7.0156
   },
   {
    "ort": "Theater am Tanzbrunnen",
@@ -1479,7 +1693,9 @@
    "dauer": 150,
    "groesse": "M",
    "art": "Theater",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.94589,
+   "lon": 6.97042
   },
   {
    "ort": "Gloria",
@@ -1490,7 +1706,9 @@
    "dauer": 165,
    "groesse": "M",
    "art": "Konzert",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.93753,
+   "lon": 6.9449
   },
   {
    "ort": "Schauspiel Köln",
@@ -1501,7 +1719,9 @@
    "dauer": 150,
    "groesse": "M",
    "art": "Theater",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.96644,
+   "lon": 7.01339
   },
   {
    "ort": "Palastzelt Schanzenviertel",
@@ -1512,7 +1732,9 @@
    "dauer": 150,
    "groesse": "M",
    "art": "Show",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.9678,
+   "lon": 7.0156
   },
   {
    "ort": "Oper Köln",
@@ -1523,7 +1745,9 @@
    "dauer": 180,
    "groesse": "M",
    "art": "Oper",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.94607,
+   "lon": 6.97351
   },
   {
    "ort": "Kölner Philharmonie",
@@ -1534,7 +1758,9 @@
    "dauer": 165,
    "groesse": "L",
    "art": "Konzert",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.94062,
+   "lon": 6.96082
   },
   {
    "ort": "Schauspiel Köln",
@@ -1545,7 +1771,9 @@
    "dauer": 150,
    "groesse": "M",
    "art": "Theater",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.96644,
+   "lon": 7.01339
   },
   {
    "ort": "LANXESS arena",
@@ -1556,7 +1784,9 @@
    "dauer": 165,
    "groesse": "XL",
    "art": "Konzert/Show",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.9385,
+   "lon": 6.98288
   },
   {
    "ort": "Palladium Köln",
@@ -1567,7 +1797,9 @@
    "dauer": 165,
    "groesse": "L",
    "art": "Konzert",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.96898,
+   "lon": 7.01682
   },
   {
    "ort": "Carlswerk Victoria",
@@ -1578,7 +1810,9 @@
    "dauer": 165,
    "groesse": "L",
    "art": "Konzert",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.96494,
+   "lon": 7.01254
   },
   {
    "ort": "Schauspiel Köln",
@@ -1589,7 +1823,9 @@
    "dauer": 150,
    "groesse": "M",
    "art": "Theater",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.96644,
+   "lon": 7.01339
   },
   {
    "ort": "Kölner Philharmonie",
@@ -1600,7 +1836,9 @@
    "dauer": 165,
    "groesse": "L",
    "art": "Konzert",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.94062,
+   "lon": 6.96082
   },
   {
    "ort": "Volksbühne Am Rudolfplatz",
@@ -1611,7 +1849,9 @@
    "dauer": 150,
    "groesse": "M",
    "art": "Theater",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.93636,
+   "lon": 6.9368
   },
   {
    "ort": "Schauspiel Köln",
@@ -1622,7 +1862,9 @@
    "dauer": 150,
    "groesse": "M",
    "art": "Theater",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.96644,
+   "lon": 7.01339
   },
   {
    "ort": "Theater am Tanzbrunnen",
@@ -1633,7 +1875,9 @@
    "dauer": 150,
    "groesse": "M",
    "art": "Theater",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.94589,
+   "lon": 6.97042
   },
   {
    "ort": "Volksbühne Am Rudolfplatz",
@@ -1644,7 +1888,9 @@
    "dauer": 150,
    "groesse": "M",
    "art": "Theater",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.93636,
+   "lon": 6.9368
   },
   {
    "ort": "LANXESS arena",
@@ -1655,7 +1901,9 @@
    "dauer": 165,
    "groesse": "XL",
    "art": "Konzert/Show",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.9385,
+   "lon": 6.98288
   },
   {
    "ort": "Kölner Philharmonie",
@@ -1666,7 +1914,9 @@
    "dauer": 165,
    "groesse": "L",
    "art": "Konzert",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.94062,
+   "lon": 6.96082
   },
   {
    "ort": "Volksbühne Am Rudolfplatz",
@@ -1677,7 +1927,9 @@
    "dauer": 150,
    "groesse": "M",
    "art": "Theater",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.93636,
+   "lon": 6.9368
   },
   {
    "ort": "Schauspiel Köln im Depot",
@@ -1688,7 +1940,9 @@
    "dauer": 150,
    "groesse": "M",
    "art": "Theater",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.96644,
+   "lon": 7.01339
   },
   {
    "ort": "Schauspiel Köln",
@@ -1699,7 +1953,9 @@
    "dauer": 150,
    "groesse": "M",
    "art": "Theater",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.96644,
+   "lon": 7.01339
   },
   {
    "ort": "LANXESS arena",
@@ -1710,7 +1966,9 @@
    "dauer": 150,
    "groesse": "XL",
    "art": "Sport",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.9385,
+   "lon": 6.98288
   },
   {
    "ort": "Theater am Tanzbrunnen",
@@ -1721,7 +1979,9 @@
    "dauer": 150,
    "groesse": "M",
    "art": "Theater",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.94589,
+   "lon": 6.97042
   },
   {
    "ort": "Volksbühne Am Rudolfplatz",
@@ -1732,7 +1992,9 @@
    "dauer": 150,
    "groesse": "M",
    "art": "Theater",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.93636,
+   "lon": 6.9368
   },
   {
    "ort": "Schauspiel Köln",
@@ -1743,7 +2005,9 @@
    "dauer": 150,
    "groesse": "M",
    "art": "Theater",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.96644,
+   "lon": 7.01339
   },
   {
    "ort": "Palladium Köln",
@@ -1754,7 +2018,9 @@
    "dauer": 165,
    "groesse": "L",
    "art": "Konzert",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.96898,
+   "lon": 7.01682
   },
   {
    "ort": "Carlswerk Victoria",
@@ -1765,7 +2031,9 @@
    "dauer": 165,
    "groesse": "L",
    "art": "Konzert",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.96494,
+   "lon": 7.01254
   },
   {
    "ort": "Live Music Hall",
@@ -1776,7 +2044,9 @@
    "dauer": 165,
    "groesse": "M",
    "art": "Konzert",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.94932,
+   "lon": 6.90948
   },
   {
    "ort": "Kölner Philharmonie",
@@ -1787,7 +2057,165 @@
    "dauer": 165,
    "groesse": "L",
    "art": "Konzert",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.94062,
+   "lon": 6.96082
+  },
+  {
+   "ort": "Volksbühne Am Rudolfplatz",
+   "stand": "Rudolfplatz",
+   "titel": "Nicht nur zur Weihnachtszeit -Johanna Gastdorf, Jan-Gregor Kremp, Leo Gastdorf",
+   "zusatz": "",
+   "beginn": "2026-12-09T13:00",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Theater",
+   "abgesagt": false,
+   "lat": 50.93636,
+   "lon": 6.9368
+  },
+  {
+   "ort": "Palastzelt Schanzenviertel",
+   "stand": "Schanzenstr.",
+   "titel": "11. Kölner Weihnachtscircus",
+   "zusatz": "",
+   "beginn": "2026-12-09T15:30",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Show",
+   "abgesagt": false,
+   "lat": 50.9678,
+   "lon": 7.0156
+  },
+  {
+   "ort": "Kölner Philharmonie",
+   "stand": "Philharmonie",
+   "titel": "Julien Chauvin & Le Concert de la Loge",
+   "zusatz": "",
+   "beginn": "2026-12-09T19:00",
+   "dauer": 165,
+   "groesse": "L",
+   "art": "Konzert",
+   "abgesagt": false,
+   "lat": 50.94062,
+   "lon": 6.96082
+  },
+  {
+   "ort": "E-Werk Köln",
+   "stand": "E-Werk",
+   "titel": "Stunksitzung 2026",
+   "zusatz": "",
+   "beginn": "2026-12-09T19:30",
+   "dauer": 165,
+   "groesse": "L",
+   "art": "Konzert",
+   "abgesagt": false,
+   "lat": 50.96962,
+   "lon": 7.0166
+  },
+  {
+   "ort": "Theater am Tanzbrunnen",
+   "stand": "Tanzbrunnen",
+   "titel": "Brings – Das Weihnachtskonzert 3.0",
+   "zusatz": "",
+   "beginn": "2026-12-09T19:30",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Theater",
+   "abgesagt": false,
+   "lat": 50.94589,
+   "lon": 6.97042
+  },
+  {
+   "ort": "Volksbühne Am Rudolfplatz",
+   "stand": "Rudolfplatz",
+   "titel": "PAM PENGCO – PAM PENGCOs COMEDY YOUNGSTARS",
+   "zusatz": "",
+   "beginn": "2026-12-09T19:30",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Theater",
+   "abgesagt": false,
+   "lat": 50.93636,
+   "lon": 6.9368
+  },
+  {
+   "ort": "Schauspiel Köln",
+   "stand": "Schanzenstr.",
+   "titel": "Vergeltung",
+   "zusatz": "",
+   "beginn": "2026-12-09T19:30",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Theater",
+   "abgesagt": false,
+   "lat": 50.96644,
+   "lon": 7.01339
+  },
+  {
+   "ort": "Palastzelt Schanzenviertel",
+   "stand": "Schanzenstr.",
+   "titel": "11. Kölner Weihnachtscircus",
+   "zusatz": "",
+   "beginn": "2026-12-09T19:30",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Show",
+   "abgesagt": false,
+   "lat": 50.9678,
+   "lon": 7.0156
+  },
+  {
+   "ort": "Carlswerk Victoria",
+   "stand": "Schanzenstr.",
+   "titel": "Kodaline – Farewell Tour + Support: Bertie Newman",
+   "zusatz": "",
+   "beginn": "2026-12-09T20:00",
+   "dauer": 165,
+   "groesse": "L",
+   "art": "Konzert",
+   "abgesagt": false,
+   "lat": 50.96494,
+   "lon": 7.01254
+  },
+  {
+   "ort": "Schauspiel Köln im Depot",
+   "stand": "Schanzenstr.",
+   "titel": "Choreia",
+   "zusatz": "",
+   "beginn": "2026-12-09T20:00",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Theater",
+   "abgesagt": false,
+   "lat": 50.96644,
+   "lon": 7.01339
+  },
+  {
+   "ort": "Gloria",
+   "stand": "Neumarkt",
+   "titel": "NightWash Live",
+   "zusatz": "",
+   "beginn": "2026-12-09T20:00",
+   "dauer": 165,
+   "groesse": "M",
+   "art": "Konzert",
+   "abgesagt": false,
+   "lat": 50.93753,
+   "lon": 6.9449
+  },
+  {
+   "ort": "Schauspiel Köln",
+   "stand": "Schanzenstr.",
+   "titel": "#Motherfuckinghood",
+   "zusatz": "",
+   "beginn": "2026-12-09T20:00",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Theater",
+   "abgesagt": false,
+   "lat": 50.96644,
+   "lon": 7.01339
   },
   {
    "ort": "LANXESS arena",
@@ -1798,7 +2226,9 @@
    "dauer": 165,
    "groesse": "XL",
    "art": "Konzert/Show",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.9385,
+   "lon": 6.98288
   },
   {
    "ort": "Sportpark Höhenberg",
@@ -1809,7 +2239,9 @@
    "dauer": 115,
    "groesse": "M",
    "art": "Fußball",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.94511,
+   "lon": 7.03047
   },
   {
    "ort": "LANXESS arena",
@@ -1820,7 +2252,9 @@
    "dauer": 150,
    "groesse": "XL",
    "art": "Sport",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.9385,
+   "lon": 6.98288
   },
   {
    "ort": "RheinEnergieStadion",
@@ -1831,7 +2265,9 @@
    "dauer": 115,
    "groesse": "XL",
    "art": "Fußball",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.93351,
+   "lon": 6.87512
   },
   {
    "ort": "LANXESS arena",
@@ -1842,7 +2278,9 @@
    "dauer": 165,
    "groesse": "XL",
    "art": "Konzert/Show",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.9385,
+   "lon": 6.98288
   },
   {
    "ort": "LANXESS arena",
@@ -1853,7 +2291,9 @@
    "dauer": 165,
    "groesse": "XL",
    "art": "Konzert/Show",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.9385,
+   "lon": 6.98288
   },
   {
    "ort": "LANXESS arena",
@@ -1864,7 +2304,9 @@
    "dauer": 150,
    "groesse": "XL",
    "art": "Sport",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.9385,
+   "lon": 6.98288
   },
   {
    "ort": "LANXESS arena",
@@ -1875,7 +2317,9 @@
    "dauer": 165,
    "groesse": "XL",
    "art": "Konzert/Show",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.9385,
+   "lon": 6.98288
   },
   {
    "ort": "LANXESS arena",
@@ -1886,7 +2330,9 @@
    "dauer": 165,
    "groesse": "XL",
    "art": "Konzert/Show",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.9385,
+   "lon": 6.98288
   },
   {
    "ort": "Sportpark Höhenberg",
@@ -1897,7 +2343,9 @@
    "dauer": 115,
    "groesse": "M",
    "art": "Fußball",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.94511,
+   "lon": 7.03047
   },
   {
    "ort": "LANXESS arena",
@@ -1908,7 +2356,9 @@
    "dauer": 165,
    "groesse": "XL",
    "art": "Konzert/Show",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.9385,
+   "lon": 6.98288
   },
   {
    "ort": "LANXESS arena",
@@ -1919,7 +2369,9 @@
    "dauer": 165,
    "groesse": "XL",
    "art": "Konzert/Show",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.9385,
+   "lon": 6.98288
   },
   {
    "ort": "LANXESS arena",
@@ -1930,7 +2382,9 @@
    "dauer": 150,
    "groesse": "XL",
    "art": "Sport",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.9385,
+   "lon": 6.98288
   },
   {
    "ort": "LANXESS arena",
@@ -1941,7 +2395,9 @@
    "dauer": 165,
    "groesse": "XL",
    "art": "Konzert/Show",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.9385,
+   "lon": 6.98288
   },
   {
    "ort": "LANXESS arena",
@@ -1952,7 +2408,9 @@
    "dauer": 150,
    "groesse": "XL",
    "art": "Sport",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.9385,
+   "lon": 6.98288
   },
   {
    "ort": "LANXESS arena",
@@ -1963,7 +2421,9 @@
    "dauer": 165,
    "groesse": "XL",
    "art": "Konzert/Show",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.9385,
+   "lon": 6.98288
   },
   {
    "ort": "LANXESS arena",
@@ -1974,7 +2434,9 @@
    "dauer": 150,
    "groesse": "XL",
    "art": "Sport",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.9385,
+   "lon": 6.98288
   },
   {
    "ort": "LANXESS arena",
@@ -1985,7 +2447,9 @@
    "dauer": 150,
    "groesse": "XL",
    "art": "Sport",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.9385,
+   "lon": 6.98288
   },
   {
    "ort": "LANXESS arena",
@@ -1996,7 +2460,9 @@
    "dauer": 210,
    "groesse": "XL",
    "art": "Konzert/Show",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.9385,
+   "lon": 6.98288
   },
   {
    "ort": "LANXESS arena",
@@ -2007,7 +2473,9 @@
    "dauer": 210,
    "groesse": "XL",
    "art": "Konzert/Show",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.9385,
+   "lon": 6.98288
   },
   {
    "ort": "LANXESS arena",
@@ -2018,7 +2486,9 @@
    "dauer": 150,
    "groesse": "XL",
    "art": "Sport",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.9385,
+   "lon": 6.98288
   },
   {
    "ort": "LANXESS arena",
@@ -2029,7 +2499,9 @@
    "dauer": 165,
    "groesse": "XL",
    "art": "Konzert/Show",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.9385,
+   "lon": 6.98288
   },
   {
    "ort": "LANXESS arena",
@@ -2040,7 +2512,9 @@
    "dauer": 210,
    "groesse": "XL",
    "art": "Konzert/Show",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.9385,
+   "lon": 6.98288
   },
   {
    "ort": "LANXESS arena",
@@ -2051,7 +2525,9 @@
    "dauer": 210,
    "groesse": "XL",
    "art": "Konzert/Show",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.9385,
+   "lon": 6.98288
   },
   {
    "ort": "LANXESS arena",
@@ -2062,7 +2538,9 @@
    "dauer": 210,
    "groesse": "XL",
    "art": "Konzert/Show",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.9385,
+   "lon": 6.98288
   },
   {
    "ort": "RheinEnergieStadion",
@@ -2073,7 +2551,9 @@
    "dauer": 115,
    "groesse": "XL",
    "art": "Fußball",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.93351,
+   "lon": 6.87512
   },
   {
    "ort": "LANXESS arena",
@@ -2084,7 +2564,9 @@
    "dauer": 210,
    "groesse": "XL",
    "art": "Konzert/Show",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.9385,
+   "lon": 6.98288
   },
   {
    "ort": "LANXESS arena",
@@ -2095,7 +2577,9 @@
    "dauer": 165,
    "groesse": "XL",
    "art": "Konzert/Show",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.9385,
+   "lon": 6.98288
   },
   {
    "ort": "LANXESS arena",
@@ -2106,7 +2590,9 @@
    "dauer": 165,
    "groesse": "XL",
    "art": "Konzert/Show",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.9385,
+   "lon": 6.98288
   },
   {
    "ort": "LANXESS arena",
@@ -2117,7 +2603,9 @@
    "dauer": 165,
    "groesse": "XL",
    "art": "Konzert/Show",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.9385,
+   "lon": 6.98288
   },
   {
    "ort": "RheinEnergieStadion",
@@ -2128,7 +2616,9 @@
    "dauer": 115,
    "groesse": "XL",
    "art": "Fußball",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.93351,
+   "lon": 6.87512
   },
   {
    "ort": "LANXESS arena",
@@ -2139,7 +2629,9 @@
    "dauer": 165,
    "groesse": "XL",
    "art": "Konzert/Show",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.9385,
+   "lon": 6.98288
   },
   {
    "ort": "LANXESS arena",
@@ -2150,7 +2642,9 @@
    "dauer": 210,
    "groesse": "XL",
    "art": "Konzert/Show",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.9385,
+   "lon": 6.98288
   },
   {
    "ort": "LANXESS arena",
@@ -2161,7 +2655,9 @@
    "dauer": 210,
    "groesse": "XL",
    "art": "Konzert/Show",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.9385,
+   "lon": 6.98288
   },
   {
    "ort": "LANXESS arena",
@@ -2172,7 +2668,9 @@
    "dauer": 210,
    "groesse": "XL",
    "art": "Konzert/Show",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.9385,
+   "lon": 6.98288
   },
   {
    "ort": "LANXESS arena",
@@ -2183,7 +2681,9 @@
    "dauer": 210,
    "groesse": "XL",
    "art": "Konzert/Show",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.9385,
+   "lon": 6.98288
   },
   {
    "ort": "LANXESS arena",
@@ -2194,7 +2694,9 @@
    "dauer": 135,
    "groesse": "XL",
    "art": "Sport",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.9385,
+   "lon": 6.98288
   },
   {
    "ort": "LANXESS arena",
@@ -2205,7 +2707,9 @@
    "dauer": 135,
    "groesse": "XL",
    "art": "Sport",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.9385,
+   "lon": 6.98288
   },
   {
    "ort": "LANXESS arena",
@@ -2216,7 +2720,22 @@
    "dauer": 135,
    "groesse": "XL",
    "art": "Sport",
-   "abgesagt": false
+   "abgesagt": false,
+   "lat": 50.9385,
+   "lon": 6.98288
+  },
+  {
+   "ort": "LANXESS arena",
+   "stand": "Lanxess Arena",
+   "titel": "IHF MEN’S HANDBALL WORLD CHAMPIONSHIP 2027",
+   "zusatz": "",
+   "beginn": "2027-01-23T15:30",
+   "dauer": 135,
+   "groesse": "XL",
+   "art": "Sport",
+   "abgesagt": false,
+   "lat": 50.9385,
+   "lon": 6.98288
   }
  ],
  "messen": [
@@ -2224,19 +2743,25 @@
    "ort": "Koelnmesse",
    "titel": "PMRExpo",
    "von": "2026-11-24",
-   "bis": "2026-11-26"
+   "bis": "2026-11-26",
+   "lat": 50.94827,
+   "lon": 6.98394
   },
   {
    "ort": "Koelnmesse",
    "titel": "PSI",
    "von": "2027-01-12",
-   "bis": "2027-01-14"
+   "bis": "2027-01-14",
+   "lat": 50.94827,
+   "lon": 6.98394
   },
   {
    "ort": "Koelnmesse",
    "titel": "imm cologne",
    "von": "2027-01-19",
-   "bis": "2027-01-22"
+   "bis": "2027-01-22",
+   "lat": 50.94827,
+   "lon": 6.98394
   }
  ],
  "fehler": []
