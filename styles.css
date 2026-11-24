@@ -106,6 +106,13 @@ p:last-child { margin-bottom: 0; }
 .rank { width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: var(--accent-ink);
   display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; flex: none; }
 
+/* Live-Radar */
+.radar .ico { font-size: 22px; width: 30px; text-align: center; flex: none; }
+.radar.hot { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
+
+/* Rechner */
+.linkbtn { border: 0; background: none; color: var(--accent); font: inherit; padding: 4px 0; cursor: pointer; text-decoration: underline; text-align: left; }
+
 /* KI-Berater */
 .ai-answer { font-size: 18px; margin-bottom: 6px; }
 .ai-answer p { margin-bottom: 8px; }

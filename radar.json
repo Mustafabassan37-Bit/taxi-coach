@@ -1,0 +1,462 @@
+{
+ "stand": "2026-11-24T22:41:53.997Z",
+ "quellen": [
+  "https://www.lanxess-arena.de/events-tickets/eventkalender",
+  "https://www.koelnmesse.de/aktuelle-termine/alle-messen/"
+ ],
+ "veranstaltungen": [
+  {
+   "ort": "LANXESS arena",
+   "stand": "Lanxess Arena",
+   "titel": "Kölner Haie - Nürnberg Ice Tigers",
+   "zusatz": "",
+   "beginn": "2026-11-24T19:30",
+   "dauer": 150,
+   "abgesagt": false
+  },
+  {
+   "ort": "LANXESS arena",
+   "stand": "Lanxess Arena",
+   "titel": "Westlife",
+   "zusatz": "",
+   "beginn": "2026-11-25T19:30",
+   "dauer": 165,
+   "abgesagt": false
+  },
+  {
+   "ort": "LANXESS arena",
+   "stand": "Lanxess Arena",
+   "titel": "Noah Kahan",
+   "zusatz": "",
+   "beginn": "2026-11-26T19:20",
+   "dauer": 165,
+   "abgesagt": false
+  },
+  {
+   "ort": "LANXESS arena",
+   "stand": "Lanxess Arena",
+   "titel": "Kölner Haie - Straubing Tigers",
+   "zusatz": "",
+   "beginn": "2026-11-27T19:30",
+   "dauer": 150,
+   "abgesagt": false
+  },
+  {
+   "ort": "LANXESS arena",
+   "stand": "Lanxess Arena",
+   "titel": "30 Jahre Peter Wackel",
+   "zusatz": "",
+   "beginn": "2026-11-28T16:00",
+   "dauer": 165,
+   "abgesagt": false
+  },
+  {
+   "ort": "LANXESS arena",
+   "stand": "Lanxess Arena",
+   "titel": "Kölner Haie - ERC Ingolstadt",
+   "zusatz": "",
+   "beginn": "2026-11-29T14:00",
+   "dauer": 150,
+   "abgesagt": false
+  },
+  {
+   "ort": "LANXESS arena",
+   "stand": "Lanxess Arena",
+   "titel": "Hazel Brugger",
+   "zusatz": "",
+   "beginn": "2026-12-01T20:00",
+   "dauer": 165,
+   "abgesagt": false
+  },
+  {
+   "ort": "LANXESS arena",
+   "stand": "Lanxess Arena",
+   "titel": "World Darts Gala 2026",
+   "zusatz": "",
+   "beginn": "2026-12-02T19:00",
+   "dauer": 165,
+   "abgesagt": false
+  },
+  {
+   "ort": "LANXESS arena",
+   "stand": "Lanxess Arena",
+   "titel": "Let´s Dance",
+   "zusatz": "",
+   "beginn": "2026-12-03T19:30",
+   "dauer": 165,
+   "abgesagt": false
+  },
+  {
+   "ort": "LANXESS arena",
+   "stand": "Lanxess Arena",
+   "titel": "Night of the Proms",
+   "zusatz": "",
+   "beginn": "2026-12-04T20:00",
+   "dauer": 165,
+   "abgesagt": false
+  },
+  {
+   "ort": "LANXESS arena",
+   "stand": "Lanxess Arena",
+   "titel": "Night of the Proms",
+   "zusatz": "",
+   "beginn": "2026-12-05T20:00",
+   "dauer": 165,
+   "abgesagt": false
+  },
+  {
+   "ort": "LANXESS arena",
+   "stand": "Lanxess Arena",
+   "titel": "Laura Larsson",
+   "zusatz": "",
+   "beginn": "2026-12-06T19:00",
+   "dauer": 165,
+   "abgesagt": false
+  },
+  {
+   "ort": "LANXESS arena",
+   "stand": "Lanxess Arena",
+   "titel": "NIMO",
+   "zusatz": "",
+   "beginn": "2026-12-07T20:00",
+   "dauer": 165,
+   "abgesagt": false
+  },
+  {
+   "ort": "LANXESS arena",
+   "stand": "Lanxess Arena",
+   "titel": "Kölner Haie - Krefeld Pinguine",
+   "zusatz": "",
+   "beginn": "2026-12-08T19:30",
+   "dauer": 150,
+   "abgesagt": false
+  },
+  {
+   "ort": "LANXESS arena",
+   "stand": "Lanxess Arena",
+   "titel": "Lisa Eckhart",
+   "zusatz": "",
+   "beginn": "2026-12-10T20:00",
+   "dauer": 165,
+   "abgesagt": false
+  },
+  {
+   "ort": "LANXESS arena",
+   "stand": "Lanxess Arena",
+   "titel": "Kölner Haie - Augsburger Panther",
+   "zusatz": "",
+   "beginn": "2026-12-11T19:30",
+   "dauer": 150,
+   "abgesagt": false
+  },
+  {
+   "ort": "LANXESS arena",
+   "stand": "Lanxess Arena",
+   "titel": "Chris Tall",
+   "zusatz": "",
+   "beginn": "2026-12-12T20:00",
+   "dauer": 165,
+   "abgesagt": false
+  },
+  {
+   "ort": "LANXESS arena",
+   "stand": "Lanxess Arena",
+   "titel": "PUR",
+   "zusatz": "",
+   "beginn": "2026-12-13T19:00",
+   "dauer": 165,
+   "abgesagt": false
+  },
+  {
+   "ort": "LANXESS arena",
+   "stand": "Lanxess Arena",
+   "titel": "Kölner Haie vs. Frölunda Göteborg",
+   "zusatz": "",
+   "beginn": "2026-12-15T19:30",
+   "dauer": 150,
+   "abgesagt": false
+  },
+  {
+   "ort": "LANXESS arena",
+   "stand": "Lanxess Arena",
+   "titel": "Bonez MC & RAF Camora",
+   "zusatz": "",
+   "beginn": "2026-12-16T19:00",
+   "dauer": 165,
+   "abgesagt": false
+  },
+  {
+   "ort": "LANXESS arena",
+   "stand": "Lanxess Arena",
+   "titel": "Unheilig & Special Guests",
+   "zusatz": "",
+   "beginn": "2026-12-17T19:15",
+   "dauer": 165,
+   "abgesagt": false
+  },
+  {
+   "ort": "LANXESS arena",
+   "stand": "Lanxess Arena",
+   "titel": "BAP",
+   "zusatz": "",
+   "beginn": "2026-12-18T19:30",
+   "dauer": 165,
+   "abgesagt": false
+  },
+  {
+   "ort": "LANXESS arena",
+   "stand": "Lanxess Arena",
+   "titel": "Der Herr der Ringe - Die Gefährten in Concert live to Film",
+   "zusatz": "",
+   "beginn": "2026-12-19T18:30",
+   "dauer": 165,
+   "abgesagt": false
+  },
+  {
+   "ort": "LANXESS arena",
+   "stand": "Lanxess Arena",
+   "titel": "Kölner Haie - Adler Mannheim",
+   "zusatz": "",
+   "beginn": "2026-12-20T14:00",
+   "dauer": 150,
+   "abgesagt": false
+  },
+  {
+   "ort": "LANXESS arena",
+   "stand": "Lanxess Arena",
+   "titel": "VfL Gummersbach vs. Füchse Berlin",
+   "zusatz": "",
+   "beginn": "2026-12-22T20:00",
+   "dauer": 165,
+   "abgesagt": false
+  },
+  {
+   "ort": "LANXESS arena",
+   "stand": "Lanxess Arena",
+   "titel": "Kölner Haie - Augsburger Panther",
+   "zusatz": "",
+   "beginn": "2026-12-23T19:30",
+   "dauer": 150,
+   "abgesagt": false
+  },
+  {
+   "ort": "LANXESS arena",
+   "stand": "Lanxess Arena",
+   "titel": "BLOK3",
+   "zusatz": "",
+   "beginn": "2026-12-28T20:30",
+   "dauer": 165,
+   "abgesagt": false
+  },
+  {
+   "ort": "LANXESS arena",
+   "stand": "Lanxess Arena",
+   "titel": "Kölner Haie - EHC Red Bull München",
+   "zusatz": "",
+   "beginn": "2026-12-29T19:30",
+   "dauer": 150,
+   "abgesagt": false
+  },
+  {
+   "ort": "LANXESS arena",
+   "stand": "Lanxess Arena",
+   "titel": "Kölner Haie - Pinguins Bremerhaven",
+   "zusatz": "",
+   "beginn": "2026-12-31T13:00",
+   "dauer": 150,
+   "abgesagt": false
+  },
+  {
+   "ort": "LANXESS arena",
+   "stand": "Lanxess Arena",
+   "titel": "Lachende Kölnarena 2027",
+   "zusatz": "",
+   "beginn": "2027-01-02T18:30",
+   "dauer": 210,
+   "abgesagt": false
+  },
+  {
+   "ort": "LANXESS arena",
+   "stand": "Lanxess Arena",
+   "titel": "Lachende Kölnarena 2027",
+   "zusatz": "",
+   "beginn": "2027-01-03T16:00",
+   "dauer": 210,
+   "abgesagt": false
+  },
+  {
+   "ort": "LANXESS arena",
+   "stand": "Lanxess Arena",
+   "titel": "Kölner Haie - Straubing Tigers",
+   "zusatz": "",
+   "beginn": "2027-01-05T19:30",
+   "dauer": 150,
+   "abgesagt": false
+  },
+  {
+   "ort": "LANXESS arena",
+   "stand": "Lanxess Arena",
+   "titel": "Unheilig & Special Guests",
+   "zusatz": "",
+   "beginn": "2027-01-06T19:15",
+   "dauer": 165,
+   "abgesagt": false
+  },
+  {
+   "ort": "LANXESS arena",
+   "stand": "Lanxess Arena",
+   "titel": "Lachende Kölnarena 2027",
+   "zusatz": "",
+   "beginn": "2027-01-07T18:00",
+   "dauer": 210,
+   "abgesagt": false
+  },
+  {
+   "ort": "LANXESS arena",
+   "stand": "Lanxess Arena",
+   "titel": "Lachende Kölnarena 2027",
+   "zusatz": "",
+   "beginn": "2027-01-08T18:30",
+   "dauer": 210,
+   "abgesagt": false
+  },
+  {
+   "ort": "LANXESS arena",
+   "stand": "Lanxess Arena",
+   "titel": "Lachende PÄNZarena 2027",
+   "zusatz": "",
+   "beginn": "2027-01-09T11:30",
+   "dauer": 210,
+   "abgesagt": false
+  },
+  {
+   "ort": "LANXESS arena",
+   "stand": "Lanxess Arena",
+   "titel": "Lachende Kölnarena 2027",
+   "zusatz": "",
+   "beginn": "2027-01-09T18:30",
+   "dauer": 210,
+   "abgesagt": false
+  },
+  {
+   "ort": "LANXESS arena",
+   "stand": "Lanxess Arena",
+   "titel": "Feuerwerk der Turnkunst",
+   "zusatz": "",
+   "beginn": "2027-01-10T16:00",
+   "dauer": 165,
+   "abgesagt": false
+  },
+  {
+   "ort": "LANXESS arena",
+   "stand": "Lanxess Arena",
+   "titel": "Die Fantastischen Vier",
+   "zusatz": "",
+   "beginn": "2027-01-11T20:00",
+   "dauer": 165,
+   "abgesagt": false
+  },
+  {
+   "ort": "LANXESS arena",
+   "stand": "Lanxess Arena",
+   "titel": "Die Fantastischen Vier",
+   "zusatz": "",
+   "beginn": "2027-01-12T20:00",
+   "dauer": 165,
+   "abgesagt": false
+  },
+  {
+   "ort": "LANXESS arena",
+   "stand": "Lanxess Arena",
+   "titel": "Nothing But Thieves",
+   "zusatz": "",
+   "beginn": "2027-01-13T20:00",
+   "dauer": 165,
+   "abgesagt": false
+  },
+  {
+   "ort": "LANXESS arena",
+   "stand": "Lanxess Arena",
+   "titel": "Lachende Kölnarena 2027",
+   "zusatz": "",
+   "beginn": "2027-01-14T18:00",
+   "dauer": 210,
+   "abgesagt": false
+  },
+  {
+   "ort": "LANXESS arena",
+   "stand": "Lanxess Arena",
+   "titel": "Lachende Kölnarena 2027",
+   "zusatz": "",
+   "beginn": "2027-01-15T18:30",
+   "dauer": 210,
+   "abgesagt": false
+  },
+  {
+   "ort": "LANXESS arena",
+   "stand": "Lanxess Arena",
+   "titel": "Lachende PÄNZarena 2027",
+   "zusatz": "",
+   "beginn": "2027-01-16T11:30",
+   "dauer": 210,
+   "abgesagt": false
+  },
+  {
+   "ort": "LANXESS arena",
+   "stand": "Lanxess Arena",
+   "titel": "Lachende Kölnarena 2027",
+   "zusatz": "",
+   "beginn": "2027-01-16T18:30",
+   "dauer": 210,
+   "abgesagt": false
+  },
+  {
+   "ort": "LANXESS arena",
+   "stand": "Lanxess Arena",
+   "titel": "IHF MEN’S HANDBALL WORLD CHAMPIONSHIP 2027",
+   "zusatz": "",
+   "beginn": "2027-01-20T15:30",
+   "dauer": 135,
+   "abgesagt": false
+  },
+  {
+   "ort": "LANXESS arena",
+   "stand": "Lanxess Arena",
+   "titel": "IHF MEN’S HANDBALL WORLD CHAMPIONSHIP 2027",
+   "zusatz": "",
+   "beginn": "2027-01-21T15:30",
+   "dauer": 135,
+   "abgesagt": false
+  },
+  {
+   "ort": "LANXESS arena",
+   "stand": "Lanxess Arena",
+   "titel": "IHF MEN’S HANDBALL WORLD CHAMPIONSHIP 2027",
+   "zusatz": "",
+   "beginn": "2027-01-22T15:30",
+   "dauer": 135,
+   "abgesagt": false
+  }
+ ],
+ "messen": [
+  {
+   "ort": "Koelnmesse",
+   "titel": "PMRExpo",
+   "von": "2026-11-24",
+   "bis": "2026-11-26"
+  },
+  {
+   "ort": "Koelnmesse",
+   "titel": "PSI",
+   "von": "2027-01-12",
+   "bis": "2027-01-14"
+  },
+  {
+   "ort": "Koelnmesse",
+   "titel": "imm cologne",
+   "von": "2027-01-19",
+   "bis": "2027-01-22"
+  }
+ ],
+ "fehler": []
+}

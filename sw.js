@@ -1,6 +1,6 @@
 // Offline-Unterstützung: erst Netz versuchen (damit Updates ankommen), sonst Cache.
-const CACHE = 'taxicoach-v9';
-const FILES = ['./', './index.html', './styles.css', './app.js', './halteplaetze.js', './vendor/anthropic-sdk.js',
+const CACHE = 'taxicoach-v10';
+const FILES = ['./', './index.html', './styles.css', './app.js', './halteplaetze.js', './radar.json', './vendor/anthropic-sdk.js',
   './icon.svg', './icon-192.png', './icon-512.png',
   './apple-touch-icon.png', './manifest.webmanifest'];
 
@@ -18,16 +18,16 @@ self.addEventListener('activate', e => {
 
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
+  // Fremde Dienste (Wetter, Adresssuche, Route, KI) gehen direkt ans Netz und werden nicht gespeichert.
+  if (new URL(e.request.url).origin !== self.location.origin) return;
   // 'no-cache' = beim Server nachfragen, ob es eine neuere Fassung gibt. So passen nach einem
   // Update alle Dateien zusammen und es bleibt keine alte Seite im Browser-Zwischenspeicher hängen.
-  const sameOrigin = new URL(e.request.url).origin === self.location.origin;
   e.respondWith(
-    (sameOrigin ? fetch(e.request.url, { cache: 'no-cache' }) : fetch(e.request))
+    fetch(e.request.url, { cache: 'no-cache' })
       .then(res => {
-        const copy = res.clone();
-        caches.open(CACHE).then(c => c.put(e.request, copy)).catch(() => {});
+        if (res.ok) { const copy = res.clone(); caches.open(CACHE).then(c => c.put(e.request, copy)).catch(() => {}); }
         return res;
       })
-      .catch(() => caches.match(e.request).then(r => r || caches.match('./index.html')))
+      .catch(() => caches.match(e.request, { ignoreSearch: true }).then(r => r || caches.match('./index.html')))
   );
 });

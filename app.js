@@ -7,10 +7,7 @@ const KEY = 'taxicoach.v1';
 const DEFAULTS = {
   settings: {
     goal: 200,            // Tagesziel Umsatz in Euro
-    share: 100,           // mein Anteil am Umsatz in Prozent (Angestellte z. B. 40–50)
     aiModel: 'opus',      // 'opus' = beste Qualität, 'haiku' = sparsam
-    tariffMode: 'koeln',  // 'koeln' = amtlicher Kölner Tarif, 'custom' = eigene Werte unten
-    tariff: { base: 4.9, km1: 2.9, km1Until: 0, km2: 2.9, waitPerHour: 36, large: 6 },
     places: ['Hauptbahnhof', 'Bf Messe/Deutz', 'Flughafen', 'Altstadt/Heumarkt', 'Ringe', 'Zülpicher Str.',
       'Ehrenfeld', 'Südstadt', 'Lanxess Arena', 'Koelnmesse', 'Uniklinik', 'Stadion', 'Hotel']
   },
@@ -39,19 +36,10 @@ function merge(d) {
   const s = Object.assign(base, d);
   const ds = d.settings || {};
   s.settings = Object.assign({}, DEFAULTS.settings, ds);
-  s.settings.tariff = Object.assign({}, DEFAULTS.settings.tariff, ds.tariff || {});
-  // Umstellung älterer Stände auf Köln: Beispieltarif und Beispielorte ersetzen, eigene Eingaben behalten
-  if (!ds.tariffMode) {
-    if (ds.tariffIsExample === false) {
-      s.settings.tariffMode = 'custom';
-      if (!ds.tariff || ds.tariff.large == null) s.settings.tariff.large = 0;
-    } else {
-      s.settings.tariffMode = 'koeln';
-      s.settings.tariff = Object.assign({}, DEFAULTS.settings.tariff);
-    }
-  }
+  // Beispielorte aus der ersten Version durch die Kölner Orte ersetzen; eigene Eingaben bleiben
   if (Array.isArray(ds.places) && ds.places.join('|') === OLD_PLACES.join('|')) s.settings.places = DEFAULTS.settings.places.slice();
-  delete s.settings.tariffIsExample;
+  // Tarif und Umsatzanteil sind nicht mehr einstellbar (der Rechner nutzt immer den Kölner Tarif)
+  ['tariff', 'tariffMode', 'tariffIsExample', 'share'].forEach(k => delete s.settings[k]);
   ['shifts', 'rides', 'costs', 'waits'].forEach(k => { if (!Array.isArray(s[k])) s[k] = []; });
   if (!s.check || typeof s.check !== 'object') s.check = { day: '', done: {} };
   s.last = Object.assign({}, DEFAULTS.last, d.last || {});
@@ -65,7 +53,6 @@ function save() {
 
 let S = load();
 let tab = 'heute';
-let period = 'woche';
 
 // Halteplätze aus halteplaetze.js: [Kanal, Nr., Name, Zone, Lage, Plätze, Rufsäule, Zeiten, Hinweis]
 // Kanal 5 = Sonderplätze aus der Liste der Stadt (Hauptbahnhof, Flughafen, Messe, Veranstaltungsorte).
@@ -131,15 +118,6 @@ const sheetOpen = () => !$('#sheet').hidden;
 
 /* ---------- Auswertung ---------- */
 
-function periodStart(p, now = Date.now()) {
-  const d = new Date(now);
-  d.setHours(0, 0, 0, 0);
-  if (p === 'heute') return d.getTime();
-  if (p === 'woche') { d.setDate(d.getDate() - dow(now)); return d.getTime(); }
-  if (p === 'monat') { d.setDate(1); return d.getTime(); }
-  return 0;
-}
-
 // Gearbeitete Stunden im Zeitraum (laufende Schicht zählt bis jetzt)
 function workedHours(from, to) {
   let ms = 0;
@@ -153,18 +131,9 @@ function workedHours(from, to) {
 
 function summary(from, to = Date.now()) {
   const rides = S.rides.filter(r => r.t >= from && r.t <= to);
-  const costs = S.costs.filter(c => c.t >= from && c.t <= to);
   const rev = sum(rides, 'amount');
-  const tips = sum(rides, 'tip');
   const hours = workedHours(from, to);
-  const costSum = sum(costs, 'amount');
-  return {
-    rides, costs, rev, tips, hours, costSum,
-    count: rides.length,
-    avg: rides.length ? rev / rides.length : 0,
-    perHour: hours > 0.05 ? rev / hours : 0,
-    mine: rev * (S.settings.share / 100) + tips - costSum
-  };
+  return { rides, rev, count: rides.length, perHour: hours > 0.05 ? rev / hours : 0 };
 }
 
 // Umsatz pro gearbeiteter Stunde je Wochentag und 3-Stunden-Block
@@ -367,7 +336,7 @@ function viewToday() {
       <p>2. Trage nach <b>jeder Fahrt</b> den Betrag und den Einstiegsort ein – das dauert 5 Sekunden.</p>
       <p>3. Der <b>Coach</b> zeigt dir danach, wo und wann du am meisten verdienst.</p>
     </section>`;
-    return `<section class="card center">
+    return `${radarCard(now)}<section class="card center">
         <p class="muted">Keine Schicht aktiv</p>
         <button class="btn primary big" data-act="shiftStart">Schicht starten</button>
       </section>${intro}${checklistCard()}${lastCard}`;
@@ -423,7 +392,7 @@ function viewToday() {
     : `<section class="card hint"><h2>Tipp für jetzt: ${esc(adv.title)}</h2>
         <p>${esc(adv.places.join(' · '))}</p></section>`;
 
-  return `<div class="kpis">
+  return `${radarCard(now)}<div class="kpis">
       <div class="kpi big">
         <div class="label">Umsatz diese Schicht</div>
         <div class="value">${eur(rev)}</div>
@@ -533,7 +502,7 @@ function viewCoach() {
       }).join('')).join('')}
     </div>`;
 
-  return `${aiCard()}
+  return `${radarCard(now)}${aiCard()}
     <section class="card hint">
       <h2>Jetzt: ${DAYS_LONG[dow(now)]}, ${hhmm(now)} Uhr</h2>
       <p><b>${esc(adv.title)}</b></p>
@@ -838,6 +807,110 @@ function viewPlaces() {
     <p class="muted small">Entfernungen sind Luftlinie und die Kartenpositionen ungefähr (aus OpenStreetMap) – der Rhein kann dazwischen liegen. Dein Standort bleibt auf dem Handy.</p>`;
 }
 
+/* ---------- Live-Radar: Veranstaltungen, Messen, Regen ---------- */
+
+// radar.json wird einmal täglich von radar/aktualisieren.mjs aus den offiziellen Seiten erzeugt
+// (LANXESS arena, Koelnmesse). Der Regen kommt live von Open-Meteo.
+let radar = { data: null, loadedAt: 0, rain: null, rainAt: 0 };
+
+async function loadRadar(force) {
+  if (!force && radar.data && Date.now() - radar.loadedAt < 3 * 36e5) return;
+  try {
+    const res = await fetch('radar.json', { cache: 'no-cache' });
+    if (res.ok) { radar.data = await res.json(); radar.loadedAt = Date.now(); }
+  } catch (e) { /* offline: alte Daten behalten (der Service Worker liefert die letzte Fassung) */ }
+}
+
+async function loadRain() {
+  if (radar.rain && Date.now() - radar.rainAt < 10 * 60000) return;
+  try {
+    const ctl = new AbortController();
+    const timer = setTimeout(() => ctl.abort(), 6000);
+    const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=50.94&longitude=6.96&minutely_15=precipitation&forecast_minutely_15=9&past_minutely_15=1&timezone=Europe%2FBerlin', { signal: ctl.signal });
+    clearTimeout(timer);
+    if (!res.ok) return;
+    const m = (await res.json()).minutely_15;
+    if (!m) return;
+    radar.rain = m.time.map((t, i) => ({ t: new Date(t).getTime(), mm: m.precipitation[i] || 0 }));
+    radar.rainAt = Date.now();
+  } catch (e) { /* ohne Netz kein Regen-Hinweis */ }
+}
+
+// Beides holen und danach die Ansicht auffrischen (ohne ein offenes Formular zu stören)
+function refreshRadar(force) {
+  Promise.all([loadRadar(force), loadRain()]).then(() => {
+    if ((tab === 'heute' || tab === 'coach') && !sheetOpen()) render();
+  });
+}
+
+const parseLocal = s => { const [d, t = '00:00'] = s.split('T'); const [y, mo, da] = d.split('-').map(Number); const [h, mi] = t.split(':').map(Number); return new Date(y, mo - 1, da, h, mi).getTime(); };
+const dm = t => { const d = new Date(t); return pad(d.getDate()) + '.' + pad(d.getMonth() + 1) + '.'; };
+const sameDay = (a, b) => dayKey(a) === dayKey(b);
+
+// Liste der aktuellen Hinweise, wichtigste zuerst. prio: 3 = jetzt hinfahren, 2 = bald, 1 = Info
+function radarItems(now = Date.now()) {
+  const items = [];
+  const d = radar.data;
+  if (d && Array.isArray(d.veranstaltungen)) {
+    for (const e of d.veranstaltungen) {
+      if (e.abgesagt) continue;
+      const start = parseLocal(e.beginn), end = start + (e.dauer || 165) * 60000;
+      const label = `${e.titel} (${e.ort})`;
+      if (now >= end - 20 * 60000 && now <= end + 40 * 60000) {
+        items.push({ prio: 3, icon: '🔥', text: `Jetzt hin: ${label} endet ca. ${hhmm(end)}`, sub: `Halteplatz ${e.stand} – oder Deutz Bhf als Ausweich`, stand: e.stand });
+      } else if (now >= start && now < end - 20 * 60000) {
+        items.push({ prio: 2, icon: '🎤', text: `${label} läuft – Ende ca. ${hhmm(end)}`, sub: `Ab ${hhmm(end - 20 * 60000)} am Platz ${e.stand} sein`, stand: e.stand });
+      } else if (now >= start - 2 * 36e5 && now < start) {
+        items.push({ prio: 2, icon: '🎟️', text: `${label} beginnt ${hhmm(start)}`, sub: 'Anreise läuft: Fahrten vom Hauptbahnhof und aus Hotels zur Arena' });
+      } else if (start > now && sameDay(start, now)) {
+        items.push({ prio: 1, icon: '📅', text: `Heute: ${label}`, sub: `Beginn ${hhmm(start)}, Ende ca. ${hhmm(end)}` });
+      } else if (start > now && start - now < 36 * 36e5 && sameDay(start, now + 864e5)) {
+        items.push({ prio: 0, icon: '📅', text: `Morgen: ${label}`, sub: `Beginn ${hhmm(start)}, Ende ca. ${hhmm(end)}` });
+      }
+    }
+  }
+  if (d && Array.isArray(d.messen)) {
+    const h = new Date(now).getHours(), wd = dow(now);
+    for (const m of d.messen) {
+      const von = parseLocal(m.von), bis = parseLocal(m.bis) + 864e5;
+      if (now >= von && now < bis) {
+        if (h >= 7 && h < 10) items.push({ prio: 2, icon: '🏢', text: `Messe ${m.titel}: Anreise`, sub: 'Hotels, Hauptbahnhof und Flughafen → Messe. Gute Zeit für lange Fahrten.' });
+        else if (h >= 16 && h < 19 && wd !== 6) items.push({ prio: 3, icon: '🏢', text: `Messe ${m.titel}: Schluss`, sub: 'Jetzt an Messe Nord oder Messe Süd stehen – Fahrten zu Hotels, Bahnhof und Flughafen', stand: 'Messe Nord' });
+        else items.push({ prio: 1, icon: '🏢', text: `Messe ${m.titel} läuft bis ${dm(bis - 864e5)}`, sub: 'Viele Messegäste in den Hotels: morgens Anreise, nachmittags 16–19 Uhr Schluss' });
+      } else if (von > now && von - now < 3 * 864e5) {
+        items.push({ prio: 0, icon: '🏢', text: `Ab ${DAYS_LONG[dow(von)]}: Messe ${m.titel}`, sub: 'Mehr Flughafen- und Hotelfahrten' });
+      }
+    }
+  }
+  if (radar.rain && radar.rain.length) {
+    const nowRain = radar.rain.filter(r => r.t <= now).slice(-1)[0];
+    const next = radar.rain.find(r => r.t > now && r.t - now <= 2 * 36e5 && r.mm >= 0.2);
+    if (nowRain && nowRain.mm >= 0.2) items.push({ prio: 2, icon: '🌧️', text: 'Es regnet', sub: 'Mehr Fahrgäste – Innenstadt, Bahnhöfe und Haltestellen' });
+    else if (next) items.push({ prio: 2, icon: '🌦️', text: `Regen ab ca. ${hhmm(next.t)}`, sub: 'Dann wird es in der Innenstadt voll – rechtzeitig dort sein' });
+  }
+  return items.sort((a, b) => b.prio - a.prio);
+}
+
+function radarCard(now = Date.now()) {
+  const items = radarItems(now).filter(x => x.prio > 0);
+  const d = radar.data;
+  const age = d && d.stand ? Math.floor((now - new Date(d.stand).getTime()) / 864e5) : null;
+  const stale = age != null && age >= 3 ? `<p class="muted small">Termine Stand ${dm(new Date(d.stand).getTime())} – ggf. nicht aktuell.</p>` : '';
+  if (!items.length) {
+    return `<section class="card radar"><h2>📡 Jetzt wichtig</h2>
+      <p class="muted">${d ? 'Gerade keine Veranstaltung, keine Messe, kein Regen. Normaler Betrieb.' : 'Termine werden geladen …'}</p>${stale}</section>`;
+  }
+  return `<section class="card radar ${items[0].prio >= 3 ? 'hot' : ''}"><h2>📡 Jetzt wichtig</h2>
+    <ul class="list">${items.slice(0, 5).map(x => `<li><span class="ico">${x.icon}</span>
+      <div class="grow"><div><b>${esc(x.text)}</b></div><div class="sub">${esc(x.sub)}</div></div></li>`).join('')}</ul>${stale}</section>`;
+}
+
+// Für den KI-Berater: alles, was heute und morgen ansteht
+function radarForAi(now = Date.now()) {
+  const items = radarItems(now);
+  return items.length ? items.map(x => `- ${x.text}: ${x.sub}`).join('\n') : '';
+}
+
 /* ---------- KI-Berater (Claude) ---------- */
 
 // Der Schlüssel liegt getrennt von den Fahrdaten und nur auf diesem Gerät:
@@ -864,7 +937,7 @@ function aiSystemPrompt() {
   }).join('\n');
   return `Du bist der Umsatz-Berater in einer App für einen Taxifahrer in Köln, der neu im Beruf ist. Er fragt dich während der Schicht, wohin er als Nächstes fahren soll, und liest deine Antwort im stehenden Auto auf dem Handy.
 
-Du bekommst die aktuelle Zeit, das Wetter, seine eigenen Messungen je Halteplatz, eine grobe Schätzung aus Kartendaten (welche Einrichtungen rund um einen Platz liegen) und einen allgemeinen Erfahrungswert. Seine eigenen Messungen sind die beste Grundlage, aber nur, wenn genug Fahrten dahinterstehen. Bei weniger als etwa 5 Fahrten an einem Platz ist die Zahl ein Hinweis und kein Beweis; sag das dann offen und stütze dich stärker auf Uhrzeit, Wochentag, Wetter und das, was über Köln allgemein bekannt ist. Erfinde keine Zahlen, Veranstaltungen oder Zugzeiten: Den heutigen Veranstaltungskalender kennst du nicht.
+Du bekommst die aktuelle Zeit, das Wetter, seine eigenen Messungen je Halteplatz, eine grobe Schätzung aus Kartendaten (welche Einrichtungen rund um einen Platz liegen) und einen allgemeinen Erfahrungswert. Seine eigenen Messungen sind die beste Grundlage, aber nur, wenn genug Fahrten dahinterstehen. Bei weniger als etwa 5 Fahrten an einem Platz ist die Zahl ein Hinweis und kein Beweis; sag das dann offen und stütze dich stärker auf Uhrzeit, Wochentag, Wetter und das, was über Köln allgemein bekannt ist. Erfinde keine Zahlen, Veranstaltungen oder Zugzeiten: Nutze nur die Termine aus dem Live-Radar; was dort nicht steht, kennst du nicht. Endet laut Radar bald eine Veranstaltung oder ist Messeschluss, hat das meist Vorrang.
 
 Antworte auf Deutsch in einfachen, kurzen Sätzen, ohne Fachwörter und ohne Formatierungszeichen. Nenne zuerst einen konkreten Halteplatz aus der Liste unten, dann in einem Satz den Grund, dann eine Ausweichmöglichkeit. Wenn er gerade an einem Platz steht, sag klar, ob er bleiben oder wechseln soll. Höchstens fünf Sätze.
 
@@ -879,6 +952,8 @@ function aiContext(now, weather) {
   if (weather) L.push('Wetter in Köln: ' + weather);
   const season = seasonHint(now);
   if (season) L.push(`Besonderheit: ${season.title} – ${season.text}`);
+  const rd = radarForAi(now);
+  if (rd) L.push('', 'Live-Radar (Veranstaltungen und Messen von den offiziellen Seiten, Endzeiten geschätzt; Regen live):', rd);
 
   const sh = activeShift();
   if (sh) {
@@ -966,6 +1041,7 @@ async function askAi() {
   try {
     const now = Date.now();
     const weather = await fetchWeather();
+    await loadRadar();
     // Der Schlüssel gehört dem Nutzer und liegt nur auf seinem Gerät; deshalb darf der Aufruf direkt aus der App kommen.
     const client = new Anthropic({ apiKey: key, dangerouslyAllowBrowser: true, maxRetries: 1, timeout: 60000 });
     const model = aiModel();
@@ -999,6 +1075,7 @@ async function askAi() {
 // Kostenloser Weg mit Claude-Abo: Frage samt Zahlen kopieren und in der Claude-App einfügen
 async function copyForClaude() {
   const weather = await fetchWeather();
+  await loadRadar();
   const text = aiSystemPrompt() + '\n\n' + aiContext(Date.now(), weather);
   try {
     await navigator.clipboard.writeText(text);
@@ -1063,151 +1140,163 @@ function aiCard() {
   </section>`;
 }
 
-/* ---------- Ansicht: Zahlen ---------- */
+/* ---------- Ansicht: Rechner (immer amtlicher Kölner Taxitarif) ---------- */
 
-function viewNumbers() {
-  const now = Date.now();
-  const from = periodStart(period, now);
-  const s = summary(from, now);
-  const names = { heute: 'Heute', woche: 'Woche', monat: 'Monat', alles: 'Alles' };
-
-  // Balken: letzte 7 Tage
-  const days = [];
-  for (let i = 6; i >= 0; i--) {
-    const d = new Date(now); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() - i);
-    const a = d.getTime(); const e = new Date(d); e.setDate(e.getDate() + 1);
-    days.push({ label: DAYS[dow(a)], rev: sum(S.rides.filter(r => r.t >= a && r.t < e.getTime()), 'amount') });
-  }
-  const maxDay = Math.max(1, ...days.map(d => d.rev));
-
-  const pays = ['Bar', 'Karte', 'App'].map(p => ({ p, rev: sum(s.rides.filter(r => r.pay === p), 'amount') })).filter(x => x.rev > 0);
-  const places = byPlace(s.rides).slice(0, 8);
-  const srcMap = new Map();
-  for (const r of s.rides) { const o = srcMap.get(r.src) || { src: r.src, count: 0, rev: 0 }; o.count++; o.rev += r.amount; srcMap.set(r.src, o); }
-  const srcs = [...srcMap.values()].sort((a, b) => b.rev - a.rev);
-
-  return `<div class="seg">${Object.keys(names).map(k =>
-      `<label class="chip"><input type="radio" name="period" value="${k}" ${period === k ? 'checked' : ''}><span>${names[k]}</span></label>`).join('')}</div>
-    <div class="kpis">
-      <div class="kpi big"><div class="label">Umsatz</div><div class="value">${eur(s.rev)}</div></div>
-      <div class="kpi"><div class="label">Pro Stunde</div><div class="value">${s.perHour ? eur0(s.perHour) : '–'}</div></div>
-      <div class="kpi"><div class="label">Fahrten</div><div class="value">${s.count}</div></div>
-      <div class="kpi"><div class="label">Ø pro Fahrt</div><div class="value">${s.count ? eur0(s.avg) : '–'}</div></div>
-      <div class="kpi"><div class="label">Trinkgeld</div><div class="value">${eur0(s.tips)}</div></div>
-    </div>
-    <section class="card">
-      <h2>Mein Verdienst (geschätzt)</h2>
-      <table class="t">
-        <tr><td>Mein Anteil am Umsatz (${S.settings.share} %)</td><td>${eur(s.rev * S.settings.share / 100)}</td></tr>
-        <tr><td>+ Trinkgeld</td><td>${eur(s.tips)}</td></tr>
-        <tr><td>− Kosten</td><td>${eur(s.costSum)}</td></tr>
-        <tr><td><b>Bleibt</b></td><td><b>${eur(s.mine)}</b></td></tr>
-        <tr><td>Gearbeitet</td><td>${s.hours.toFixed(1).replace('.', ',')} Std</td></tr>
-      </table>
-      <p class="muted small" style="margin-top:8px">Vor Steuern und Abgaben. Den Anteil stellst du unter „Mehr → Einstellungen“ ein.</p>
-    </section>
-    <section class="card">
-      <h2>Letzte 7 Tage</h2>
-      <div class="days">${days.map(d => `<div class="day"><span class="v">${d.rev ? Math.round(d.rev) : ''}</span>
-        <div class="track"><div class="col" style="height:${(d.rev / maxDay * 100).toFixed(1)}%"></div></div><span class="d">${d.label}</span></div>`).join('')}</div>
-    </section>
-    ${places.length ? `<section class="card"><h2>Orte</h2><table class="t">
-      <tr><th>Einstieg</th><th>Fahrten</th><th>Ø</th><th>Umsatz</th></tr>
-      ${places.map(p => `<tr><td>${esc(p.place)}</td><td>${p.count}</td><td>${eur0(p.rev / p.count)}</td><td>${eur(p.rev)}</td></tr>`).join('')}
-    </table></section>` : ''}
-    ${srcs.length ? `<section class="card"><h2>Woher kommen die Fahrten?</h2><table class="t">
-      <tr><th>Quelle</th><th>Fahrten</th><th>Umsatz</th></tr>
-      ${srcs.map(p => `<tr><td>${esc(p.src)}</td><td>${p.count}</td><td>${eur(p.rev)}</td></tr>`).join('')}
-    </table></section>` : ''}
-    ${pays.length ? `<section class="card"><h2>Zahlart</h2><table class="t">
-      ${pays.map(p => `<tr><td>${p.p}</td><td>${eur(p.rev)}</td></tr>`).join('')}
-    </table></section>` : ''}
-    <section class="card">
-      <h2>Kosten</h2>
-      ${s.costs.length ? `<ul class="list">${s.costs.slice().sort((a, b) => b.t - a.t).map(c => `<li>
-        <div class="grow"><div>${esc(c.kind)}</div><div class="sub">${dayKey(c.t).split('-').reverse().join('.')}</div></div>
-        <div class="amt">${eur(c.amount)}</div>
-        <button class="x" data-act="costDel" data-id="${c.id}" aria-label="Kosten löschen">✕</button></li>`).join('')}</ul>`
-        : '<p class="muted">Keine Kosten im Zeitraum.</p>'}
-      <button class="btn" data-act="costNew" style="margin-top:10px">＋ Kosten eintragen (Tanken, Waschen …)</button>
-    </section>`;
-}
-
-function costForm() {
-  const kinds = ['Tanken / Laden', 'Waschen', 'Essen', 'Sonstiges'];
-  return `<h2>Kosten eintragen</h2>
-    <form data-form="cost" autocomplete="off">
-      <label class="f"><span>Betrag in Euro</span>
-        <input class="money" name="amount" type="text" inputmode="decimal" placeholder="0,00" autofocus required></label>
-      <div class="chips">${kinds.map((k, i) => `<label class="chip"><input type="radio" name="kind" value="${k}" ${i === 0 ? 'checked' : ''}><span>${k}</span></label>`).join('')}</div>
-      <div class="row">
-        <button type="button" class="btn ghost" data-act="sheetClose">Abbrechen</button>
-        <button type="submit" class="btn primary">Speichern</button>
-      </div>
-    </form>`;
-}
-
-/* ---------- Ansicht: Rechner ---------- */
-
-// Amtlicher Kölner Taxitarif (Rechtsverordnung, 9. Änderungsverordnung vom 02.04.2026).
-// Die zweite Stufe gilt ab 01.03.2027 und wird automatisch verwendet.
+// Kölner Taxitarif (Rechtsverordnung, Fassung vom 02.04.2026). Am 01.03.2027 tritt die zweite,
+// bereits beschlossene Stufe in Kraft – die App wechselt an dem Tag von selbst.
 const KOELN_STEP = new Date(2027, 2, 1).getTime();
-function koelnTariff(now = Date.now()) {
+function tariff(now = Date.now()) {
   return now >= KOELN_STEP
-    ? { base: 5.0, km1: 3.0, km1Until: 0, km2: 3.0, waitPerHour: 36, large: 7 }
-    : { base: 4.9, km1: 2.9, km1Until: 0, km2: 2.9, waitPerHour: 36, large: 6 };
+    ? { base: 5.0, km: 3.0, waitMin: 0.6, large: 7 }
+    : { base: 4.9, km: 2.9, waitMin: 0.6, large: 6 };
 }
-const isKoeln = () => S.settings.tariffMode === 'koeln';
-function tariff() { return isKoeln() ? koelnTariff() : S.settings.tariff; }
 
-function fareParts(km, waitMin, large) {
+function farePrice(km, waitMin, large) {
   const t = tariff();
-  const ride = t.base + (large ? (t.large || 0) : 0)
-    + Math.min(km, t.km1Until) * t.km1 + Math.max(0, km - t.km1Until) * t.km2;
-  return { ride, total: ride + (waitMin / 60) * t.waitPerHour };
+  return t.base + (large ? t.large : 0) + km * t.km + waitMin * t.waitMin;
+}
+
+// ---- Preis zum Ziel: Start (GPS oder Adresse) + Ziel -> Strecke -> Preis ----
+// Adresssuche: Photon (OpenStreetMap, komoot). Route: OSRM. Beide nur auf Knopfdruck.
+let route = { busy: false, err: '', from: null, to: null, alts: [], km: 0, min: 0, large: false };
+
+// Halteplatz-Namen (z. B. „Flughafen“, „Hauptbahnhof“) direkt erkennen, ohne Suche im Netz
+function standByName(q) {
+  const n = q.trim().toLowerCase();
+  const p = HP.find(x => x.pos && x.name.toLowerCase() === n);
+  return p ? { lat: p.pos[0], lon: p.pos[1], label: p.name + ' (Halteplatz)' } : null;
+}
+
+// Erst nur in Köln und Umgebung suchen (bis Bonn, Düsseldorf, Leverkusen, Solingen).
+// Nur wenn dort nichts passt, deutschlandweit – das Ergebnis wird dann als „weit weg“ markiert.
+const REGION_BBOX = '6.55,50.62,7.40,51.30';
+async function photon(q, bbox) {
+  const ctl = new AbortController();
+  const timer = setTimeout(() => ctl.abort(), 8000);
+  const res = await fetch('https://photon.komoot.io/api/?limit=4&lang=de&lat=50.94&lon=6.96' + (bbox ? '&bbox=' + bbox : '')
+    + '&q=' + encodeURIComponent(q), { signal: ctl.signal });
+  clearTimeout(timer);
+  if (!res.ok) throw new Error('Die Adresssuche antwortet gerade nicht.');
+  return (await res.json()).features || [];
+}
+
+async function searchPlace(q) {
+  const own = standByName(q);
+  if (own) return [own];
+  let feats = await photon(q, REGION_BBOX), far = false;
+  if (!feats.length) { feats = await photon(q, ''); far = true; }
+  return feats.map(f => {
+    const p = f.properties || {};
+    const street = [p.street, p.housenumber].filter(Boolean).join(' ');
+    const label = [p.name && p.name !== p.street ? p.name : '', street, [p.postcode, p.city || p.town || p.village].filter(Boolean).join(' '), p.district]
+      .filter(Boolean).filter((v, i, a) => a.indexOf(v) === i).join(', ');
+    return { lat: f.geometry.coordinates[1], lon: f.geometry.coordinates[0], label: label || q, far };
+  });
+}
+
+async function routeBetween(a, b) {
+  const ctl = new AbortController();
+  const timer = setTimeout(() => ctl.abort(), 10000);
+  const res = await fetch(`https://router.project-osrm.org/route/v1/driving/${a.lon},${a.lat};${b.lon},${b.lat}?overview=false`, { signal: ctl.signal });
+  clearTimeout(timer);
+  const j = res.ok ? await res.json() : null;
+  if (!j || j.code !== 'Ok' || !j.routes || !j.routes.length) throw new Error('Für diese Strecke wurde keine Route gefunden.');
+  return { km: j.routes[0].distance / 1000, min: j.routes[0].duration / 60 };
+}
+
+function routeResultHtml() {
+  if (route.busy) return '<p class="muted center">Wird berechnet …</p>';
+  if (route.err) return `<p class="bad">${esc(route.err)}</p>`;
+  if (!route.to) return '';
+  const p = farePrice(route.km, 0, route.large);
+  const alts = route.alts.length ? `<p class="muted small">Nicht das richtige Ziel? ${route.alts.map((a, i) =>
+    `<button type="button" class="linkbtn" data-act="routePick" data-i="${i}">${esc(a.label)}</button>`).join(' · ')}</p>` : '';
+  const farWarn = route.to.far || route.from.far
+    ? '<p class="bad">Achtung: In Köln und Umgebung nichts gefunden – das Ergebnis liegt weit weg. Bitte prüfen, ob das wirklich das Ziel ist.</p>' : '';
+  return `${farWarn}<div class="result">${eur(p)}</div>
+    <p class="center">${route.km.toFixed(1).replace('.', ',')} km · ca. ${Math.round(route.min)} Min Fahrzeit</p>
+    <p class="muted small center">Mit 10 Min Stau: ${eur(farePrice(route.km, 10, route.large))} · mit 20 Min: ${eur(farePrice(route.km, 20, route.large))}</p>
+    <p class="muted small">Von: ${esc(route.from.label)}<br>Nach: ${esc(route.to.label)}</p>
+    ${alts}
+    ${route.km > 35 ? '<p class="small">Hinweis: Liegt das Ziel außerhalb des Pflichtfahrgebiets, musst du den Fahrpreis vorher mit dem Fahrgast vereinbaren.</p>' : ''}`;
+}
+
+function updateRoute() { const el = $('#routeOut'); if (el) el.innerHTML = routeResultHtml(); }
+
+async function calcRoute(f) {
+  const fromQ = f.from.value.trim(), toQ = f.to.value.trim();
+  route.large = f.large.checked;
+  if (!toQ) { f.to.focus(); return toast('Bitte ein Ziel eingeben'); }
+  route = Object.assign(route, { busy: true, err: '', to: null, alts: [] });
+  updateRoute();
+  try {
+    let from;
+    if (fromQ) {
+      const r = await searchPlace(fromQ);
+      if (!r.length) throw new Error('Start nicht gefunden. Bitte genauer eingeben (Straße, Hausnummer, Stadtteil).');
+      from = r[0];
+    } else {
+      const me = posFresh() ? myPos : await locate();
+      from = { lat: me.lat, lon: me.lon, label: 'Mein Standort' };
+    }
+    const hits = await searchPlace(toQ);
+    if (!hits.length) throw new Error('Ziel nicht gefunden. Bitte genauer eingeben (Straße, Hausnummer, Stadtteil).');
+    const r = await routeBetween(from, hits[0]);
+    route = Object.assign(route, { busy: false, from, to: hits[0], alts: hits.slice(1), km: r.km, min: r.min });
+  } catch (e) {
+    route = Object.assign(route, { busy: false, err: e.name === 'AbortError' ? 'Keine Antwort – bitte Internet prüfen.' : e.message });
+  }
+  updateRoute();
+}
+
+async function pickRouteAlt(i) {
+  const alt = route.alts[i];
+  if (!alt || !route.from) return;
+  const rest = route.alts.filter((_, j) => j !== i).concat(route.to);
+  route = Object.assign(route, { busy: true, err: '' });
+  updateRoute();
+  try {
+    const r = await routeBetween(route.from, alt);
+    route = Object.assign(route, { busy: false, to: alt, alts: rest, km: r.km, min: r.min });
+  } catch (e) { route = Object.assign(route, { busy: false, err: e.message }); }
+  updateRoute();
 }
 
 function viewCalc() {
   const t = tariff();
-  const oneKmPrice = t.km1Until <= 0 || t.km1 === t.km2;
-  const de = n => String(n).replace('.', ',');
-  const stepNote = Date.now() < KOELN_STEP
-    ? 'Ab 1. März 2027 rechnet die App automatisch mit den neuen Preisen (Grundpreis 5,00 €, 3,00 € pro km, Großraum 7,00 €).'
-    : 'Es gilt die Tarifstufe seit 1. März 2027.';
   return `<section class="card">
-      <h2>Fahrpreis schätzen</h2>
-      <label class="f"><span>Strecke in Kilometern</span><input id="calcKm" type="text" inputmode="decimal" placeholder="z. B. 12,5"></label>
-      <label class="f"><span>Wartezeit / Stau in Minuten</span><input id="calcWait" type="text" inputmode="decimal" placeholder="0"></label>
-      ${t.large > 0 ? `<label class="check"><input type="checkbox" id="calcLarge"><span>Großraumtaxi oder mehr als 4 Fahrgäste (+ ${eur(t.large)})</span></label>` : ''}
-      <div class="result" id="calcOut">${eur(t.base)}</div>
-      <p class="muted small center">Nur eine Schätzung. Es gilt immer der Taxameter.</p>
-      ${isKoeln() ? '<p class="small center" id="calcFix"></p>' : ''}
+      <h2>Preis zum Ziel</h2>
+      <form data-form="route" autocomplete="off">
+        <label class="f"><span>Start – leer lassen für meinen Standort</span><input name="from" type="text" placeholder="📍 Mein Standort"></label>
+        <label class="f"><span>Ziel – Adresse, Ort oder Halteplatz</span><input name="to" type="text" placeholder="z. B. Aachener Str. 703 oder Flughafen"></label>
+        <label class="check"><input type="checkbox" name="large" ${route.large ? 'checked' : ''}><span>Großraum (+ ${eur(t.large)})</span></label>
+        <button type="submit" class="btn primary">Preis berechnen</button>
+      </form>
+      <div id="routeOut" style="margin-top:12px">${routeResultHtml()}</div>
+      <p class="muted small">Schätzung nach Kölner Tarif auf der schnellsten Strecke, ohne Verkehr. Es gilt der Taxameter. Start und Ziel werden zur Berechnung an Kartendienste (OpenStreetMap) geschickt.</p>
     </section>
     <section class="card">
-      <h2>${isKoeln() ? 'Kölner Taxitarif' : 'Eigener Tarif'}</h2>
+      <h2>Nach Kilometern</h2>
+      <label class="f"><span>Strecke in Kilometern</span><input id="calcKm" type="text" inputmode="decimal" placeholder="z. B. 12,5"></label>
+      <label class="f"><span>Wartezeit / Stau in Minuten</span><input id="calcWait" type="text" inputmode="decimal" placeholder="0"></label>
+      <label class="check"><input type="checkbox" id="calcLarge"><span>Großraum (+ ${eur(t.large)})</span></label>
+      <div class="result" id="calcOut">${eur(t.base)}</div>
+    </section>
+    <section class="card">
       <table class="t">
-        <tr><td>Grundpreis</td><td>${eur(t.base)}</td></tr>
-        ${oneKmPrice ? `<tr><td>Pro Kilometer</td><td>${eur(t.km2)}</td></tr>`
-          : `<tr><td>Pro km (bis ${de(t.km1Until)} km)</td><td>${eur(t.km1)}</td></tr>
-        <tr><td>Pro km (danach)</td><td>${eur(t.km2)}</td></tr>`}
-        <tr><td>Wartezeit pro Minute</td><td>${eur(t.waitPerHour / 60)}</td></tr>
-        ${t.large > 0 ? `<tr><td>Großraum / mehr als 4 Fahrgäste</td><td>+ ${eur(t.large)}</td></tr>` : ''}
+        <tr><td>Start</td><td>${eur(t.base)}</td></tr>
+        <tr><td>Pro Kilometer</td><td>${eur(t.km)}</td></tr>
+        <tr><td>Pro Minute Stau / Warten</td><td>${eur(t.waitMin)}</td></tr>
+        <tr><td>Großraum zum Start</td><td>+ ${eur(t.large)}</td></tr>
       </table>
-      ${isKoeln() ? `<p class="muted small" style="margin-top:8px">Amtlicher Tarif der Stadt Köln, Fassung vom 02.04.2026. ${stepNote}</p>
-      <p class="muted small">Festpreis ist nur bei Vorbestellung mit festem Start und Ziel erlaubt (Telefon oder App) und darf höchstens 20 % über oder unter dem Tarifpreis liegen. Wartezeit zählt dabei nicht mit.</p>` : ''}
-      <button class="btn" data-act="settings" style="margin-top:10px">Tarif ändern</button>
+      <p class="muted small" style="margin-top:8px">Kölner Taxitarif. ${Date.now() < KOELN_STEP ? 'Ab 1. März 2027 gilt der neue Tarif (5,00 € Start, 3,00 € pro km, Großraum 7,00 €) – die App stellt dann von selbst um.' : 'Tarif seit 1. März 2027.'}</p>
     </section>`;
 }
 
 function updateCalc() {
   const out = $('#calcOut');
   if (!out) return;
-  const large = $('#calcLarge') ? $('#calcLarge').checked : false;
-  const km = Math.max(0, num($('#calcKm').value));
-  const p = fareParts(km, Math.max(0, num($('#calcWait').value)), large);
-  out.textContent = eur(p.total);
-  const fix = $('#calcFix');
-  if (fix) fix.textContent = km > 0 ? `Festpreis bei Vorbestellung: ${eur(p.ride * 0.8)} bis ${eur(p.ride * 1.2)}` : '';
+  out.textContent = eur(farePrice(Math.max(0, num($('#calcKm').value)), Math.max(0, num($('#calcWait').value)), $('#calcLarge').checked));
 }
 
 /* ---------- Ansicht: Mehr ---------- */
@@ -1228,9 +1317,7 @@ function viewMore() {
       <h2>Einstellungen</h2>
       <table class="t">
         <tr><td>Tagesziel</td><td>${eur(S.settings.goal)}</td></tr>
-        <tr><td>Mein Anteil am Umsatz</td><td>${S.settings.share} %</td></tr>
         <tr><td>Meine Orte</td><td>${S.settings.places.length}</td></tr>
-        <tr><td>Tarif</td><td>${isKoeln() ? 'Köln (amtlich)' : 'Eigener'}</td></tr>
       </table>
       <button class="btn" data-act="settings" style="margin-top:10px">Einstellungen ändern</button>
     </section>
@@ -1251,24 +1338,12 @@ function viewMore() {
 }
 
 function settingsForm() {
-  const s = S.settings, t = s.tariff;
+  const s = S.settings;
   const v = n => String(n).replace('.', ',');
   return `<h2>Einstellungen</h2>
     <form data-form="settings" autocomplete="off">
       <label class="f"><span>Tagesziel Umsatz in Euro (0 = kein Ziel)</span><input name="goal" type="text" inputmode="decimal" value="${v(s.goal)}"></label>
-      <label class="f"><span>Mein Anteil am Umsatz in Prozent (selbstständig: 100)</span><input name="share" type="text" inputmode="decimal" value="${v(s.share)}"></label>
       <label class="f"><span>Meine Orte – einer pro Zeile</span><textarea name="places">${esc(s.places.join('\n'))}</textarea></label>
-      <h3>Tarif</h3>
-      <label class="check"><input type="checkbox" name="koeln" ${isKoeln() ? 'checked' : ''}><span>Amtlichen Kölner Taxitarif verwenden (empfohlen)</span></label>
-      <h3>Eigener Tarif – gilt nur, wenn der Haken oben aus ist</h3>
-      <label class="f"><span>Grundpreis in Euro</span><input name="base" type="text" inputmode="decimal" value="${v(t.base)}"></label>
-      <div class="row">
-        <label class="f"><span>Euro pro km (Anfang)</span><input name="km1" type="text" inputmode="decimal" value="${v(t.km1)}"></label>
-        <label class="f"><span>gilt bis km (0 = keine Staffel)</span><input name="km1Until" type="text" inputmode="decimal" value="${v(t.km1Until)}"></label>
-      </div>
-      <label class="f"><span>Euro pro km (danach)</span><input name="km2" type="text" inputmode="decimal" value="${v(t.km2)}"></label>
-      <label class="f"><span>Wartezeit in Euro pro Stunde</span><input name="waitPerHour" type="text" inputmode="decimal" value="${v(t.waitPerHour)}"></label>
-      <label class="f"><span>Zuschlag Großraumtaxi in Euro</span><input name="large" type="text" inputmode="decimal" value="${v(t.large || 0)}"></label>
       <h3>KI-Berater</h3>
       <label class="f"><span>KI-Schlüssel von Anthropic (${getAiKey() ? 'ist gespeichert – leer lassen, um ihn zu behalten' : 'noch keiner gespeichert'})</span>
         <input name="aikey" type="password" autocomplete="off" placeholder="sk-ant-…"></label>
@@ -1314,7 +1389,6 @@ const VIEWS = {
   heute: { title: 'Heute', render: viewToday },
   coach: { title: 'Coach', render: viewCoach },
   plaetze: { title: 'Halteplätze', render: viewPlaces },
-  zahlen: { title: 'Zahlen', render: viewNumbers },
   rechner: { title: 'Rechner', render: viewCalc },
   mehr: { title: 'Mehr', render: viewMore }
 };
@@ -1402,13 +1476,8 @@ const ACTIONS = {
     S.rides = S.rides.filter(r => r.id !== el.dataset.id);
     save(); render();
   },
-  costNew() { openSheet(costForm()); },
-  costDel(el) {
-    if (!confirm('Diese Kosten löschen?')) return;
-    S.costs = S.costs.filter(c => c.id !== el.dataset.id);
-    save(); render();
-  },
   settings() { openSheet(settingsForm()); },
+  routePick(el) { pickRouteAlt(Number(el.dataset.i)); },
   aiAsk() { askAi(); },
   aiKeyDel() {
     if (!confirm('KI-Schlüssel von diesem Gerät löschen?')) return;
@@ -1433,6 +1502,7 @@ const ACTIONS = {
 };
 
 const FORMS = {
+  route(f) { calcRoute(f); },
   ride(f) {
     const sh = activeShift();
     if (!sh) { closeSheet(); return toast('Bitte zuerst eine Schicht starten'); }
@@ -1460,27 +1530,11 @@ const FORMS = {
     S.last = { pay, src };
     save(); closeSheet(); render(); toast('Fahrt gespeichert: ' + eur(amount));
   },
-  cost(f) {
-    const amount = num(f.amount.value);
-    if (amount <= 0) { f.amount.focus(); return toast('Bitte einen Betrag eintragen'); }
-    S.costs.push({ id: uid(), t: Date.now(), amount, kind: f.kind.value || 'Sonstiges' });
-    save(); closeSheet(); render(); toast('Kosten gespeichert');
-  },
   settings(f) {
     const s = S.settings;
     s.goal = Math.max(0, num(f.goal.value));
-    s.share = Math.min(100, Math.max(0, num(f.share.value)));
     const places = f.places.value.split('\n').map(x => x.trim().slice(0, 40)).filter(Boolean);
     s.places = [...new Set(places)];
-    s.tariffMode = f.koeln.checked ? 'koeln' : 'custom';
-    s.tariff = {
-      base: Math.max(0, num(f.base.value)),
-      km1: Math.max(0, num(f.km1.value)),
-      km1Until: Math.max(0, num(f.km1Until.value)),
-      km2: Math.max(0, num(f.km2.value)),
-      waitPerHour: Math.max(0, num(f.waitPerHour.value)),
-      large: Math.max(0, num(f.large.value))
-    };
     s.aiModel = AI_MODELS[f.aimodel.value] ? f.aimodel.value : 'opus';
     const key = f.aikey.value.trim();
     if (key) setAiKey(key);
@@ -1510,7 +1564,6 @@ document.addEventListener('change', e => {
     S.check.done[t.dataset.check] = t.checked;
     save(); render(); return;
   }
-  if (t.name === 'period') { period = t.value; render(); return; }
   if (t.name === 'hpChan') { hpChan = Number(t.value); updateHp(); return; }
   if (t.id === 'importFile' && t.files[0]) {
     const reader = new FileReader();
@@ -1541,9 +1594,12 @@ setInterval(() => {
   if (sheetOpen()) return;
   if (tab === 'heute' || tab === 'coach') render();
 }, 30000);
+setInterval(() => { if (!document.hidden) refreshRadar(false); }, 5 * 60000);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) refreshRadar(false); });
 
 if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
   navigator.serviceWorker.register('sw.js').catch(() => {});
 }
 
 render();
+refreshRadar(true);
