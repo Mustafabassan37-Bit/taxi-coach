@@ -8,9 +8,10 @@ const DEFAULTS = {
   settings: {
     goal: 200,            // Tagesziel Umsatz in Euro
     share: 100,           // mein Anteil am Umsatz in Prozent (Angestellte z. B. 40–50)
-    tariff: { base: 4.5, km1: 2.6, km1Until: 7, km2: 2.0, waitPerHour: 36 }, // Beispielwerte!
-    tariffIsExample: true,
-    places: ['Hauptbahnhof', 'Flughafen', 'Innenstadt', 'Krankenhaus', 'Hotel', 'Kneipenviertel']
+    tariffMode: 'koeln',  // 'koeln' = amtlicher Kölner Tarif, 'custom' = eigene Werte unten
+    tariff: { base: 4.9, km1: 2.9, km1Until: 0, km2: 2.9, waitPerHour: 36, large: 6 },
+    places: ['Hauptbahnhof', 'Bf Messe/Deutz', 'Flughafen', 'Altstadt/Heumarkt', 'Ringe', 'Zülpicher Str.',
+      'Ehrenfeld', 'Südstadt', 'Lanxess Arena', 'Koelnmesse', 'Uniklinik', 'Stadion', 'Hotel']
   },
   shifts: [],   // { id, start, end }
   rides: [],    // { id, shiftId, t, amount, tip, pay, place, src }
@@ -18,6 +19,8 @@ const DEFAULTS = {
   check: { day: '', done: {} },
   last: { pay: 'Bar', src: 'Halteplatz' }
 };
+
+const OLD_PLACES = ['Hauptbahnhof', 'Flughafen', 'Innenstadt', 'Krankenhaus', 'Hotel', 'Kneipenviertel'];
 
 function load() {
   try {
@@ -30,8 +33,21 @@ function load() {
 function merge(d) {
   const base = JSON.parse(JSON.stringify(DEFAULTS));
   const s = Object.assign(base, d);
-  s.settings = Object.assign({}, DEFAULTS.settings, d.settings || {});
-  s.settings.tariff = Object.assign({}, DEFAULTS.settings.tariff, (d.settings || {}).tariff || {});
+  const ds = d.settings || {};
+  s.settings = Object.assign({}, DEFAULTS.settings, ds);
+  s.settings.tariff = Object.assign({}, DEFAULTS.settings.tariff, ds.tariff || {});
+  // Umstellung älterer Stände auf Köln: Beispieltarif und Beispielorte ersetzen, eigene Eingaben behalten
+  if (!ds.tariffMode) {
+    if (ds.tariffIsExample === false) {
+      s.settings.tariffMode = 'custom';
+      if (!ds.tariff || ds.tariff.large == null) s.settings.tariff.large = 0;
+    } else {
+      s.settings.tariffMode = 'koeln';
+      s.settings.tariff = Object.assign({}, DEFAULTS.settings.tariff);
+    }
+  }
+  if (Array.isArray(ds.places) && ds.places.join('|') === OLD_PLACES.join('|')) s.settings.places = DEFAULTS.settings.places.slice();
+  delete s.settings.tariffIsExample;
   ['shifts', 'rides', 'costs'].forEach(k => { if (!Array.isArray(s[k])) s[k] = []; });
   if (!s.check || typeof s.check !== 'object') s.check = { day: '', done: {} };
   s.last = Object.assign({}, DEFAULTS.last, d.last || {});
@@ -180,56 +196,85 @@ function slotAdvice(now = Date.now()) {
 
   if (weekendNight) return {
     title: 'Wochenend-Nacht – stärkste Zeit der Woche',
-    places: ['Clubs und Diskotheken', 'Kneipenviertel', 'Hauptbahnhof'],
-    text: 'Viele kurze Fahrten hintereinander. Nach dem Absetzen direkt zurück ins Ausgehviertel, nicht am Zielort warten.'
+    places: ['Ringe (Friesenplatz, Rudolfplatz)', 'Zülpicher Straße', 'Altstadt / Heumarkt'],
+    text: 'Viele kurze Fahrten hintereinander. Nach dem Absetzen direkt zurück zu den Ringen oder nach Ehrenfeld, nicht am Zielort warten.'
   };
   if (goingOut) return {
     title: 'Ausgeh-Abend',
-    places: ['Restaurants und Bars', 'Veranstaltungsorte', 'Hotels'],
-    text: 'Schau nach, wann Konzerte, Theater oder Spiele enden – 10 Minuten vorher dort stehen.'
+    places: ['Altstadt / Heumarkt', 'Belgisches Viertel und Ringe', 'Lanxess Arena (bei Veranstaltung)'],
+    text: 'Schau nach, wann Konzerte in der Lanxess Arena oder Spiele im Stadion enden – 10 Minuten vorher dort stehen.'
   };
   if (d === 6) {
     if (h < 12) return {
       title: 'Sonntagmorgen',
-      places: ['Clubs (Heimfahrten)', 'Hauptbahnhof', 'Flughafen'],
+      places: ['Ringe / Zülpicher Straße (Heimfahrten)', 'Hauptbahnhof', 'Flughafen Köln/Bonn'],
       text: 'Bis etwa 8 Uhr letzte Heimfahrten aus dem Nachtleben, danach Reisende.'
     };
     return {
       title: 'Sonntag ab Mittag',
-      places: ['Hauptbahnhof', 'Flughafen', 'Hotels'],
-      text: 'Rückreise-Tag: Wochenend-Gäste fahren heim, Pendler kommen am Abend an.'
+      places: ['Hauptbahnhof', 'Bahnhof Messe/Deutz', 'Flughafen Köln/Bonn'],
+      text: 'Rückreise-Tag: Wochenend-Gäste fahren heim, Pendler und Messegäste kommen am Abend an.'
     };
   }
   if (h < 4) return {
     title: 'Nacht unter der Woche – ruhig',
-    places: ['Hauptbahnhof (späte Züge)', 'Krankenhaus / Notaufnahme', 'Hotels'],
+    places: ['Hauptbahnhof (späte Züge)', 'Uniklinik / Notaufnahmen', 'Hotels am Dom und in Deutz'],
     text: 'Wenig Laufkundschaft. Funk und Vermittlungs-App anlassen und zentral stehen.'
   };
   if (h < 9) return {
     title: 'Frühschicht',
-    places: ['Hotels (Abreise)', 'Flughafen', 'Hauptbahnhof'],
-    text: 'Geschäftsreisende und Flughafenfahrten – oft lange, gut bezahlte Touren. Vorbestellungen sind jetzt am wertvollsten.'
+    places: ['Hotels (Dom, Deutz, Messe)', 'Flughafen Köln/Bonn', 'Hauptbahnhof'],
+    text: 'Geschäftsreisende und Flughafenfahrten – lange, gut bezahlte Touren. Vorbestellungen sind jetzt am wertvollsten.'
   };
   if (h < 12) return {
     title: 'Vormittag – eher ruhig',
-    places: ['Krankenhäuser', 'Arztpraxen', 'Seniorenheime'],
+    places: ['Uniklinik (Lindenthal)', 'Krankenhäuser und Arztpraxen', 'Hauptbahnhof'],
     text: 'Arzt- und Krankenfahrten sind planbar. Frag Fahrgäste, ob sie auch eine Rückfahrt brauchen.'
   };
   if (h < 16) return {
     title: 'Mittag',
-    places: ['Innenstadt', 'Einkaufszentren', 'Hauptbahnhof'],
+    places: ['Hauptbahnhof', 'Innenstadt (Neumarkt, Schildergasse)', 'Bahnhof Messe/Deutz'],
     text: 'Schwächere Stunden: gute Zeit für Pause, Tanken und Auto sauber machen.'
   };
   if (h < 20) return {
     title: 'Feierabend-Verkehr',
-    places: ['Hauptbahnhof', 'Büroviertel', 'Hotels (Anreise)'],
-    text: 'Pendler und ankommende Reisende. Bei Regen ist die Innenstadt jetzt besonders stark.'
+    places: ['Hauptbahnhof', 'Bahnhof Messe/Deutz', 'Koelnmesse (an Messetagen)'],
+    text: 'Pendler, ankommende Reisende und Messegäste. Bei Regen ist die Innenstadt jetzt besonders stark.'
   };
   return {
     title: 'Abend',
-    places: ['Restaurants', 'Hotels', 'Hauptbahnhof (späte Züge)'],
+    places: ['Altstadt / Heumarkt', 'Hotels', 'Hauptbahnhof (späte Züge)'],
     text: 'Unter der Woche ruhiger als am Wochenende – Standplätze mit Hotels und Gastronomie bevorzugen.'
   };
+}
+
+// Ostersonntag (gregorianischer Kalender) – daraus ergeben sich die Karnevalstage
+function easter(y) {
+  const a = y % 19, b = Math.floor(y / 100), c = y % 100, d = Math.floor(b / 4), e = b % 4;
+  const f = Math.floor((b + 8) / 25), g = Math.floor((b - f + 1) / 3), h = (19 * a + b - d - g + 15) % 30;
+  const i = Math.floor(c / 4), k = c % 4, l = (32 + 2 * e + 2 * i - h - k) % 7, m = Math.floor((a + 11 * h + 22 * l) / 451);
+  const n = h + l - 7 * m + 114;
+  return new Date(y, Math.floor(n / 31) - 1, (n % 31) + 1);
+}
+
+// Kölner Besonderheiten im Jahreslauf
+function seasonHint(now = Date.now()) {
+  const n = new Date(now), m = n.getMonth() + 1, day = n.getDate();
+  const e = easter(n.getFullYear());
+  const off = k => { const x = new Date(e); x.setDate(x.getDate() + k); return x.getTime(); };
+  if (now >= off(-52) && now < off(-46)) return {   // Weiberfastnacht bis Veilchendienstag
+    title: 'Straßenkarneval',
+    text: 'Sehr viele Fahrten rund um Altstadt, Zülpicher Straße und Südstadt. Achte auf Straßensperrungen und plane Umwege ein.'
+  };
+  if (m === 11 && day === 11) return {
+    title: 'Elfter im Elften',
+    text: 'Sessionseröffnung: ab mittags sehr viel los rund um Heumarkt, Altstadt und Zülpicher Straße. Sperrungen beachten.'
+  };
+  if ((m === 11 && day >= 23) || (m === 12 && day <= 23)) return {
+    title: 'Weihnachtsmarkt-Zeit',
+    text: 'Abends viele Fahrgäste an den Weihnachtsmärkten: Dom, Heumarkt / Alter Markt, Neumarkt und Rudolfplatz. Dazu Weihnachtsfeiern – Restaurants und Hotels im Blick behalten.'
+  };
+  return null;
 }
 
 // Eigene beste Orte zur aktuellen Zeit (gleicher Tagestyp, gleiche Uhrzeit ± 2 Stunden)
@@ -386,10 +431,14 @@ const TIPS = [
   'Baue Stammkunden auf: Visitenkarte mitgeben und Vorbestellungen annehmen (Flughafen, Arzt, Dialyse).',
   'Biete immer Kartenzahlung an. Viele Fahrgäste haben kein Bargeld dabei.',
   'Freundlich sein, sauberes Auto, beim Gepäck helfen – das bringt das meiste Trinkgeld.',
-  'Prüfe den Veranstaltungskalender deiner Stadt: Konzerte, Fußball, Messen. Das Ende einer Veranstaltung bringt viele Fahrten.',
-  'Regen, Kälte und Bahn-Ausfälle erhöhen die Nachfrage. An solchen Tagen lohnt es sich, länger zu fahren.',
+  'Prüfe jeden Tag: Was läuft in der Lanxess Arena, auf der Koelnmesse und im RheinEnergieStadion? Das Ende einer Veranstaltung bringt viele Fahrten auf einmal.',
+  'Regen, Kälte und Ausfälle bei KVB oder Bahn erhöhen die Nachfrage. An solchen Tagen lohnt es sich, länger zu fahren.',
   'Lege Pause und Tanken in deine schwachen Stunden (siehe Tabelle „Deine starken Zeiten“).',
   'Lehne kurze Fahrten nicht ab. Im Pflichtfahrgebiet musst du befördern – und viele kurze Fahrten bringen oft mehr pro Stunde als langes Warten.',
+  'Das Kölner Pflichtfahrgebiet ist groß: Es reicht unter anderem bis Bonn, Düsseldorf, Leverkusen und in den Rhein-Erft-Kreis. Das sind lange Fahrten zum vollen Tarif.',
+  'Bei mehr als 4 Fahrgästen oder bestelltem Großraumtaxi gilt der erhöhte Grundpreis (siehe Rechner).',
+  'Liegt das Ziel außerhalb des Pflichtfahrgebiets, musst du den Fahrgast vor der Abfahrt darauf hinweisen und den Preis für die ganze Strecke vereinbaren.',
+  'Du musst laut Tarif nicht länger als 15 Minuten auf einen Fahrgast warten.',
   'Fahre den kürzesten Weg, außer der Fahrgast wünscht einen anderen. Im Zweifel kurz fragen.',
   'Biete immer eine Quittung an.',
   'Bediene das Handy nur im Stand.'
@@ -400,6 +449,7 @@ function viewCoach() {
   const adv = slotAdvice(now);
   const best = myBestPlaces(now);
   const hm = heatmap();
+  const season = seasonHint(now);
 
   const bestCard = best.list.length
     ? `<section class="card hint good">
@@ -433,6 +483,7 @@ function viewCoach() {
       <p class="small">${esc(adv.text)}</p>
       <p class="muted small">Allgemeine Erfahrungswerte. Deine eigenen Zahlen unten sind genauer, sobald genug Fahrten eingetragen sind.</p>
     </section>
+    ${season ? `<section class="card hint warn"><h2>Gerade in Köln: ${esc(season.title)}</h2><p>${esc(season.text)}</p></section>` : ''}
     ${bestCard}
     <section class="card">
       <h2>Deine starken Zeiten</h2>
@@ -441,7 +492,7 @@ function viewCoach() {
       ${anyHeat ? '' : '<p class="muted small" style="margin-top:10px">Die Tabelle füllt sich mit jeder Schicht.</p>'}
     </section>
     <section class="card">
-      <h2>13 Regeln für mehr Umsatz</h2>
+      <h2>${TIPS.length} Regeln für mehr Umsatz in Köln</h2>
       <ol class="tips">${TIPS.map(t => `<li>${esc(t)}</li>`).join('')}</ol>
     </section>`;
 }
@@ -532,31 +583,52 @@ function costForm() {
 
 /* ---------- Ansicht: Rechner ---------- */
 
-function farePrice(km, waitMin) {
-  const t = S.settings.tariff;
-  const first = Math.min(km, t.km1Until);
-  const rest = Math.max(0, km - t.km1Until);
-  return t.base + first * t.km1 + rest * t.km2 + (waitMin / 60) * t.waitPerHour;
+// Amtlicher Kölner Taxitarif (Rechtsverordnung, 9. Änderungsverordnung vom 02.04.2026).
+// Die zweite Stufe gilt ab 01.03.2027 und wird automatisch verwendet.
+const KOELN_STEP = new Date(2027, 2, 1).getTime();
+function koelnTariff(now = Date.now()) {
+  return now >= KOELN_STEP
+    ? { base: 5.0, km1: 3.0, km1Until: 0, km2: 3.0, waitPerHour: 36, large: 7 }
+    : { base: 4.9, km1: 2.9, km1Until: 0, km2: 2.9, waitPerHour: 36, large: 6 };
+}
+const isKoeln = () => S.settings.tariffMode === 'koeln';
+function tariff() { return isKoeln() ? koelnTariff() : S.settings.tariff; }
+
+function fareParts(km, waitMin, large) {
+  const t = tariff();
+  const ride = t.base + (large ? (t.large || 0) : 0)
+    + Math.min(km, t.km1Until) * t.km1 + Math.max(0, km - t.km1Until) * t.km2;
+  return { ride, total: ride + (waitMin / 60) * t.waitPerHour };
 }
 
 function viewCalc() {
-  const t = S.settings.tariff;
+  const t = tariff();
+  const oneKmPrice = t.km1Until <= 0 || t.km1 === t.km2;
+  const de = n => String(n).replace('.', ',');
+  const stepNote = Date.now() < KOELN_STEP
+    ? 'Ab 1. März 2027 rechnet die App automatisch mit den neuen Preisen (Grundpreis 5,00 €, 3,00 € pro km, Großraum 7,00 €).'
+    : 'Es gilt die Tarifstufe seit 1. März 2027.';
   return `<section class="card">
       <h2>Fahrpreis schätzen</h2>
       <label class="f"><span>Strecke in Kilometern</span><input id="calcKm" type="text" inputmode="decimal" placeholder="z. B. 12,5"></label>
       <label class="f"><span>Wartezeit / Stau in Minuten</span><input id="calcWait" type="text" inputmode="decimal" placeholder="0"></label>
+      ${t.large > 0 ? `<label class="check"><input type="checkbox" id="calcLarge"><span>Großraumtaxi oder mehr als 4 Fahrgäste (+ ${eur(t.large)})</span></label>` : ''}
       <div class="result" id="calcOut">${eur(t.base)}</div>
       <p class="muted small center">Nur eine Schätzung. Es gilt immer der Taxameter.</p>
+      ${isKoeln() ? '<p class="small center" id="calcFix"></p>' : ''}
     </section>
-    <section class="card ${S.settings.tariffIsExample ? 'hint warn' : ''}">
-      <h2>Tarif</h2>
-      ${S.settings.tariffIsExample ? '<p><b>Das sind Beispielwerte.</b> Trage den Tarif deiner Stadt ein – er steht in der Taxitarifordnung deiner Stadt oder deines Landkreises.</p>' : ''}
+    <section class="card">
+      <h2>${isKoeln() ? 'Kölner Taxitarif' : 'Eigener Tarif'}</h2>
       <table class="t">
         <tr><td>Grundpreis</td><td>${eur(t.base)}</td></tr>
-        <tr><td>Pro km (bis ${String(t.km1Until).replace('.', ',')} km)</td><td>${eur(t.km1)}</td></tr>
-        <tr><td>Pro km (danach)</td><td>${eur(t.km2)}</td></tr>
-        <tr><td>Wartezeit pro Stunde</td><td>${eur(t.waitPerHour)}</td></tr>
+        ${oneKmPrice ? `<tr><td>Pro Kilometer</td><td>${eur(t.km2)}</td></tr>`
+          : `<tr><td>Pro km (bis ${de(t.km1Until)} km)</td><td>${eur(t.km1)}</td></tr>
+        <tr><td>Pro km (danach)</td><td>${eur(t.km2)}</td></tr>`}
+        <tr><td>Wartezeit pro Minute</td><td>${eur(t.waitPerHour / 60)}</td></tr>
+        ${t.large > 0 ? `<tr><td>Großraum / mehr als 4 Fahrgäste</td><td>+ ${eur(t.large)}</td></tr>` : ''}
       </table>
+      ${isKoeln() ? `<p class="muted small" style="margin-top:8px">Amtlicher Tarif der Stadt Köln, Fassung vom 02.04.2026. ${stepNote}</p>
+      <p class="muted small">Festpreis ist nur bei Vorbestellung mit festem Start und Ziel erlaubt (Telefon oder App) und darf höchstens 20 % über oder unter dem Tarifpreis liegen. Wartezeit zählt dabei nicht mit.</p>` : ''}
       <button class="btn" data-act="settings" style="margin-top:10px">Tarif ändern</button>
     </section>`;
 }
@@ -564,7 +636,12 @@ function viewCalc() {
 function updateCalc() {
   const out = $('#calcOut');
   if (!out) return;
-  out.textContent = eur(farePrice(Math.max(0, num($('#calcKm').value)), Math.max(0, num($('#calcWait').value))));
+  const large = $('#calcLarge') ? $('#calcLarge').checked : false;
+  const km = Math.max(0, num($('#calcKm').value));
+  const p = fareParts(km, Math.max(0, num($('#calcWait').value)), large);
+  out.textContent = eur(p.total);
+  const fix = $('#calcFix');
+  if (fix) fix.textContent = km > 0 ? `Festpreis bei Vorbestellung: ${eur(p.ride * 0.8)} bis ${eur(p.ride * 1.2)}` : '';
 }
 
 /* ---------- Ansicht: Mehr ---------- */
@@ -587,6 +664,7 @@ function viewMore() {
         <tr><td>Tagesziel</td><td>${eur(S.settings.goal)}</td></tr>
         <tr><td>Mein Anteil am Umsatz</td><td>${S.settings.share} %</td></tr>
         <tr><td>Meine Orte</td><td>${S.settings.places.length}</td></tr>
+        <tr><td>Tarif</td><td>${isKoeln() ? 'Köln (amtlich)' : 'Eigener'}</td></tr>
       </table>
       <button class="btn" data-act="settings" style="margin-top:10px">Einstellungen ändern</button>
     </section>
@@ -614,14 +692,17 @@ function settingsForm() {
       <label class="f"><span>Tagesziel Umsatz in Euro (0 = kein Ziel)</span><input name="goal" type="text" inputmode="decimal" value="${v(s.goal)}"></label>
       <label class="f"><span>Mein Anteil am Umsatz in Prozent (selbstständig: 100)</span><input name="share" type="text" inputmode="decimal" value="${v(s.share)}"></label>
       <label class="f"><span>Meine Orte – einer pro Zeile</span><textarea name="places">${esc(s.places.join('\n'))}</textarea></label>
-      <h3>Tarif meiner Stadt</h3>
+      <h3>Tarif</h3>
+      <label class="check"><input type="checkbox" name="koeln" ${isKoeln() ? 'checked' : ''}><span>Amtlichen Kölner Taxitarif verwenden (empfohlen)</span></label>
+      <h3>Eigener Tarif – gilt nur, wenn der Haken oben aus ist</h3>
       <label class="f"><span>Grundpreis in Euro</span><input name="base" type="text" inputmode="decimal" value="${v(t.base)}"></label>
       <div class="row">
         <label class="f"><span>Euro pro km (Anfang)</span><input name="km1" type="text" inputmode="decimal" value="${v(t.km1)}"></label>
-        <label class="f"><span>gilt bis km</span><input name="km1Until" type="text" inputmode="decimal" value="${v(t.km1Until)}"></label>
+        <label class="f"><span>gilt bis km (0 = keine Staffel)</span><input name="km1Until" type="text" inputmode="decimal" value="${v(t.km1Until)}"></label>
       </div>
       <label class="f"><span>Euro pro km (danach)</span><input name="km2" type="text" inputmode="decimal" value="${v(t.km2)}"></label>
       <label class="f"><span>Wartezeit in Euro pro Stunde</span><input name="waitPerHour" type="text" inputmode="decimal" value="${v(t.waitPerHour)}"></label>
+      <label class="f"><span>Zuschlag Großraumtaxi in Euro</span><input name="large" type="text" inputmode="decimal" value="${v(t.large || 0)}"></label>
       <div class="row">
         <button type="button" class="btn ghost" data-act="sheetClose">Abbrechen</button>
         <button type="submit" class="btn primary">Speichern</button>
@@ -737,19 +818,20 @@ const FORMS = {
     save(); closeSheet(); render(); toast('Kosten gespeichert');
   },
   settings(f) {
-    const s = S.settings, old = JSON.stringify(s.tariff);
+    const s = S.settings;
     s.goal = Math.max(0, num(f.goal.value));
     s.share = Math.min(100, Math.max(0, num(f.share.value)));
     const places = f.places.value.split('\n').map(x => x.trim().slice(0, 40)).filter(Boolean);
     s.places = [...new Set(places)];
+    s.tariffMode = f.koeln.checked ? 'koeln' : 'custom';
     s.tariff = {
       base: Math.max(0, num(f.base.value)),
       km1: Math.max(0, num(f.km1.value)),
       km1Until: Math.max(0, num(f.km1Until.value)),
       km2: Math.max(0, num(f.km2.value)),
-      waitPerHour: Math.max(0, num(f.waitPerHour.value))
+      waitPerHour: Math.max(0, num(f.waitPerHour.value)),
+      large: Math.max(0, num(f.large.value))
     };
-    if (JSON.stringify(s.tariff) !== old) s.tariffIsExample = false;
     save(); closeSheet(); render(); toast('Gespeichert');
   }
 };
@@ -792,7 +874,7 @@ document.addEventListener('change', e => {
 });
 
 document.addEventListener('input', e => {
-  if (e.target.id === 'calcKm' || e.target.id === 'calcWait') updateCalc();
+  if (['calcKm', 'calcWait', 'calcLarge'].includes(e.target.id)) updateCalc();
 });
 
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && sheetOpen()) closeSheet(); });
