@@ -868,8 +868,147 @@ function updateHp() {
   $('#hpInfo').textContent = hpInfoText();
 }
 
+/* ---------- Karte: Stände, Veranstaltungen, eigener Standort ---------- */
+
+// Kartenbaustein Leaflet (vendor/leaflet) wird erst geladen, wenn die Karte zum ersten Mal geöffnet wird.
+// Kartenbilder: OpenStreetMap (Namensnennung Pflicht).
+let placesMode = 'karte';   // 'karte' oder 'liste'
+let mapState = { map: null, watch: null, me: null, meCircle: null, followed: false };
+let leafletLoading = null;
+
+function loadLeaflet() {
+  if (window.L) return Promise.resolve();
+  if (leafletLoading) return leafletLoading;
+  leafletLoading = new Promise((resolve, reject) => {
+    const css = document.createElement('link');
+    css.rel = 'stylesheet'; css.href = 'vendor/leaflet/leaflet.css';
+    document.head.appendChild(css);
+    const s = document.createElement('script');
+    s.src = 'vendor/leaflet/leaflet.js';
+    s.onload = () => resolve();
+    s.onerror = () => { leafletLoading = null; reject(new Error('Karte konnte nicht geladen werden')); };
+    document.head.appendChild(s);
+  });
+  return leafletLoading;
+}
+
+function destroyMap() {
+  if (mapState.watch != null && navigator.geolocation) navigator.geolocation.clearWatch(mapState.watch);
+  if (mapState.map) mapState.map.remove();
+  mapState = { map: null, watch: null, me: null, meCircle: null, followed: false };
+}
+
+// Heutige große Veranstaltungen (laufend oder noch kommend) und laufende Messen
+function mapEvents(now) {
+  const d = radar.data;
+  if (!d) return [];
+  const t0 = new Date(now); t0.setHours(0, 0, 0, 0);
+  const out = [];
+  for (const e of d.veranstaltungen || []) {
+    if (e.abgesagt || e.lat == null || e.groesse === 'M') continue;
+    const start = parseLocal(e.beginn), end = start + (e.dauer || 165) * 60000;
+    if (end < now - 30 * 60000 || start > t0.getTime() + 864e5 + 3 * 36e5) continue;   // heute bis 3 Uhr nachts
+    out.push({ lat: e.lat, lon: e.lon, titel: e.titel, ort: e.ort, start, end, groesse: e.groesse || 'XL' });
+  }
+  for (const m of d.messen || []) {
+    if (m.lat == null || parseLocal(m.von) > now || parseLocal(m.bis) + 864e5 < now) continue;
+    out.push({ lat: m.lat, lon: m.lon, titel: 'Messe ' + m.titel, ort: 'Koelnmesse', messe: true });
+  }
+  return out;
+}
+
+function standPopup(p, hot) {
+  const me = posFresh() ? [myPos.lat, myPos.lon] : null;
+  const shift = !!activeShift();
+  return `<div class="pop"><b>${esc(p.name)}</b>${hot ? ' <span class="hot">🔥 jetzt gut</span>' : ''}
+    <div class="sub">${esc(p.lage)}</div>
+    <div class="sub">${esc([chLabel(p.ch), p.zone ? 'Zone ' + p.zone : '', p.n ? p.n + ' Plätze' : '',
+      p.note ? 'nur ' + p.note : '', p.hrs ? 'nur ' + p.hrs + ' Uhr' : '', me ? fmtDist(distM(me, p.pos)) + ' von dir' : ''].filter(Boolean).join(' · '))}</div>
+    ${p.env && envLine(p, 4) ? `<div class="sub">Umfeld: ${esc(envLine(p, 4))}</div>` : ''}
+    <div class="popbtns">
+      <a class="btn route" href="${mapsDir(p.pos[0], p.pos[1])}" target="_blank" rel="noopener">Route</a>
+      ${shift ? `<button type="button" class="btn route" data-act="mapStand" data-name="${esc(p.name)}">Ich stehe hier</button>` : ''}
+    </div></div>`;
+}
+
+function eventPopup(e) {
+  const near = standsNear(e.lat, e.lon, 3);
+  return `<div class="pop"><b>${esc(e.titel)}</b>
+    <div class="sub">${esc(e.ort)}${e.start ? ` · ${hhmm(e.start)}–ca. ${hhmm(e.end)}` : ' · Anreise 7–10, Schluss 16–19 Uhr'}</div>
+    ${e.end ? `<div class="sub">Am besten ab <b>${hhmm(e.end - 20 * 60000)}</b> in der Nähe sein</div>` : ''}
+    <div class="sub">Nächste Stände: ${near.map(x => `${esc(x.p.name)} ${fmtDist(x.d)}`).join(' · ')}</div>
+    <div class="popbtns"><a class="btn route" href="${mapsDir(near[0].p.pos[0], near[0].p.pos[1])}" target="_blank" rel="noopener">Route zu ${esc(near[0].p.name)}</a></div></div>`;
+}
+
+async function initMap() {
+  const el = $('#map');
+  if (!el) return;
+  try { await loadLeaflet(); } catch (e) { el.innerHTML = `<p class="bad" style="padding:12px">${esc(e.message)}. Bitte Internet prüfen.</p>`; return; }
+  if (!$('#map') || tab !== 'plaetze' || placesMode !== 'karte') return;   // inzwischen weggewechselt
+  destroyMap();
+  const L = window.L;
+  const map = L.map('map', { zoomControl: true, preferCanvas: true, attributionControl: true }).setView([50.938, 6.96], 12);
+  mapState.map = map;
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19, attribution: '© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>-Mitwirkende',
+    className: 'tiles-dark'
+  }).addTo(map);
+
+  const now = Date.now();
+  const hot = new Set(diverse(potentialRanking(now, HP, 40), 5).map(x => x.p.name));
+  // Stände: grau = nur bei Veranstaltungen/Bedarf, orange = Sonderplatz, gelb = normal, groß und rot = jetzt gut
+  for (const p of HP) {
+    if (!p.pos) continue;
+    const isHot = hot.has(p.name);
+    const color = isHot ? '#ff5c5c' : p.note ? '#8a94a3' : p.ch === 5 ? '#ff9f43' : '#ffcc00';
+    L.circleMarker(p.pos, { radius: isHot ? 10 : 6, color: '#101317', weight: 1.5, fillColor: color, fillOpacity: 0.95 })
+      .bindPopup(() => standPopup(p, isHot), { maxWidth: 280 }).addTo(map);
+  }
+  // Veranstaltungen und Messen heute
+  for (const e of mapEvents(now)) {
+    const soon = e.end && now >= e.end - 30 * 60000 && now <= e.end + 30 * 60000;
+    L.marker([e.lat, e.lon], { icon: L.divIcon({ className: 'evicon' + (soon ? ' soon' : ''), html: e.messe ? '🏢' : soon ? '🔥' : '🎤', iconSize: [30, 30] }) })
+      .bindPopup(() => eventPopup(e), { maxWidth: 280 }).addTo(map);
+  }
+
+  // Eigener Standort: blauer Punkt, folgt dir, solange die Karte offen ist
+  const showMe = pos => {
+    if (!mapState.map) return;
+    const ll = [pos.lat, pos.lon];
+    if (!mapState.me) {
+      mapState.meCircle = L.circle(ll, { radius: pos.acc || 30, color: '#4da3ff', weight: 1, fillOpacity: 0.12 }).addTo(map);
+      mapState.me = L.circleMarker(ll, { radius: 8, color: '#fff', weight: 3, fillColor: '#2f80ed', fillOpacity: 1 }).addTo(map);
+    } else { mapState.me.setLatLng(ll); mapState.meCircle.setLatLng(ll).setRadius(pos.acc || 30); }
+    if (!mapState.followed) { map.setView(ll, 15); mapState.followed = true; }
+  };
+  if (posFresh()) showMe(myPos);
+  if (navigator.geolocation) {
+    mapState.watch = navigator.geolocation.watchPosition(p => {
+      myPos = { lat: p.coords.latitude, lon: p.coords.longitude, acc: p.coords.accuracy, t: Date.now() };
+      showMe(myPos);
+    }, () => {}, { enableHighAccuracy: true, maximumAge: 15000, timeout: 20000 });
+  }
+  setTimeout(() => map.invalidateSize(), 50);
+}
+
+function viewMap() {
+  const ev = mapEvents(Date.now()).length;
+  return `<div class="maptools">
+      <button type="button" class="btn route" data-act="mapMe">📍 Ich</button>
+      <span class="muted small">🔴 jetzt gut · 🟡 Stand · 🟠 Sonderplatz · ⚪ nur bei Veranstaltung${ev ? ' · 🎤 Veranstaltung heute' : ''}</span>
+    </div>
+    <div id="map" class="map"></div>`;
+}
+
 function viewPlaces() {
   if (!HP.length) return '<section class="card"><p class="muted">Die Halteplatzliste ist auf diesem Gerät nicht geladen.</p></section>';
+  const seg = `<div class="seg">${[['karte', '🗺️ Karte'], ['liste', '📋 Liste']].map(([k, l]) =>
+    `<label class="chip"><input type="radio" name="placesMode" value="${k}" ${placesMode === k ? 'checked' : ''}><span>${l}</span></label>`).join('')}</div>`;
+  if (placesMode === 'karte') return seg + viewMap();
+  return seg + viewPlacesList();
+}
+
+function viewPlacesList() {
   const geoBtn = HP.some(p => p.pos)
     ? `<button class="btn ${hpNear ? 'primary' : ''}" data-act="hpNear" style="margin-bottom:12px">📍 ${hpNear ? 'Sortiert nach Entfernung – tippen zum Ausschalten' : 'Plätze in meiner Nähe'}</button>` : '';
   return `${geoBtn}<label class="f"><input id="hpSearch" type="text" placeholder="Halteplatz, Straße oder Zone suchen" value="${esc(hpQuery)}" autocomplete="off"></label>
@@ -1638,17 +1777,20 @@ const VIEWS = {
   heute: { title: 'Heute', render: viewToday },
   woche: { title: 'Woche', render: viewWeek },
   coach: { title: 'Coach', render: viewCoach },
-  plaetze: { title: 'Halteplätze', render: viewPlaces },
+  plaetze: { title: 'Karte', render: viewPlaces },
   rechner: { title: 'Rechner', render: viewCalc },
   mehr: { title: 'Mehr', render: viewMore }
 };
 
 function render() {
   const v = VIEWS[tab];
+  destroyMap();   // die Karte wird bei jedem Neuaufbau frisch angelegt
   $('#title').textContent = v.title;
   $('#view').innerHTML = v.render();
+  document.body.classList.toggle('mapmode', tab === 'plaetze' && placesMode === 'karte');
   document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === tab));
   tickClock();
+  if (tab === 'plaetze' && placesMode === 'karte') initMap();
 }
 
 function tickClock() {
@@ -1701,6 +1843,19 @@ const ACTIONS = {
     save(); closeSheet(); render(); toast('Du stehst an: ' + el.dataset.name);
   },
   standLeave() { closeStand(); save(); render(); },
+  mapStand(el) {
+    if (!activeShift()) return toast('Bitte zuerst die Schicht starten');
+    closeStand();
+    S.stand = { name: el.dataset.name, since: Date.now() };
+    save(); tab = 'heute'; render(); window.scrollTo(0, 0);
+    toast('Du stehst an: ' + el.dataset.name);
+  },
+  mapMe() {
+    toast('Standort wird gesucht …');
+    locate().then(p => {
+      if (mapState.map) { mapState.map.setView([p.lat, p.lon], 15); mapState.followed = true; }
+    }).catch(err => toast(err.message));
+  },
   tripStart() {
     if (!S.stand) return;
     const now = Date.now();
@@ -1827,6 +1982,7 @@ document.addEventListener('change', e => {
     save(); render(); return;
   }
   if (t.name === 'hpChan') { hpChan = Number(t.value); updateHp(); return; }
+  if (t.name === 'placesMode') { placesMode = t.value; render(); window.scrollTo(0, 0); return; }
   if (t.name === 'weekDays') { week.days = Number(t.value); render(); return; }
   if (t.name === 'weekShowM') { week.showM = t.checked; render(); return; }
   if (t.id === 'importFile' && t.files[0]) {
