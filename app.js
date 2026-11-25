@@ -336,7 +336,7 @@ function viewToday() {
       <p>2. Trage nach <b>jeder Fahrt</b> den Betrag und den Einstiegsort ein – das dauert 5 Sekunden.</p>
       <p>3. Der <b>Coach</b> zeigt dir danach, wo und wann du am meisten verdienst.</p>
     </section>`;
-    return `${radarCard(now)}<section class="card center">
+    return `${radarBanner(now)}<section class="card center">
         <p class="muted">Keine Schicht aktiv</p>
         <button class="btn primary big" data-act="shiftStart">Schicht starten</button>
       </section>${intro}${checklistCard()}${lastCard}`;
@@ -392,7 +392,7 @@ function viewToday() {
     : `<section class="card hint"><h2>Tipp für jetzt: ${esc(adv.title)}</h2>
         <p>${esc(adv.places.join(' · '))}</p></section>`;
 
-  return `${radarCard(now)}<div class="kpis">
+  return `${radarBanner(now)}<div class="kpis">
       <div class="kpi big">
         <div class="label">Umsatz diese Schicht</div>
         <div class="value">${eur(rev)}</div>
@@ -502,7 +502,7 @@ function viewCoach() {
       }).join('')).join('')}
     </div>`;
 
-  return `${radarCard(now)}${aiCard()}
+  return `${radarBanner(now)}${aiCard()}
     <section class="card hint">
       <h2>Jetzt: ${DAYS_LONG[dow(now)]}, ${hhmm(now)} Uhr</h2>
       <p><b>${esc(adv.title)}</b></p>
@@ -693,7 +693,7 @@ const TAG_TIPPS = [
   ['Mittagsloch nutzen', '12–15 Uhr ist meist am schwächsten: Pause, tanken, Auto sauber machen. Dann bist du am Nachmittag bereit.'],
   ['Messe-Tage', 'Läuft eine Messe, sind die Hotels voll: morgens Hotel → Messe, ab 16 Uhr Messe → Hotel, Bahnhof, Flughafen. Der Reiter „Woche“ zeigt dir die Messetage.'],
   ['Funk und App tagsüber', 'In den Außenbezirken kommen tagsüber kaum Winker. Funk und Vermittlungs-App bringen hier die meisten Aufträge – immer eingeschaltet lassen.'],
-  ['Regen am Tag', 'Bei Regen steigt die Nachfrage sofort, vor allem an Haltestellen, Einkaufsstraßen und Kliniken. „Jetzt wichtig“ warnt dich 2 Stunden vorher.'],
+  ['Regen am Tag', 'Bei Regen steigt die Nachfrage sofort, vor allem an Haltestellen, Einkaufsstraßen und Kliniken. Der Reiter „Radar“ warnt dich 2 Stunden vorher.'],
   ['Senioren freundlich behandeln', 'Ältere Fahrgäste aus Pflegeheimen und Arztpraxen rufen gern wieder den gleichen Fahrer. Geduld beim Ein- und Aussteigen zahlt sich aus.']
 ];
 
@@ -1132,7 +1132,7 @@ function bahnItems(now = Date.now()) {
 // Beides holen und danach die Ansicht auffrischen (ohne ein offenes Formular zu stören)
 function refreshRadar(force) {
   Promise.all([loadRadar(force), loadRain(), loadBahn()]).then(() => {
-    if ((tab === 'heute' || tab === 'coach') && !sheetOpen()) render();
+    if (['heute', 'coach', 'radar'].includes(tab) && !sheetOpen()) render();
   });
 }
 
@@ -1158,7 +1158,7 @@ function radarItems(now = Date.now()) {
         items.push({ prio: 2, icon: '🎟️', text: `${label} beginnt ${hhmm(start)}`, sub: 'Anreise läuft: Fahrten vom Hauptbahnhof und aus Hotels dorthin' });
       } else if (start > now && sameDay(start, now)) {
         items.push({ prio: 1, icon: '📅', text: `Heute: ${label}`, sub: `Beginn ${hhmm(start)}, Ende ca. ${hhmm(end)}` });
-      } else if (start > now && start - now < 36 * 36e5 && sameDay(start, now + 864e5)) {
+      } else if (start > now && sameDay(start, now + 864e5)) {
         items.push({ prio: 0, icon: '📅', text: `Morgen: ${label}`, sub: `Beginn ${hhmm(start)}, Ende ca. ${hhmm(end)}` });
       }
     }
@@ -1186,18 +1186,52 @@ function radarItems(now = Date.now()) {
   return items.sort((a, b) => b.prio - a.prio);
 }
 
-function radarCard(now = Date.now()) {
-  const items = radarItems(now).filter(x => x.prio > 0);
+// Schmaler Hinweis oben auf „Heute“ – nur wenn es wirklich brennt; Antippen öffnet den Reiter „Radar“
+function radarBanner(now = Date.now()) {
+  const hot = radarItems(now).filter(x => x.prio >= 3);
+  if (!hot.length) return '';
+  return `<button type="button" class="card radar hot banner" data-act="goRadar">
+    <span class="ico">${hot[0].icon}</span>
+    <span class="grow"><b>${esc(hot[0].text)}</b>${hot.length > 1 ? `<span class="sub"> + ${hot.length - 1} weitere</span>` : ''}</span>
+    <span class="more">Radar ›</span></button>`;
+}
+
+// Reiter „Radar“: alles auf einen Blick
+function viewRadar() {
+  const now = Date.now();
+  const items = radarItems(now);
+  const groups = [
+    ['🔥 Jetzt', items.filter(x => x.prio >= 2)],
+    ['📅 Später heute', items.filter(x => x.prio === 1)],
+    ['🌙 Morgen und demnächst', items.filter(x => x.prio === 0)]
+  ];
+  const row = x => `<li><span class="ico">${x.icon}</span>
+    <div class="grow"><div><b>${esc(x.text)}</b></div><div class="sub">${esc(x.sub)}</div></div></li>`;
   const d = radar.data;
-  const age = d && d.stand ? Math.floor((now - new Date(d.stand).getTime()) / 864e5) : null;
-  const stale = age != null && age >= 3 ? `<p class="muted small">Termine Stand ${dm(new Date(d.stand).getTime())} – ggf. nicht aktuell.</p>` : '';
-  if (!items.length) {
-    return `<section class="card radar"><h2>📡 Jetzt wichtig</h2>
-      <p class="muted">${d ? 'Gerade keine Veranstaltung, keine Messe, kein Regen. Normaler Betrieb.' : 'Termine werden geladen …'}</p>${stale}</section>`;
-  }
-  return `<section class="card radar ${items[0].prio >= 3 ? 'hot' : ''}"><h2>📡 Jetzt wichtig</h2>
-    <ul class="list">${items.slice(0, 5).map(x => `<li><span class="ico">${x.icon}</span>
-      <div class="grow"><div><b>${esc(x.text)}</b></div><div class="sub">${esc(x.sub)}</div></div></li>`).join('')}</ul>${stale}</section>`;
+
+  // Stand der einzelnen Quellen – damit du siehst, ob die App wirklich aktuell ist
+  const bahnN = radar.bahn ? radar.bahn.reduce((s, b) => s + b.trains.length, 0) : 0;
+  const bahnOk = radar.bahn && Date.now() - radar.bahnAt < 30 * 60000;
+  const bahnHas = bahnItems(now).length;
+  const rainNow = radar.rain ? radar.rain.filter(r => r.t <= now).slice(-1)[0] : null;
+  const rainNext = radar.rain ? radar.rain.find(r => r.t > now && r.t - now <= 2 * 36e5 && r.mm >= 0.2) : null;
+  const status = [
+    ['🚆 Bahn (Hbf, Deutz)', bahnOk ? (bahnHas ? 'Störungen – siehe oben' : `keine Ausfälle · ${bahnN} Züge geprüft`) + ` · ${hhmm(radar.bahnAt)}` : 'nicht erreichbar'],
+    ['🌧️ Regen', radar.rain ? (rainNow && rainNow.mm >= 0.2 ? 'es regnet' : rainNext ? `ab ca. ${hhmm(rainNext.t)}` : 'kein Regen in den nächsten 2 Std.') + ` · ${hhmm(radar.rainAt)}` : 'nicht erreichbar'],
+    ['🎤 Termine (Arena, Messe, Fußball, Konzerte)', d && d.stand ? `Stand ${dm(new Date(d.stand).getTime())} ${hhmm(new Date(d.stand).getTime())}` : 'werden geladen …']
+  ];
+
+  return `<button type="button" class="btn" data-act="radarRefresh" style="margin-bottom:12px">↻ Jetzt aktualisieren</button>
+    ${groups.map(([title, list]) => `<section class="card radar ${title.startsWith('🔥') && list.some(x => x.prio >= 3) ? 'hot' : ''}">
+      <h2>${title}</h2>
+      ${list.length ? `<ul class="list">${list.map(row).join('')}</ul>`
+        : `<p class="muted">${title.startsWith('🔥') ? 'Gerade nichts Besonderes – normaler Betrieb. Schau auf die Karte für die besten Stände.' : 'Nichts angekündigt.'}</p>`}
+    </section>`).join('')}
+    <section class="card">
+      <h2>Datenstand</h2>
+      <table class="t">${status.map(([k, v]) => `<tr><td>${k}</td><td>${esc(v)}</td></tr>`).join('')}</table>
+      <p class="muted small" style="margin-top:8px">Die App prüft alle paar Minuten neu, solange sie offen ist. Alle Veranstaltungen der nächsten Tage stehen im Reiter „Woche“.</p>
+    </section>`;
 }
 
 // Für den KI-Berater: alles, was heute und morgen ansteht
@@ -1857,6 +1891,7 @@ function viewWeek() {
 
 const VIEWS = {
   heute: { title: 'Heute', render: viewToday },
+  radar: { title: 'Jetzt wichtig', render: viewRadar },
   woche: { title: 'Woche', render: viewWeek },
   coach: { title: 'Coach', render: viewCoach },
   plaetze: { title: 'Karte', render: viewPlaces },
@@ -1966,6 +2001,12 @@ const ACTIONS = {
   settings() { openSheet(settingsForm()); },
   routePick(el) { pickRouteAlt(Number(el.dataset.i)); },
   hereAgain() { locateHere(true); },
+  goRadar() { tab = 'radar'; render(); window.scrollTo(0, 0); refreshRadar(false); },
+  radarRefresh() {
+    radar.bahnAt = 0; radar.rainAt = 0; radar.loadedAt = 0;
+    toast('Wird aktualisiert …');
+    refreshRadar(true);
+  },
   evOpen(el) {
     const y = window.scrollY;
     week.open = week.open === el.dataset.k ? '' : el.dataset.k;
@@ -2042,6 +2083,7 @@ document.addEventListener('click', e => {
   if (tabBtn) {
     tab = tabBtn.dataset.tab; render(); window.scrollTo(0, 0);
     if (tab === 'rechner') locateHere(false);
+    if (tab === 'radar') refreshRadar(false);
     if (tab === 'woche') Promise.all([loadRadar(false), loadWeekWeather()]).then(() => { if (tab === 'woche' && !sheetOpen()) render(); });
     return;
   }
@@ -2094,7 +2136,7 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape' && sheetOpen(
 setInterval(() => {
   tickClock();
   if (sheetOpen()) return;
-  if (tab === 'heute' || tab === 'coach') render();
+  if (['heute', 'coach', 'radar'].includes(tab)) render();
 }, 30000);
 setInterval(() => { if (!document.hidden) refreshRadar(false); }, 5 * 60000);
 document.addEventListener('visibilitychange', () => { if (!document.hidden) refreshRadar(false); });
