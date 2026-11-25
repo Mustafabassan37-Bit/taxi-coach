@@ -1048,9 +1048,90 @@ async function loadRain() {
   } catch (e) { /* ohne Netz kein Regen-Hinweis */ }
 }
 
+// ---- Bahn: Ausfälle und Verspätungen an Hauptbahnhof und Messe/Deutz ----
+// Quelle: DBF (dbf.finalrewind.org), ein freier Abfahrtsmonitor auf Basis der Bahn-Echtzeitdaten (IRIS).
+// Abruf nur, solange die App offen ist, höchstens alle 4 Minuten.
+const BAHN_STATIONEN = [{ name: 'Köln Hbf', stand: 'Hauptbahnhof' }, { name: 'Köln Messe/Deutz', stand: 'Deutz Bhf' }];
+radar.bahn = null; radar.bahnAt = 0;
+
+async function loadBahn() {
+  if (radar.bahn && Date.now() - radar.bahnAt < 4 * 60000) return;
+  const out = [];
+  for (const st of BAHN_STATIONEN) {
+    try {
+      const ctl = new AbortController();
+      const timer = setTimeout(() => ctl.abort(), 8000);
+      const res = await fetch(`https://dbf.finalrewind.org/${encodeURIComponent(st.name)}.json?mode=json&limit=150`, { signal: ctl.signal });
+      clearTimeout(timer);
+      if (res.ok) out.push({ st, trains: (await res.json()).departures || [] });
+    } catch (e) { /* ohne Netz oder Dienst nicht erreichbar: Bahn-Hinweise fallen weg */ }
+  }
+  if (out.length) { radar.bahn = out; radar.bahnAt = Date.now(); }
+}
+
+// „HH:MM“ aus der Bahn-Anzeige in eine Uhrzeit um jetzt herum umrechnen (auch über Mitternacht)
+function hmNear(hm, now) {
+  if (!hm) return null;
+  const [h, m] = hm.split(':').map(Number);
+  const d = new Date(now); d.setHours(h, m, 0, 0);
+  let t = d.getTime();
+  if (t < now - 12 * 36e5) t += 864e5; else if (t > now + 12 * 36e5) t -= 864e5;
+  return t;
+}
+
+const FERN = /^(ICE|IC|EC|ECE|FLX|NJ|RJ|RJX|TGV|THA|EST|EN|ES)\b/;
+
+function bahnItems(now = Date.now()) {
+  const items = [];
+  if (!radar.bahn || Date.now() - radar.bahnAt > 30 * 60000) return items;   // zu alt: lieber nichts zeigen
+  const h = new Date(now).getHours();
+  const spaet = h >= 21 || h < 2;
+  for (const { st, trains } of radar.bahn) {
+    const list = trains.map(x => {
+      const arr = hmNear(x.scheduledArrival, now), dep = hmNear(x.scheduledDeparture, now);
+      const name = (x.train || '').replace(/^S S/, 'S').replace(/\s+/g, ' ').trim();
+      const fern = (x.trainClasses || []).includes('F') || FERN.test(name);
+      const route = x.route || [];
+      return { x, arr, dep, t: arr || dep, name, fern, delay: Math.max(x.delayArrival || 0, x.delayDeparture || 0),
+        from: route.length ? route[0].name : '', dest: x.destination || '' };
+    }).filter(y => y.t && y.t >= now - 15 * 60000 && y.t <= now + 90 * 60000);
+    const label = y => `${y.name} ${hhmm(y.t)} ${y.dep && y.dest && y.dest !== st.name ? 'nach ' + y.dest : y.from ? 'aus ' + y.from : ''}`.trim();
+
+    // 1. Ausfälle
+    const weg = list.filter(y => y.x.isCancelled);
+    const fernWeg = weg.filter(y => y.fern);
+    if (weg.length >= 3 || fernWeg.length >= 1) {
+      const top = (fernWeg.length ? fernWeg : weg).slice(0, 3).map(label).join(' · ');
+      items.push({ prio: (fernWeg.length && spaet) || weg.length >= 5 ? 3 : 2, icon: '🚆',
+        text: `${st.name}: ${weg.length} ${weg.length === 1 ? 'Zug fällt' : 'Züge fallen'} aus`,
+        sub: `${top} – gestrandete Reisende brauchen ein Taxi. Halteplatz ${st.stand}`, stand: st.stand });
+    }
+    // 2. Späte, stark verspätete Fernzüge: danach fahren kaum noch Bahnen
+    if (spaet) {
+      const lateArr = list.filter(y => y.fern && y.arr && !y.x.isCancelled && y.delay >= 20)
+        .map(y => Object.assign(y, { real: y.arr + y.delay * 60000 }))
+        .filter(y => y.real >= now - 5 * 60000 && y.real <= now + 75 * 60000)
+        .sort((a, b) => a.real - b.real).slice(0, 2);
+      for (const y of lateArr) {
+        items.push({ prio: 2, icon: '🕐', text: `${y.name}${y.from ? ' aus ' + y.from : ''} kommt ca. ${hhmm(y.real)} an (+${y.delay} Min)`,
+          sub: `Spät und verspätet – viele Reisende brauchen ein Taxi. Halteplatz ${st.stand}`, stand: st.stand });
+      }
+    }
+    // 3. Gemeldete Großstörungen (Streik, Stellwerk, Sperrung) bei mehreren Zügen
+    const stoer = list.filter(y => (y.x.messages && [...(y.x.messages.delay || []), ...(y.x.messages.qos || [])]
+      .some(m => /streik|stellwerk|sperrung|notarzt|polizeieinsatz|unwetter|oberleitung/i.test(m.text || '')) && (y.delay >= 15 || y.x.isCancelled)));
+    if (stoer.length >= 3) {
+      const grund = ((stoer[0].x.messages.delay || []).concat(stoer[0].x.messages.qos || []).find(m => /streik|stellwerk|sperrung|notarzt|polizeieinsatz|unwetter|oberleitung/i.test(m.text || '')) || {}).text || 'Störung';
+      items.push({ prio: 3, icon: '⚠️', text: `${st.name}: Bahn-Störung (${grund})`,
+        sub: `${stoer.length} Züge betroffen – jetzt zum Halteplatz ${st.stand}`, stand: st.stand });
+    }
+  }
+  return items;
+}
+
 // Beides holen und danach die Ansicht auffrischen (ohne ein offenes Formular zu stören)
 function refreshRadar(force) {
-  Promise.all([loadRadar(force), loadRain()]).then(() => {
+  Promise.all([loadRadar(force), loadRain(), loadBahn()]).then(() => {
     if ((tab === 'heute' || tab === 'coach') && !sheetOpen()) render();
   });
 }
@@ -1101,6 +1182,7 @@ function radarItems(now = Date.now()) {
     if (nowRain && nowRain.mm >= 0.2) items.push({ prio: 2, icon: '🌧️', text: 'Es regnet', sub: 'Mehr Fahrgäste – Innenstadt, Bahnhöfe und Haltestellen' });
     else if (next) items.push({ prio: 2, icon: '🌦️', text: `Regen ab ca. ${hhmm(next.t)}`, sub: 'Dann wird es in der Innenstadt voll – rechtzeitig dort sein' });
   }
+  items.push(...bahnItems(now));
   return items.sort((a, b) => b.prio - a.prio);
 }
 
