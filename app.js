@@ -18,6 +18,7 @@ const DEFAULTS = {
   stand: null,  // { name, since } – hier stehe ich gerade
   trip: null,   // { place, wait, start } – laufende Fahrt ab einem Halteplatz
   check: { day: '', done: {} },
+  backupAt: 0,  // Zeitpunkt der letzten Sicherung (für die wöchentliche Erinnerung)
   last: { pay: 'Bar', src: 'Halteplatz' }
 };
 
@@ -336,7 +337,7 @@ function viewToday() {
       <p>2. Trage nach <b>jeder Fahrt</b> den Betrag und den Einstiegsort ein – das dauert 5 Sekunden.</p>
       <p>3. Der <b>Coach</b> zeigt dir danach, wo und wann du am meisten verdienst.</p>
     </section>`;
-    return `${radarBanner(now)}<section class="card center">
+    return `${radarBanner(now)}${backupCard(now)}<section class="card center">
         <p class="muted">Keine Schicht aktiv</p>
         <button class="btn primary big" data-act="shiftStart">Schicht starten</button>
       </section>${intro}${checklistCard()}${lastCard}`;
@@ -1697,10 +1698,11 @@ function viewMore() {
     </section>
     <section class="card stack">
       <h2>Meine Daten</h2>
-      <p class="muted small">Alle Daten liegen nur auf diesem Gerät. Mach regelmäßig eine Sicherung. Die App ist dein persönliches Notizbuch und ersetzt nicht den Taxameter oder die Aufzeichnungen deines Betriebs.</p>
-      <button class="btn" data-act="exportCsv">Fahrten als Tabelle speichern (CSV)</button>
-      <button class="btn" data-act="exportJson">Sicherung speichern</button>
+      <p class="muted small">Alle Daten liegen nur auf diesem Gerät. Die App erinnert dich jede Woche an eine Sicherung. Die App ist dein persönliches Notizbuch und ersetzt nicht den Taxameter oder die Aufzeichnungen deines Betriebs.</p>
+      <p class="small">Letzte Sicherung: <b>${backupAgo()}</b></p>
+      <button class="btn primary" data-act="backupNow">💾 Jetzt sichern (iCloud / Dateien)</button>
       <button class="btn" data-act="importJson">Sicherung laden</button>
+      <button class="btn" data-act="exportCsv">Fahrten als Tabelle speichern (CSV)</button>
       <input type="file" id="importFile" accept="application/json,.json" hidden>
       <button class="btn danger" data-act="wipe">Alle Daten löschen</button>
     </section>`;
@@ -1735,6 +1737,50 @@ function download(name, text, type) {
   a.href = url; a.download = name;
   document.body.appendChild(a); a.click(); a.remove();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+// Sicherung: auf dem iPhone über das Teilen-Menü („In Dateien sichern“ → iCloud Drive),
+// sonst als Download. Die Datei geht nirgendwohin außer dorthin, wo du sie ablegst.
+const BACKUP_DAYS = 7;
+
+async function backupNow() {
+  const name = 'taxi-coach-sicherung-' + dayKey(Date.now()) + '.json';
+  const text = JSON.stringify(Object.assign({}, S, { backupAt: Date.now() }));
+  const done = () => { S.backupAt = Date.now(); save(); render(); toast('Sicherung erstellt'); };
+  let file = null;
+  try { file = new File([text], name, { type: 'application/json' }); } catch (e) { /* alte Browser ohne File */ }
+  if (file && navigator.canShare && navigator.canShare({ files: [file] })) {
+    try {
+      await navigator.share({ files: [file], title: 'Taxi Coach Sicherung' });
+      return done();
+    } catch (e) {
+      if (e && e.name === 'AbortError') return toast('Sicherung abgebrochen');
+      // Teilen klappt nicht: auf Download ausweichen
+    }
+  }
+  download(name, text, 'application/json');
+  done();
+}
+
+function backupDue(now = Date.now()) {
+  if (!S.rides.length && !S.shifts.length) return false;   // noch nichts zu sichern
+  return !S.backupAt || now - S.backupAt > BACKUP_DAYS * 864e5;
+}
+
+function backupAgo(now = Date.now()) {
+  if (!S.backupAt) return 'noch nie';
+  const days = Math.floor((now - S.backupAt) / 864e5);
+  return days === 0 ? 'heute' : days === 1 ? 'gestern' : `vor ${days} Tagen (${dm(S.backupAt)})`;
+}
+
+function backupCard(now = Date.now()) {
+  if (!backupDue(now)) return '';
+  return `<section class="card hint warn">
+    <h2>💾 Sicherung fällig</h2>
+    <p class="small">Letzte Sicherung: <b>${backupAgo(now)}</b>. ${S.rides.length === 1 ? 'Deine Fahrt liegt' : `Deine ${S.rides.length} Fahrten liegen`} nur auf diesem Handy.</p>
+    <p class="muted small">Tippe auf „Jetzt sichern“, dann „In Dateien sichern“ → iCloud Drive.</p>
+    <button class="btn primary" data-act="backupNow">💾 Jetzt sichern</button>
+  </section>`;
 }
 
 function csvCell(v) {
@@ -2025,7 +2071,8 @@ const ACTIONS = {
     if (!S.rides.length) return toast('Noch keine Fahrten vorhanden');
     exportCsv();
   },
-  exportJson() { download('taxi-coach-sicherung-' + dayKey(Date.now()) + '.json', JSON.stringify(S), 'application/json'); },
+  exportJson() { backupNow(); },
+  backupNow() { backupNow(); },
   importJson() { $('#importFile').click(); },
   wipe() {
     if (!confirm('Wirklich ALLE Fahrten, Schichten, Einstellungen und den KI-Schlüssel löschen? Das kann nicht rückgängig gemacht werden.')) return;
