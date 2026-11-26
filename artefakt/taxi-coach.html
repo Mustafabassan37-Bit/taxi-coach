@@ -1,0 +1,29 @@
+<title>Taxi Coach Köln</title>
+<meta name="theme-color" content="#101317">
+<link rel="stylesheet" href="styles.css">
+
+<header id="top">
+  <h1 id="title">Heute</h1>
+  <span id="clock"></span>
+</header>
+
+<main id="view"></main>
+
+<nav id="tabs">
+  <button data-tab="heute"><span class="ico">🚕</span>Heute</button>
+  <button data-tab="radar"><span class="ico">📡</span>Radar</button>
+  <button data-tab="woche"><span class="ico">📅</span>Woche</button>
+  <button data-tab="coach"><span class="ico">🎯</span>Coach</button>
+  <button data-tab="plaetze"><span class="ico">🗺️</span>Karte</button>
+  <button data-tab="rechner"><span class="ico">🧮</span>Rechner</button>
+  <button data-tab="mehr"><span class="ico">☰</span>Mehr</button>
+</nav>
+
+<div id="sheet" class="sheet" hidden>
+  <div class="sheet-body" id="sheetBody"></div>
+</div>
+<div id="toast" hidden></div>
+
+<script src="halteplaetze.js"></script>
+<script src="rhein.js"></script>
+<script src="app.js"></script>
