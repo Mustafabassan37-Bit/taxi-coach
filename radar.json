@@ -1,5 +1,5 @@
 {
- "stand": "2026-11-26T13:03:27.429Z",
+ "stand": "2026-11-27T13:00:22.353Z",
  "quellen": [
   "https://www.lanxess-arena.de/events-tickets/eventkalender",
   "https://www.koelnmesse.de/aktuelle-termine/alle-messen/",
@@ -7,110 +7,6 @@
   "https://www.koeln.de/veranstaltungen/"
  ],
  "veranstaltungen": [
-  {
-   "ort": "Volksbühne Am Rudolfplatz",
-   "stand": "Rudolfplatz",
-   "titel": "Mathias Richling – KI – Keine Identität",
-   "zusatz": "",
-   "beginn": "2026-11-25T19:30",
-   "dauer": 150,
-   "groesse": "M",
-   "art": "Theater",
-   "abgesagt": false,
-   "lat": 50.93636,
-   "lon": 6.9368
-  },
-  {
-   "ort": "Carlswerk Victoria",
-   "stand": "Schanzenstr.",
-   "titel": "Mighty Oaks – Tour 2026",
-   "zusatz": "",
-   "beginn": "2026-11-25T20:00",
-   "dauer": 165,
-   "groesse": "L",
-   "art": "Konzert",
-   "abgesagt": false,
-   "lat": 50.96494,
-   "lon": 7.01254
-  },
-  {
-   "ort": "Theater am Tanzbrunnen",
-   "stand": "Tanzbrunnen",
-   "titel": "Niklas Kolorz – Evolution Live",
-   "zusatz": "",
-   "beginn": "2026-11-25T20:00",
-   "dauer": 150,
-   "groesse": "M",
-   "art": "Theater",
-   "abgesagt": false,
-   "lat": 50.94589,
-   "lon": 6.97042
-  },
-  {
-   "ort": "Live Music Hall",
-   "stand": "Helios",
-   "titel": "Dominik Hartz – verstr!ckt Tour 2026",
-   "zusatz": "",
-   "beginn": "2026-11-25T20:00",
-   "dauer": 165,
-   "groesse": "M",
-   "art": "Konzert",
-   "abgesagt": false,
-   "lat": 50.94932,
-   "lon": 6.90948
-  },
-  {
-   "ort": "Essigfabrik",
-   "stand": "Drehbrücke",
-   "titel": "Boy Harsher – Supports: Choir Boy + Curses",
-   "zusatz": "",
-   "beginn": "2026-11-25T20:00",
-   "dauer": 165,
-   "groesse": "M",
-   "art": "Konzert",
-   "abgesagt": false,
-   "lat": 50.92471,
-   "lon": 6.97808
-  },
-  {
-   "ort": "Gloria",
-   "stand": "Neumarkt",
-   "titel": "Fortuna Ehrenfeld – Jubiläumstour – 10 Jahre Fortuna",
-   "zusatz": "",
-   "beginn": "2026-11-25T20:00",
-   "dauer": 165,
-   "groesse": "M",
-   "art": "Konzert",
-   "abgesagt": false,
-   "lat": 50.93753,
-   "lon": 6.9449
-  },
-  {
-   "ort": "Kölner Philharmonie",
-   "stand": "Philharmonie",
-   "titel": "Cuarteto Quiroga",
-   "zusatz": "",
-   "beginn": "2026-11-25T20:00",
-   "dauer": 165,
-   "groesse": "L",
-   "art": "Konzert",
-   "abgesagt": false,
-   "lat": 50.94062,
-   "lon": 6.96082
-  },
-  {
-   "ort": "LANXESS arena",
-   "stand": "Lanxess Arena",
-   "titel": "Noah Kahan",
-   "zusatz": "",
-   "beginn": "2026-11-26T19:20",
-   "dauer": 165,
-   "groesse": "XL",
-   "art": "Konzert/Show",
-   "abgesagt": false,
-   "lat": 50.9385,
-   "lon": 6.98288
-  },
   {
    "ort": "Essigfabrik",
    "stand": "Drehbrücke",
@@ -2257,6 +2153,19 @@
    "lon": 7.01339
   },
   {
+   "ort": "Palastzelt Schanzenviertel",
+   "stand": "Schanzenstr.",
+   "titel": "11. Kölner Weihnachtscircus",
+   "zusatz": "",
+   "beginn": "2026-12-11T15:30",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Show",
+   "abgesagt": false,
+   "lat": 50.9678,
+   "lon": 7.0156
+  },
+  {
    "ort": "Sportpark Höhenberg",
    "stand": "Höhenberg",
    "titel": "Viktoria Köln – Fortuna Düsseldorf",
@@ -2281,6 +2190,110 @@
    "abgesagt": false,
    "lat": 50.9385,
    "lon": 6.98288
+  },
+  {
+   "ort": "E-Werk Köln",
+   "stand": "E-Werk",
+   "titel": "Stunksitzung 2026",
+   "zusatz": "",
+   "beginn": "2026-12-11T19:30",
+   "dauer": 165,
+   "groesse": "L",
+   "art": "Konzert",
+   "abgesagt": false,
+   "lat": 50.96962,
+   "lon": 7.0166
+  },
+  {
+   "ort": "Schauspiel Köln",
+   "stand": "Schanzenstr.",
+   "titel": "Imagine",
+   "zusatz": "",
+   "beginn": "2026-12-11T19:30",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Theater",
+   "abgesagt": false,
+   "lat": 50.96644,
+   "lon": 7.01339
+  },
+  {
+   "ort": "Palastzelt Schanzenviertel",
+   "stand": "Schanzenstr.",
+   "titel": "11. Kölner Weihnachtscircus",
+   "zusatz": "",
+   "beginn": "2026-12-11T19:30",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Show",
+   "abgesagt": false,
+   "lat": 50.9678,
+   "lon": 7.0156
+  },
+  {
+   "ort": "Theater am Tanzbrunnen",
+   "stand": "Tanzbrunnen",
+   "titel": "Tom Gaebel & His Orchestra – A Swinging Christmas 2026",
+   "zusatz": "",
+   "beginn": "2026-12-11T20:00",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Theater",
+   "abgesagt": false,
+   "lat": 50.94589,
+   "lon": 6.97042
+  },
+  {
+   "ort": "Palladium Köln",
+   "stand": "Schanzenstr.",
+   "titel": "Sondaschule – ‚Wir bleiben Wach Tour‘ 2026",
+   "zusatz": "",
+   "beginn": "2026-12-11T20:00",
+   "dauer": 165,
+   "groesse": "L",
+   "art": "Konzert",
+   "abgesagt": false,
+   "lat": 50.96898,
+   "lon": 7.01682
+  },
+  {
+   "ort": "Gloria",
+   "stand": "Neumarkt",
+   "titel": "Räuber – Oben Unten Links Rechts",
+   "zusatz": "",
+   "beginn": "2026-12-11T20:00",
+   "dauer": 165,
+   "groesse": "M",
+   "art": "Konzert",
+   "abgesagt": false,
+   "lat": 50.93753,
+   "lon": 6.9449
+  },
+  {
+   "ort": "Kölner Philharmonie",
+   "stand": "Philharmonie",
+   "titel": "WDR Sinfonieorchester | Abenteurer – Măcelaru & Strauss",
+   "zusatz": "",
+   "beginn": "2026-12-11T20:00",
+   "dauer": 165,
+   "groesse": "L",
+   "art": "Konzert",
+   "abgesagt": false,
+   "lat": 50.94062,
+   "lon": 6.96082
+  },
+  {
+   "ort": "Schauspiel Köln",
+   "stand": "Schanzenstr.",
+   "titel": "Hundert",
+   "zusatz": "",
+   "beginn": "2026-12-11T20:00",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Theater",
+   "abgesagt": false,
+   "lat": 50.96644,
+   "lon": 7.01339
   },
   {
    "ort": "RheinEnergieStadion",
@@ -2775,17 +2788,22 @@
    "abgesagt": false,
    "lat": 50.9385,
    "lon": 6.98288
+  },
+  {
+   "ort": "LANXESS arena",
+   "stand": "Lanxess Arena",
+   "titel": "IHF MEN’S HANDBALL WORLD CHAMPIONSHIP 2027",
+   "zusatz": "",
+   "beginn": "2027-01-25T15:30",
+   "dauer": 135,
+   "groesse": "XL",
+   "art": "Sport",
+   "abgesagt": false,
+   "lat": 50.9385,
+   "lon": 6.98288
   }
  ],
  "messen": [
-  {
-   "ort": "Koelnmesse",
-   "titel": "PMRExpo",
-   "von": "2026-11-24",
-   "bis": "2026-11-26",
-   "lat": 50.94827,
-   "lon": 6.98394
-  },
   {
    "ort": "Koelnmesse",
    "titel": "PSI",
