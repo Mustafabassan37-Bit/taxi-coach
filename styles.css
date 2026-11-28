@@ -272,3 +272,38 @@ table.t tr:last-child td { border-bottom: 0; }
 .phrase:last-child { border-bottom: 0; }
 ol.tips { margin: 0; padding-left: 22px; }
 ol.tips li { margin-bottom: 8px; }
+
+/* Radar: Ende groß, Farbe je Ort, Zeitstrahl */
+.c-fb { --c: #3ddc84; }
+.c-ar { --c: #ff5c5c; }
+.c-me { --c: #4da3ff; }
+.c-ko { --c: #b48cff; }
+.list li.rv { align-items: flex-start; gap: 12px; }
+.rv-time { flex: none; width: 66px; display: flex; flex-direction: column; align-items: center; padding: 6px 0 5px;
+  border: 2px solid var(--c); border-radius: 12px; line-height: 1.15; }
+.rv-time b { font-size: 21px; letter-spacing: -.3px; }
+.rv-time small { font-size: 11px; color: var(--muted); }
+.rv.xl .rv-time { background: var(--c); color: #101317; }
+.rv.xl .rv-time small { color: #101317; opacity: .75; }
+.rv.now .rv-time { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.rv.now .rv-time small { color: var(--accent-ink); font-weight: 700; opacity: 1; }
+.rv-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 3px; }
+.tag { font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 99px; color: var(--c); border: 1px solid var(--c); }
+.tag.big { background: var(--bad); border-color: var(--bad); color: #fff; }
+.rv-title { font-weight: 600; line-height: 1.25; }
+.rv:not(.xl) .rv-title { font-weight: 500; font-size: 15px; }
+
+.tl { position: relative; padding-top: 18px; }
+.tl-ticks { position: absolute; inset: 0 0 auto 0; height: 100%; pointer-events: none; }
+.tl-tick { position: absolute; top: 0; transform: translateX(-50%); font-size: 11px; color: var(--muted); white-space: nowrap; }
+.tl-tick::after { content: ''; position: absolute; left: 50%; top: 16px; height: var(--tlh, 400px); border-left: 1px dashed var(--line); }
+.tl { overflow: hidden; }
+.tl-tick.mid { color: var(--text); font-weight: 700; }
+.tl-now { position: absolute; top: 14px; bottom: 0; border-left: 2px solid var(--accent); z-index: 1; }
+.tl-row { position: relative; height: 34px; }
+.tl-run, .tl-hot { position: absolute; top: 6px; border-radius: 99px; background: var(--c); }
+.tl-run { height: 3px; top: 8px; opacity: .45; }
+.tl-hot { height: 8px; top: 5px; }
+.tl-row.xl .tl-hot { height: 12px; top: 3px; }
+.tl-lab { position: absolute; top: 16px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+.tl-row.xl .tl-lab { font-weight: 800; top: 17px; }

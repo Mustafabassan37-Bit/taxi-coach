@@ -1363,16 +1363,17 @@ function radarItems(now = Date.now()) {
       if (e.abgesagt || (e.groesse && e.groesse === 'M')) continue;
       const start = parseLocal(e.beginn), end = start + (e.dauer || 165) * 60000;
       const label = `${e.titel} (${e.ort})`;
+      const ev = { start, end, titel: e.titel, ort: e.ort, stand: e.stand, groesse: e.groesse, art: e.art };
       if (now >= end - 20 * 60000 && now <= end + 40 * 60000) {
-        items.push({ prio: 3, icon: '🔥', text: `Jetzt hin: ${label} endet ca. ${hhmm(end)}`, sub: `Halteplatz ${e.stand}` + (e.stand === 'Lanxess Arena' ? ' – oder Deutz Bhf als Ausweich' : ''), stand: e.stand });
+        items.push({ ev, kind: 'raus', prio: 3, icon: '🔥', text: `Jetzt hin: ${label} endet ca. ${hhmm(end)}`, sub: `Halteplatz ${e.stand}` + (e.stand === 'Lanxess Arena' ? ' – oder Deutz Bhf als Ausweich' : ''), stand: e.stand });
       } else if (now >= start && now < end - 20 * 60000) {
-        items.push({ prio: 2, icon: '🎤', text: `${label} läuft – Ende ca. ${hhmm(end)}`, sub: `Ab ${hhmm(end - 20 * 60000)} am Platz ${e.stand} sein`, stand: e.stand });
+        items.push({ ev, kind: 'laeuft', prio: 2, icon: '🎤', text: `${label} läuft – Ende ca. ${hhmm(end)}`, sub: `Ab ${hhmm(end - 20 * 60000)} am Platz ${e.stand} sein`, stand: e.stand });
       } else if (now >= start - 2 * 36e5 && now < start) {
-        items.push({ prio: 2, icon: '🎟️', text: `${label} beginnt ${hhmm(start)}`, sub: 'Anreise läuft: Fahrten vom Hauptbahnhof und aus Hotels dorthin' });
+        items.push({ ev, kind: 'anreise', prio: 2, icon: '🎟️', text: `${label} beginnt ${hhmm(start)}`, sub: 'Anreise läuft: Fahrten vom Hauptbahnhof und aus Hotels dorthin' });
       } else if (start > now && sameDay(start, now)) {
-        items.push({ prio: 1, icon: '📅', text: `Heute: ${label}`, sub: `Beginn ${hhmm(start)}, Ende ca. ${hhmm(end)}` });
+        items.push({ ev, prio: 1, icon: '📅', text: `Heute: ${label}`, sub: `Beginn ${hhmm(start)}, Ende ca. ${hhmm(end)}` });
       } else if (start > now && sameDay(start, now + 864e5)) {
-        items.push({ prio: 0, icon: '📅', text: `Morgen: ${label}`, sub: `Beginn ${hhmm(start)}, Ende ca. ${hhmm(end)}` });
+        items.push({ ev, prio: 0, icon: '📅', text: `Morgen: ${label}`, sub: `Beginn ${hhmm(start)}, Ende ca. ${hhmm(end)}` });
       }
     }
   }
@@ -1410,6 +1411,101 @@ function radarBanner(now = Date.now()) {
 }
 
 // Reiter „Radar“: alles auf einen Blick
+// Farbe je Ort – gleich in Liste und Zeitstrahl: Stadion grün, Arena rot, Messe blau, Konzerthallen lila
+function evColor(ev) {
+  if (!ev) return 'ko';
+  if (ev.messe) return 'me';
+  if (ev.art === 'Fußball' || /Stadion|Sportpark/i.test(ev.ort || '')) return 'fb';
+  if (/LANXESS/i.test(ev.ort || '')) return 'ar';
+  return 'ko';
+}
+
+// „in 25 Min“, „in 3 Std“, „morgen“
+function inDur(t, now) {
+  const min = Math.round((t - now) / 60000);
+  if (min <= 0) return 'jetzt';
+  if (!sameDay(t, now)) return sameDay(t, now + 864e5) ? 'morgen' : DAYS_LONG[dow(t)];
+  if (min < 60) return `in ${min} Min`;
+  const h = Math.floor(min / 60), m = min % 60;
+  return h < 3 && m >= 10 ? `in ${h}:${pad(m)} Std` : `in ${h} Std`;
+}
+
+// Eine Zeile im Radar. Veranstaltungen zeigen groß, wann die Leute RAUSKOMMEN.
+function radarRow(x, now) {
+  const ev = x.ev;
+  if (!ev) return `<li><span class="ico">${x.icon}</span>
+    <div class="grow"><div><b>${esc(x.text)}</b></div><div class="sub">${esc(x.sub)}</div></div></li>`;
+  const c = evColor(ev);
+  const anreise = x.kind === 'anreise';
+  const t = anreise ? ev.start : ev.end;
+  const label = anreise ? 'Beginn' : x.kind === 'raus' ? 'raus' : 'Ende';
+  const when = x.kind === 'raus' ? 'JETZT' : inDur(t, now);
+  const sub = x.kind ? x.sub : `ab ${hhmm(ev.end - 20 * 60000)} am Platz ${ev.stand} sein · Beginn ${hhmm(ev.start)}`;
+  return `<li class="rv${ev.groesse === 'XL' ? ' xl' : ''}${x.kind === 'raus' ? ' now' : ''}">
+    <div class="rv-time c-${c}"><small>${label}</small><b>${hhmm(t)}</b><small>${esc(when)}</small></div>
+    <div class="grow">
+      <div class="rv-tags"><span class="tag c-${c}">${esc(ev.ort)}</span>${ev.groesse === 'XL' ? '<span class="tag big">GROSS</span>' : ''}</div>
+      <div class="rv-title">${esc(ev.titel)}</div>
+      <div class="sub">${esc(sub)}</div>
+    </div></li>`;
+}
+
+// Zeitstrahl: von jetzt bis 2 Uhr nachts – wann kommen wo die Leute raus?
+function radarTimeline(now) {
+  const d = radar.data;
+  if (!d) return '';
+  const t0 = new Date(now); t0.setMinutes(0, 0, 0);
+  const a = t0.getTime();
+  const e1 = new Date(now); e1.setDate(e1.getDate() + 1); e1.setHours(2, 0, 0, 0);
+  const b = e1.getTime();
+  const pct = t => Math.max(0, Math.min(100, (t - a) / (b - a) * 100));
+  const rows = [];
+  for (const e of d.veranstaltungen || []) {
+    if (e.abgesagt || e.groesse === 'M') continue;
+    const start = parseLocal(e.beginn), end = start + (e.dauer || 165) * 60000;
+    if (end + 40 * 60000 <= now || start >= b) continue;
+    rows.push({ start, end, hot0: end - 20 * 60000, hot1: end + 40 * 60000, c: evColor(e), xl: e.groesse === 'XL',
+      lab: `${hhmm(end)} ${e.stand}` });
+  }
+  const wd = dow(now);
+  for (const m of d.messen || []) {
+    const von = parseLocal(m.von), bis = parseLocal(m.bis) + 864e5;
+    const s = new Date(now); s.setHours(16, 0, 0, 0);
+    const hot0 = s.getTime(), hot1 = hot0 + 3 * 36e5;
+    if (wd !== 6 && now >= von && now < bis && hot1 > now) {
+      rows.push({ start: hot0 - 6 * 36e5, end: hot0, hot0, hot1, c: 'me', xl: true, lab: `16–19 Messe` });
+    }
+  }
+  if (!rows.length) return `<section class="card"><h2>🕐 Bis 2 Uhr nachts</h2>
+    <p class="muted">Heute keine großen Termine – normaler Betrieb.</p></section>`;
+  rows.sort((x, y) => x.hot0 - y.hot0);
+
+  const ticks = [];
+  for (let t = a + 36e5; t < b; t += 36e5) {
+    const h = new Date(t).getHours();
+    if (h % 3 === 0) ticks.push(`<span class="tl-tick${h === 0 ? ' mid' : ''}" style="left:${pct(t)}%">${h}</span>`);
+  }
+  const row = r => {
+    const l = pct(r.hot0), w = Math.max(1.5, pct(r.hot1) - l);
+    const rl = pct(r.start), rw = Math.max(0, l - rl);
+    const right = l > 62;
+    return `<div class="tl-row${r.xl ? ' xl' : ''}">
+      <i class="tl-run c-${r.c}" style="left:${rl}%;width:${rw}%"></i>
+      <i class="tl-hot c-${r.c}" style="left:${l}%;width:${w}%"></i>
+      <span class="tl-lab" style="${right ? `right:${100 - l - w}%;text-align:right` : `left:${l}%`}">${esc(r.lab)}</span>
+    </div>`;
+  };
+  return `<section class="card">
+    <h2>🕐 Bis 2 Uhr nachts</h2>
+    <div class="tl">
+      <div class="tl-ticks">${ticks.join('')}</div>
+      <div class="tl-now" style="left:${pct(now)}%"></div>
+      ${rows.map(row).join('')}
+    </div>
+    <p class="muted small" style="margin:8px 0 0">Dicker Strich = Leute kommen raus, dann dort stehen. Dünn = läuft noch.</p>
+  </section>`;
+}
+
 function viewRadar() {
   const now = Date.now();
   const items = radarItems(now);
@@ -1418,8 +1514,6 @@ function viewRadar() {
     ['📅 Später heute', items.filter(x => x.prio === 1)],
     ['🌙 Morgen und demnächst', items.filter(x => x.prio === 0)]
   ];
-  const row = x => `<li><span class="ico">${x.icon}</span>
-    <div class="grow"><div><b>${esc(x.text)}</b></div><div class="sub">${esc(x.sub)}</div></div></li>`;
   const d = radar.data;
 
   const stand = d && d.stand ? new Date(d.stand).getTime() : 0;
@@ -1428,9 +1522,9 @@ function viewRadar() {
   return `${old ? `<section class="card hint warn"><p class="small">Die Termine sind vom ${dm(stand)} und damit ${Math.floor((now - stand) / 864e5)} Tage alt. Neue Termine kommen, wenn Claude das Artefakt neu veröffentlicht.</p></section>` : ''}
     ${groups.map(([title, list]) => `<section class="card radar ${title.startsWith('🔥') && list.some(x => x.prio >= 3) ? 'hot' : ''}">
       <h2>${title}</h2>
-      ${list.length ? `<ul class="list">${list.map(row).join('')}</ul>`
+      ${list.length ? `<ul class="list">${list.map(x => radarRow(x, now)).join('')}</ul>`
         : `<p class="muted">${title.startsWith('🔥') ? 'Gerade nichts Besonderes – normaler Betrieb. Schau auf die Karte für die besten Stände.' : 'Nichts angekündigt.'}</p>`}
-    </section>`).join('')}
+    </section>`).map((h, i) => i === 1 ? radarTimeline(now) + h : h).join('')}
     <section class="card">
       <h2>Live nachsehen</h2>
       <p class="muted small">Regen und Bahn kann das Claude-Artefakt nicht selbst abrufen. Diese Seiten öffnen sich in einem neuen Fenster:</p>
