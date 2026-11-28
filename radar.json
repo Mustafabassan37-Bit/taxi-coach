@@ -1,5 +1,5 @@
 {
- "stand": "2026-11-27T13:00:22.353Z",
+ "stand": "2026-11-28T12:13:49.684Z",
  "quellen": [
   "https://www.lanxess-arena.de/events-tickets/eventkalender",
   "https://www.koelnmesse.de/aktuelle-termine/alle-messen/",
@@ -8,113 +8,9 @@
  ],
  "veranstaltungen": [
   {
-   "ort": "Essigfabrik",
-   "stand": "Drehbrücke",
-   "titel": "Allt – European Tour 2026",
-   "zusatz": "",
-   "beginn": "2026-11-26T19:30",
-   "dauer": 165,
-   "groesse": "M",
-   "art": "Konzert",
-   "abgesagt": false,
-   "lat": 50.92471,
-   "lon": 6.97808
-  },
-  {
-   "ort": "Theater am Tanzbrunnen",
-   "stand": "Tanzbrunnen",
-   "titel": "Dominik Eulberg – Prachtliebe und Wunderfakten",
-   "zusatz": "",
-   "beginn": "2026-11-26T20:00",
-   "dauer": 150,
-   "groesse": "M",
-   "art": "Theater",
-   "abgesagt": false,
-   "lat": 50.94589,
-   "lon": 6.97042
-  },
-  {
-   "ort": "Die Kantine",
-   "stand": "Kantine",
-   "titel": "Sevendust | Support: Overgrown",
-   "zusatz": "",
-   "beginn": "2026-11-26T20:00",
-   "dauer": 165,
-   "groesse": "M",
-   "art": "Konzert",
-   "abgesagt": false,
-   "lat": 50.99833,
-   "lon": 6.93699
-  },
-  {
-   "ort": "Live Music Hall",
-   "stand": "Helios",
-   "titel": "Murda – UZAY TOUR",
-   "zusatz": "",
-   "beginn": "2026-11-26T20:00",
-   "dauer": 165,
-   "groesse": "M",
-   "art": "Konzert",
-   "abgesagt": false,
-   "lat": 50.94932,
-   "lon": 6.90948
-  },
-  {
-   "ort": "Carlswerk Victoria",
-   "stand": "Schanzenstr.",
-   "titel": "Lil Peep – 30th Birthday Celebration",
-   "zusatz": "",
-   "beginn": "2026-11-26T20:00",
-   "dauer": 165,
-   "groesse": "L",
-   "art": "Konzert",
-   "abgesagt": false,
-   "lat": 50.96494,
-   "lon": 7.01254
-  },
-  {
-   "ort": "Schauspiel Köln im Depot",
-   "stand": "Schanzenstr.",
-   "titel": "Combat des lianes",
-   "zusatz": "",
-   "beginn": "2026-11-26T20:00",
-   "dauer": 150,
-   "groesse": "M",
-   "art": "Theater",
-   "abgesagt": false,
-   "lat": 50.96644,
-   "lon": 7.01339
-  },
-  {
-   "ort": "Gloria",
-   "stand": "Neumarkt",
-   "titel": "Fortuna Ehrenfeld – Jubiläumstour – 10 Jahre Fortuna",
-   "zusatz": "",
-   "beginn": "2026-11-26T20:00",
-   "dauer": 165,
-   "groesse": "M",
-   "art": "Konzert",
-   "abgesagt": false,
-   "lat": 50.93753,
-   "lon": 6.9449
-  },
-  {
-   "ort": "Kölner Philharmonie",
-   "stand": "Philharmonie",
-   "titel": "#round2 – Nyokabi Kariũki",
-   "zusatz": "",
-   "beginn": "2026-11-26T21:00",
-   "dauer": 165,
-   "groesse": "L",
-   "art": "Konzert",
-   "abgesagt": false,
-   "lat": 50.94062,
-   "lon": 6.96082
-  },
-  {
    "ort": "Palastzelt Schanzenviertel",
    "stand": "Schanzenstr.",
-   "titel": "11. Kölner Weihnachtscircus",
+   "titel": "Weihnachtscircus",
    "zusatz": "",
    "beginn": "2026-11-27T15:30",
    "dauer": 150,
@@ -136,19 +32,6 @@
    "abgesagt": false,
    "lat": 50.92471,
    "lon": 6.97808
-  },
-  {
-   "ort": "LANXESS arena",
-   "stand": "Lanxess Arena",
-   "titel": "Kölner Haie - Straubing Tigers",
-   "zusatz": "",
-   "beginn": "2026-11-27T19:30",
-   "dauer": 150,
-   "groesse": "XL",
-   "art": "Sport",
-   "abgesagt": false,
-   "lat": 50.9385,
-   "lon": 6.98288
   },
   {
    "ort": "Carlswerk Victoria",
@@ -175,19 +58,6 @@
    "abgesagt": false,
    "lat": 50.94607,
    "lon": 6.97351
-  },
-  {
-   "ort": "Palastzelt Schanzenviertel",
-   "stand": "Schanzenstr.",
-   "titel": "11. Kölner Weihnachtscircus",
-   "zusatz": "",
-   "beginn": "2026-11-27T19:30",
-   "dauer": 150,
-   "groesse": "M",
-   "art": "Show",
-   "abgesagt": false,
-   "lat": 50.9678,
-   "lon": 7.0156
   },
   {
    "ort": "Die Kantine",
@@ -281,19 +151,6 @@
    "lon": 6.95628
   },
   {
-   "ort": "Palastzelt Schanzenviertel",
-   "stand": "Schanzenstr.",
-   "titel": "11. Kölner Weihnachtscircus",
-   "zusatz": "",
-   "beginn": "2026-11-28T14:30",
-   "dauer": 150,
-   "groesse": "M",
-   "art": "Show",
-   "abgesagt": false,
-   "lat": 50.9678,
-   "lon": 7.0156
-  },
-  {
    "ort": "RheinEnergieStadion",
    "stand": "Müngersdorf",
    "titel": "1. FC Köln – SV 07 Elversberg",
@@ -305,6 +162,19 @@
    "abgesagt": false,
    "lat": 50.93351,
    "lon": 6.87512
+  },
+  {
+   "ort": "Palastzelt Schanzenviertel",
+   "stand": "Schanzenstr.",
+   "titel": "Weihnachtscircus",
+   "zusatz": "",
+   "beginn": "2026-11-28T15:30",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Show",
+   "abgesagt": false,
+   "lat": 50.9678,
+   "lon": 7.0156
   },
   {
    "ort": "LANXESS arena",
@@ -331,19 +201,6 @@
    "abgesagt": false,
    "lat": 50.94607,
    "lon": 6.97351
-  },
-  {
-   "ort": "Palastzelt Schanzenviertel",
-   "stand": "Schanzenstr.",
-   "titel": "11. Kölner Weihnachtscircus",
-   "zusatz": "",
-   "beginn": "2026-11-28T19:00",
-   "dauer": 150,
-   "groesse": "M",
-   "art": "Show",
-   "abgesagt": false,
-   "lat": 50.9678,
-   "lon": 7.0156
   },
   {
    "ort": "Essigfabrik",
@@ -463,19 +320,6 @@
    "lon": 6.96082
   },
   {
-   "ort": "Palastzelt Schanzenviertel",
-   "stand": "Schanzenstr.",
-   "titel": "11. Kölner Weihnachtscircus",
-   "zusatz": "",
-   "beginn": "2026-11-29T13:00",
-   "dauer": 150,
-   "groesse": "M",
-   "art": "Show",
-   "abgesagt": false,
-   "lat": 50.9678,
-   "lon": 7.0156
-  },
-  {
    "ort": "Sportpark Höhenberg",
    "stand": "Höhenberg",
    "titel": "Viktoria Köln – Fortuna Köln",
@@ -517,9 +361,9 @@
   {
    "ort": "Palastzelt Schanzenviertel",
    "stand": "Schanzenstr.",
-   "titel": "11. Kölner Weihnachtscircus",
+   "titel": "Weihnachtscircus",
    "zusatz": "",
-   "beginn": "2026-11-29T17:00",
+   "beginn": "2026-11-29T15:30",
    "dauer": 150,
    "groesse": "M",
    "art": "Show",
@@ -645,6 +489,19 @@
    "lon": 6.96082
   },
   {
+   "ort": "Palastzelt Schanzenviertel",
+   "stand": "Schanzenstr.",
+   "titel": "Weihnachtscircus",
+   "zusatz": "",
+   "beginn": "2026-11-30T15:30",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Show",
+   "abgesagt": false,
+   "lat": 50.9678,
+   "lon": 7.0156
+  },
+  {
    "ort": "Volksbühne Am Rudolfplatz",
    "stand": "Rudolfplatz",
    "titel": "Theater 12: Usjerechnet Helligovend – Eine kölsche Weihnachtskomödie mit Musik",
@@ -723,6 +580,19 @@
    "lon": 7.01339
   },
   {
+   "ort": "Palastzelt Schanzenviertel",
+   "stand": "Schanzenstr.",
+   "titel": "Weihnachtscircus",
+   "zusatz": "",
+   "beginn": "2026-12-01T15:30",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Show",
+   "abgesagt": false,
+   "lat": 50.9678,
+   "lon": 7.0156
+  },
+  {
    "ort": "Volksbühne Am Rudolfplatz",
    "stand": "Rudolfplatz",
    "titel": "Theater 12: Usjerechnet Helligovend – Eine kölsche Weihnachtskomödie mit Musik",
@@ -790,7 +660,7 @@
   {
    "ort": "Palastzelt Schanzenviertel",
    "stand": "Schanzenstr.",
-   "titel": "11. Kölner Weihnachtscircus",
+   "titel": "Weihnachtscircus",
    "zusatz": "",
    "beginn": "2026-12-02T15:30",
    "dauer": 150,
@@ -851,19 +721,6 @@
    "abgesagt": false,
    "lat": 50.94607,
    "lon": 6.97351
-  },
-  {
-   "ort": "Palastzelt Schanzenviertel",
-   "stand": "Schanzenstr.",
-   "titel": "11. Kölner Weihnachtscircus",
-   "zusatz": "",
-   "beginn": "2026-12-02T19:30",
-   "dauer": 150,
-   "groesse": "M",
-   "art": "Show",
-   "abgesagt": false,
-   "lat": 50.9678,
-   "lon": 7.0156
   },
   {
    "ort": "Palladium Köln",
@@ -946,7 +803,7 @@
   {
    "ort": "Palastzelt Schanzenviertel",
    "stand": "Schanzenstr.",
-   "titel": "11. Kölner Weihnachtscircus",
+   "titel": "Weihnachtscircus",
    "zusatz": "",
    "beginn": "2026-12-03T15:30",
    "dauer": 150,
@@ -994,19 +851,6 @@
    "abgesagt": false,
    "lat": 50.96644,
    "lon": 7.01339
-  },
-  {
-   "ort": "Palastzelt Schanzenviertel",
-   "stand": "Schanzenstr.",
-   "titel": "11. Kölner Weihnachtscircus",
-   "zusatz": "",
-   "beginn": "2026-12-03T19:30",
-   "dauer": 150,
-   "groesse": "M",
-   "art": "Show",
-   "abgesagt": false,
-   "lat": 50.9678,
-   "lon": 7.0156
   },
   {
    "ort": "Die Kantine",
@@ -1076,7 +920,7 @@
   {
    "ort": "Palastzelt Schanzenviertel",
    "stand": "Schanzenstr.",
-   "titel": "11. Kölner Weihnachtscircus",
+   "titel": "Weihnachtscircus",
    "zusatz": "",
    "beginn": "2026-12-04T15:30",
    "dauer": 150,
@@ -1124,19 +968,6 @@
    "abgesagt": false,
    "lat": 50.96644,
    "lon": 7.01339
-  },
-  {
-   "ort": "Palastzelt Schanzenviertel",
-   "stand": "Schanzenstr.",
-   "titel": "11. Kölner Weihnachtscircus",
-   "zusatz": "",
-   "beginn": "2026-12-04T19:30",
-   "dauer": 150,
-   "groesse": "M",
-   "art": "Show",
-   "abgesagt": false,
-   "lat": 50.9678,
-   "lon": 7.0156
   },
   {
    "ort": "LANXESS arena",
@@ -1245,9 +1076,9 @@
   {
    "ort": "Palastzelt Schanzenviertel",
    "stand": "Schanzenstr.",
-   "titel": "11. Kölner Weihnachtscircus",
+   "titel": "Weihnachtscircus",
    "zusatz": "",
-   "beginn": "2026-12-05T15:00",
+   "beginn": "2026-12-05T15:30",
    "dauer": 150,
    "groesse": "M",
    "art": "Show",
@@ -1332,19 +1163,6 @@
    "abgesagt": false,
    "lat": 50.94062,
    "lon": 6.96082
-  },
-  {
-   "ort": "Palastzelt Schanzenviertel",
-   "stand": "Schanzenstr.",
-   "titel": "11. Kölner Weihnachtscircus",
-   "zusatz": "",
-   "beginn": "2026-12-05T19:00",
-   "dauer": 150,
-   "groesse": "M",
-   "art": "Show",
-   "abgesagt": false,
-   "lat": 50.9678,
-   "lon": 7.0156
   },
   {
    "ort": "Live Music Hall",
@@ -1477,19 +1295,6 @@
    "lon": 6.96082
   },
   {
-   "ort": "Palastzelt Schanzenviertel",
-   "stand": "Schanzenstr.",
-   "titel": "11. Kölner Weihnachtscircus",
-   "zusatz": "",
-   "beginn": "2026-12-06T13:00",
-   "dauer": 150,
-   "groesse": "M",
-   "art": "Show",
-   "abgesagt": false,
-   "lat": 50.9678,
-   "lon": 7.0156
-  },
-  {
    "ort": "Theater am Tanzbrunnen",
    "stand": "Tanzbrunnen",
    "titel": "Kölsche Weihnacht 2026",
@@ -1501,6 +1306,19 @@
    "abgesagt": false,
    "lat": 50.94589,
    "lon": 6.97042
+  },
+  {
+   "ort": "Palastzelt Schanzenviertel",
+   "stand": "Schanzenstr.",
+   "titel": "Weihnachtscircus",
+   "zusatz": "",
+   "beginn": "2026-12-06T15:30",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Show",
+   "abgesagt": false,
+   "lat": 50.9678,
+   "lon": 7.0156
   },
   {
    "ort": "Gloria",
@@ -1527,19 +1345,6 @@
    "abgesagt": false,
    "lat": 50.96644,
    "lon": 7.01339
-  },
-  {
-   "ort": "Palastzelt Schanzenviertel",
-   "stand": "Schanzenstr.",
-   "titel": "11. Kölner Weihnachtscircus",
-   "zusatz": "",
-   "beginn": "2026-12-06T17:00",
-   "dauer": 150,
-   "groesse": "M",
-   "art": "Show",
-   "abgesagt": false,
-   "lat": 50.9678,
-   "lon": 7.0156
   },
   {
    "ort": "Oper Köln",
@@ -1659,6 +1464,19 @@
    "lon": 6.9368
   },
   {
+   "ort": "Palastzelt Schanzenviertel",
+   "stand": "Schanzenstr.",
+   "titel": "Weihnachtscircus",
+   "zusatz": "",
+   "beginn": "2026-12-07T15:30",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Show",
+   "abgesagt": false,
+   "lat": 50.9678,
+   "lon": 7.0156
+  },
+  {
    "ort": "Schauspiel Köln",
    "stand": "Schanzenstr.",
    "titel": "Isabel Schayani & Michel Friedman",
@@ -1735,6 +1553,19 @@
    "abgesagt": false,
    "lat": 50.93636,
    "lon": 6.9368
+  },
+  {
+   "ort": "Palastzelt Schanzenviertel",
+   "stand": "Schanzenstr.",
+   "titel": "Weihnachtscircus",
+   "zusatz": "",
+   "beginn": "2026-12-08T15:30",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Show",
+   "abgesagt": false,
+   "lat": 50.9678,
+   "lon": 7.0156
   },
   {
    "ort": "Schauspiel Köln im Depot",
@@ -1882,7 +1713,7 @@
   {
    "ort": "Palastzelt Schanzenviertel",
    "stand": "Schanzenstr.",
-   "titel": "11. Kölner Weihnachtscircus",
+   "titel": "Weihnachtscircus",
    "zusatz": "",
    "beginn": "2026-12-09T15:30",
    "dauer": 150,
@@ -1958,19 +1789,6 @@
    "lon": 7.01339
   },
   {
-   "ort": "Palastzelt Schanzenviertel",
-   "stand": "Schanzenstr.",
-   "titel": "11. Kölner Weihnachtscircus",
-   "zusatz": "",
-   "beginn": "2026-12-09T19:30",
-   "dauer": 150,
-   "groesse": "M",
-   "art": "Show",
-   "abgesagt": false,
-   "lat": 50.9678,
-   "lon": 7.0156
-  },
-  {
    "ort": "Carlswerk Victoria",
    "stand": "Schanzenstr.",
    "titel": "Kodaline – Farewell Tour + Support: Bertie Newman",
@@ -2025,7 +1843,7 @@
   {
    "ort": "Palastzelt Schanzenviertel",
    "stand": "Schanzenstr.",
-   "titel": "11. Kölner Weihnachtscircus",
+   "titel": "Weihnachtscircus",
    "zusatz": "",
    "beginn": "2026-12-10T15:30",
    "dauer": 150,
@@ -2060,19 +1878,6 @@
    "abgesagt": false,
    "lat": 50.96644,
    "lon": 7.01339
-  },
-  {
-   "ort": "Palastzelt Schanzenviertel",
-   "stand": "Schanzenstr.",
-   "titel": "11. Kölner Weihnachtscircus",
-   "zusatz": "",
-   "beginn": "2026-12-10T19:30",
-   "dauer": 150,
-   "groesse": "M",
-   "art": "Show",
-   "abgesagt": false,
-   "lat": 50.9678,
-   "lon": 7.0156
   },
   {
    "ort": "LANXESS arena",
@@ -2155,7 +1960,7 @@
   {
    "ort": "Palastzelt Schanzenviertel",
    "stand": "Schanzenstr.",
-   "titel": "11. Kölner Weihnachtscircus",
+   "titel": "Weihnachtscircus",
    "zusatz": "",
    "beginn": "2026-12-11T15:30",
    "dauer": 150,
@@ -2216,19 +2021,6 @@
    "abgesagt": false,
    "lat": 50.96644,
    "lon": 7.01339
-  },
-  {
-   "ort": "Palastzelt Schanzenviertel",
-   "stand": "Schanzenstr.",
-   "titel": "11. Kölner Weihnachtscircus",
-   "zusatz": "",
-   "beginn": "2026-12-11T19:30",
-   "dauer": 150,
-   "groesse": "M",
-   "art": "Show",
-   "abgesagt": false,
-   "lat": 50.9678,
-   "lon": 7.0156
   },
   {
    "ort": "Theater am Tanzbrunnen",
@@ -2296,6 +2088,19 @@
    "lon": 7.01339
   },
   {
+   "ort": "Galopprennbahn Weidenpesch",
+   "stand": "Scharnhorst",
+   "titel": "Flohmarkt an der Galopprennbahn",
+   "zusatz": "",
+   "beginn": "2026-12-12T08:00",
+   "dauer": 360,
+   "groesse": "M",
+   "art": "Markt",
+   "abgesagt": false,
+   "lat": 50.98137,
+   "lon": 6.95628
+  },
+  {
    "ort": "RheinEnergieStadion",
    "stand": "Müngersdorf",
    "titel": "1. FC Köln – RB Leipzig",
@@ -2309,6 +2114,71 @@
    "lon": 6.87512
   },
   {
+   "ort": "Palastzelt Schanzenviertel",
+   "stand": "Schanzenstr.",
+   "titel": "Weihnachtscircus",
+   "zusatz": "",
+   "beginn": "2026-12-12T15:30",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Show",
+   "abgesagt": false,
+   "lat": 50.9678,
+   "lon": 7.0156
+  },
+  {
+   "ort": "E-Werk Köln",
+   "stand": "E-Werk",
+   "titel": "Stunksitzung 2026",
+   "zusatz": "",
+   "beginn": "2026-12-12T18:00",
+   "dauer": 165,
+   "groesse": "L",
+   "art": "Konzert",
+   "abgesagt": false,
+   "lat": 50.96962,
+   "lon": 7.0166
+  },
+  {
+   "ort": "Die Kantine",
+   "stand": "Kantine",
+   "titel": "Kontrollverlust – New Game + Fest",
+   "zusatz": "",
+   "beginn": "2026-12-12T18:00",
+   "dauer": 165,
+   "groesse": "M",
+   "art": "Konzert",
+   "abgesagt": false,
+   "lat": 50.99833,
+   "lon": 6.93699
+  },
+  {
+   "ort": "Oper Köln",
+   "stand": "Tanzbrunnen",
+   "titel": "Der Rosenkavalier",
+   "zusatz": "",
+   "beginn": "2026-12-12T18:00",
+   "dauer": 180,
+   "groesse": "M",
+   "art": "Oper",
+   "abgesagt": false,
+   "lat": 50.94607,
+   "lon": 6.97351
+  },
+  {
+   "ort": "Schauspiel Köln",
+   "stand": "Schanzenstr.",
+   "titel": "Tag und Nacht",
+   "zusatz": "",
+   "beginn": "2026-12-12T19:30",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Theater",
+   "abgesagt": false,
+   "lat": 50.96644,
+   "lon": 7.01339
+  },
+  {
    "ort": "LANXESS arena",
    "stand": "Lanxess Arena",
    "titel": "Chris Tall",
@@ -2320,6 +2190,110 @@
    "abgesagt": false,
    "lat": 50.9385,
    "lon": 6.98288
+  },
+  {
+   "ort": "Palladium Köln",
+   "stand": "Schanzenstr.",
+   "titel": "AZET – Fast Life Forever Tour 2026",
+   "zusatz": "",
+   "beginn": "2026-12-12T20:00",
+   "dauer": 165,
+   "groesse": "L",
+   "art": "Konzert",
+   "abgesagt": false,
+   "lat": 50.96898,
+   "lon": 7.01682
+  },
+  {
+   "ort": "Theater am Tanzbrunnen",
+   "stand": "Tanzbrunnen",
+   "titel": "Tom Gaebel & His Orchestra – A Swinging Christmas 2026",
+   "zusatz": "",
+   "beginn": "2026-12-12T20:00",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Theater",
+   "abgesagt": false,
+   "lat": 50.94589,
+   "lon": 6.97042
+  },
+  {
+   "ort": "Carlswerk Victoria",
+   "stand": "Schanzenstr.",
+   "titel": "Green Lung",
+   "zusatz": "",
+   "beginn": "2026-12-12T20:00",
+   "dauer": 165,
+   "groesse": "L",
+   "art": "Konzert",
+   "abgesagt": false,
+   "lat": 50.96494,
+   "lon": 7.01254
+  },
+  {
+   "ort": "Kölner Philharmonie",
+   "stand": "Philharmonie",
+   "titel": "WDR Sinfonieorchester | Abenteurer – Măcelaru & Strauss",
+   "zusatz": "",
+   "beginn": "2026-12-12T20:00",
+   "dauer": 165,
+   "groesse": "L",
+   "art": "Konzert",
+   "abgesagt": false,
+   "lat": 50.94062,
+   "lon": 6.96082
+  },
+  {
+   "ort": "Essigfabrik",
+   "stand": "Drehbrücke",
+   "titel": "CONNY & Liser – Ælpha Male Club Tour 2026",
+   "zusatz": "",
+   "beginn": "2026-12-12T20:00",
+   "dauer": 165,
+   "groesse": "M",
+   "art": "Konzert",
+   "abgesagt": false,
+   "lat": 50.92471,
+   "lon": 6.97808
+  },
+  {
+   "ort": "Schauspiel Köln",
+   "stand": "Schanzenstr.",
+   "titel": "Der Problemlöser",
+   "zusatz": "",
+   "beginn": "2026-12-12T20:00",
+   "dauer": 150,
+   "groesse": "M",
+   "art": "Theater",
+   "abgesagt": false,
+   "lat": 50.96644,
+   "lon": 7.01339
+  },
+  {
+   "ort": "Live Music Hall",
+   "stand": "Helios",
+   "titel": "Just Taylor – Birthday Special",
+   "zusatz": "",
+   "beginn": "2026-12-12T23:00",
+   "dauer": 165,
+   "groesse": "M",
+   "art": "Konzert",
+   "abgesagt": false,
+   "lat": 50.94932,
+   "lon": 6.90948
+  },
+  {
+   "ort": "Live Music Hall",
+   "stand": "Helios",
+   "titel": "Just Taylor – Birthday Special / Party made by fans for fans",
+   "zusatz": "",
+   "beginn": "2026-12-12T23:00",
+   "dauer": 165,
+   "groesse": "M",
+   "art": "Konzert",
+   "abgesagt": false,
+   "lat": 50.94932,
+   "lon": 6.90948
   },
   {
    "ort": "LANXESS arena",
@@ -2795,6 +2769,19 @@
    "titel": "IHF MEN’S HANDBALL WORLD CHAMPIONSHIP 2027",
    "zusatz": "",
    "beginn": "2027-01-25T15:30",
+   "dauer": 135,
+   "groesse": "XL",
+   "art": "Sport",
+   "abgesagt": false,
+   "lat": 50.9385,
+   "lon": 6.98288
+  },
+  {
+   "ort": "LANXESS arena",
+   "stand": "Lanxess Arena",
+   "titel": "IHF MEN’S HANDBALL WORLD CHAMPIONSHIP 2027",
+   "zusatz": "",
+   "beginn": "2027-01-26T17:30",
    "dauer": 135,
    "groesse": "XL",
    "art": "Sport",
