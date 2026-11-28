@@ -1195,7 +1195,7 @@ function mapTop(now) {
 }
 
 // Punkte: normal klein und grau, Meine Orte gelb, Sonderplätze orange, „nur bei Veranstaltung“ dunkel
-const MAP_DOT = { std: { c: '#8b95a3', r: 1 }, mine: { c: '#ffcc00', r: 1.3 }, sonder: { c: '#ff9f43', r: 1.15 }, note: { c: '#4f5866', r: 0.8 } };
+const MAP_DOT = { std: { c: '#e6eaef', r: 1 }, mine: { c: '#ffcc00', r: 1.2 }, sonder: { c: '#ff9f43', r: 1.1 }, note: { c: '#7d8796', r: 0.85 } };
 const mapDotKind = (p, mine) => p.note ? 'note' : mine.has(p.name) ? 'mine' : p.ch === 5 ? 'sonder' : 'std';
 
 // Schild für eine Veranstaltung: Farbe wie im Radar, Uhrzeit = wann die Leute rauskommen
@@ -1204,9 +1204,9 @@ function evMapLabel(e, now) {
   const c = evColor(e);
   if (e.messe) {
     const h = new Date(now).getHours();
-    return { c, hotNow: h >= 16 && h < 19 && dow(now) !== 6, html: `${EV_ICON[c]} Messe 16–19` };
+    return { c, hotNow: h >= 16 && h < 19 && dow(now) !== 6, html: `<i>${EV_ICON[c]}</i><b>Messe 16–19</b>` };
   }
-  return { c, hotNow: now >= e.end - 20 * 60000 && now <= e.end + 40 * 60000, html: `${EV_ICON[c]} ${hhmm(e.end)}` };
+  return { c, hotNow: now >= e.end - 20 * 60000 && now <= e.end + 40 * 60000, html: `<i>${EV_ICON[c]}</i><b>${hhmm(e.end)}</b>` };
 }
 
 // Liste unter der Karte; Antippen zeigt den Platz auf der Karte
@@ -1221,7 +1221,38 @@ function mapTopListHtml(top) {
 }
 
 function mapLegendHtml(ev) {
-  return `<b class="lg-rk">1</b> jetzt am besten · <i class="lg-d" style="--c:#ffcc00"></i> Meine Orte · <i class="lg-d" style="--c:#ff9f43"></i> Sonderplatz · <i class="lg-d" style="--c:#8b95a3"></i> Stand${ev ? ' · <b>Uhrzeit</b> = Veranstaltung endet' : ''}`;
+  return `<b class="lg-rk">1</b> jetzt am besten${ev ? ' · Schild mit Uhrzeit = Ende' : ''} · <i class="lg-d" style="--c:#ffcc00"></i> Meine Orte · <i class="lg-d" style="--c:#ff9f43"></i> Sonderplatz · <i class="lg-d" style="--c:#e6eaef"></i> Halteplatz (Namen beim Hineinzoomen)`;
+}
+
+// Wichtigkeit eines Schilds: groß vor klein, Weihnachtsmarkt einzeln zuletzt
+const evPrio = e => e.art === 'Weihnachtsmarkt' ? 1 : e.groesse === 'XL' || e.messe ? 3 : 2;
+
+// Alle Weihnachtsmärkte als EIN Schild, solange nicht hineingezoomt ist
+function wmGroup(now) {
+  const wm = wmToday(now).filter(x => now <= x.close + 40 * 60000);
+  if (wm.length < 2) return null;
+  const first = wm[0].close, last = wm[wm.length - 1].close;
+  const lat = wm.reduce((a, x) => a + x.m.pos[0], 0) / wm.length, lon = wm.reduce((a, x) => a + x.m.pos[1], 0) / wm.length;
+  return { pos: [lat, lon], hotNow: now >= first - 20 * 60000 && now <= last + 40 * 60000,
+    html: `<i>🎄</i><b>${wm.length} Märkte ${first === last ? hhmm(first) : hhmm(first) + '–' + hhmm(last)}</b>`,
+    popup: `<div class="pop"><b>🎄 Weihnachtsmärkte heute</b>${wm.map(x => `<div class="sub">${hhmm(x.close)} ${esc(x.m.kurz)} – Platz ${esc(x.m.stand)}</div>`).join('')}
+      <div class="sub">Am besten 20 Min vor Schluss am Platz sein. Hineinzoomen zeigt jeden Markt einzeln.</div></div>` };
+}
+
+// Schilder, die sich überdecken, werden klein (nur Symbol). Nummern und „jetzt“-Schilder haben Vorrang.
+function mapDeclutter(root) {
+  if (!root) return;
+  const boxes = [];
+  const hit = r => boxes.some(b => r.left < b.right + 2 && r.right > b.left - 2 && r.top < b.bottom + 2 && r.bottom > b.top - 2);
+  root.querySelectorAll('.rkicon span').forEach(el => { if (el.offsetParent !== null) boxes.push(el.getBoundingClientRect()); });
+  const evs = [...root.querySelectorAll('.evl')].filter(el => !el.hidden && el.offsetParent !== null);
+  evs.sort((a, b) => (b.classList.contains('now') - a.classList.contains('now')) || (Number(b.dataset.p || 0) - Number(a.dataset.p || 0)));
+  for (const el of evs) {
+    el.classList.remove('mini');
+    let r = el.getBoundingClientRect();
+    if (hit(r)) { el.classList.add('mini'); r = el.getBoundingClientRect(); }
+    boxes.push(r);
+  }
 }
 
 function standPopup(p, hot) {
@@ -1251,6 +1282,7 @@ function eventPopup(e) {
 
 function mapSvgHtml(now) {
   const top = mapTop(now), topBy = new Map(top.map(x => [x.p.name, x]));
+  const g = wmGroup(now);
   const mine = new Set(S.settings.places);
   const rhein = RHEIN.map(p => proj(p[0], p[1]).map(v => v.toFixed(1)).join(',')).join(' ');
   const labels = STADTTEILE.map(([n, la, lo]) => { const [x, y] = proj(la, lo); return `<text class="mlabel" x="${x.toFixed(1)}" y="${y.toFixed(1)}">${esc(n)}</text>`; }).join('');
@@ -1259,13 +1291,14 @@ function mapSvgHtml(now) {
     if (!p.pos || topBy.has(p.name)) return '';
     const [x, y] = proj(p.pos[0], p.pos[1]);
     const kind = mapDotKind(p, mine);
-    return `<circle class="mk m-${kind}" data-i="${i}" data-z="${MAP_DOT[kind].r * 5}" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="1"/>`;
+    return `<circle class="mk m-${kind}" data-i="${i}" data-z="${MAP_DOT[kind].r * 6.5}" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="1"/><text class="mname" x="${x.toFixed(1)}" y="${y.toFixed(1)}" dx="0.9em">${esc(p.name)}</text>`;
   }).join('');
   // Obendrauf als HTML: die 5 besten (rote Nummern) und Veranstaltungen mit Endzeit
   const ov = top.map(x => { const [px, py] = proj(x.p.pos[0], x.p.pos[1]);
     return `<button type="button" class="ovl rkicon" data-act="mapPick" data-i="${HP.indexOf(x.p)}" data-x="${px.toFixed(1)}" data-y="${py.toFixed(1)}" aria-label="Nr. ${x.rank}: ${esc(x.p.name)}"><span>${x.rank}</span></button>`; }).join('')
     + mapEvents(now).map((e, i) => { const [px, py] = proj(e.lat, e.lon); const lb = evMapLabel(e, now);
-    return `<button type="button" class="ovl evl c-${lb.c}${lb.hotNow ? ' now' : ''}" data-act="mapPick" data-e="${i}" data-x="${px.toFixed(1)}" data-y="${py.toFixed(1)}">${lb.html}</button>`; }).join('');
+    return `<button type="button" class="ovl evl c-${lb.c}${lb.hotNow ? ' now' : ''}${e.art === 'Weihnachtsmarkt' ? ' wm1' : ''}" data-p="${evPrio(e)}" data-act="mapPick" data-e="${i}" data-x="${px.toFixed(1)}" data-y="${py.toFixed(1)}">${lb.html}</button>`; }).join('')
+    + (g ? (() => { const [px, py] = proj(g.pos[0], g.pos[1]); return `<button type="button" class="ovl evl c-wm wmall${g.hotNow ? ' now' : ''}" data-p="2" data-act="mapPick" data-g="1" data-x="${px.toFixed(1)}" data-y="${py.toFixed(1)}">${g.html}</button>`; })() : '');
   let me = '';
   if (myPos) { const [x, y] = proj(myPos.lat, myPos.lon); me = `<circle class="mme" data-r="9" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="1"/>`; }
   return `<svg id="mapSvg" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Karte der Kölner Taxi-Halteplätze">
@@ -1286,15 +1319,23 @@ function mapApplyView() {
   const grow = Math.min(1.5, Math.max(0.55, Math.sqrt(0.15 / v.s)));
   svg.querySelectorAll('[data-z]').forEach(c => c.setAttribute('r', (Number(c.dataset.z) * grow * v.s).toFixed(2)));
   const ov = svg.parentNode && svg.parentNode.querySelector('.mov');
+  svg.classList.toggle('far', v.s > 0.3);
+  svg.classList.toggle('names', v.s <= 0.05);
+  const near = v.s <= 0.05, grouped = !!(ov && ov.querySelector('.wmall'));
   if (ov) ov.querySelectorAll('[data-x]').forEach(el => {
     const px = (Number(el.dataset.x) - v.cx) / v.s + w / 2, py = (Number(el.dataset.y) - v.cy) / v.s + h / 2;
-    el.hidden = px < -60 || py < -40 || px > w + 60 || py > h + 40;
+    el.hidden = px < -60 || py < -40 || px > w + 60 || py > h + 40
+      || (el.classList.contains('wm1') && grouped && !near) || (el.classList.contains('wmall') && near);
     el.style.transform = `translate(${px.toFixed(1)}px, ${py.toFixed(1)}px) translate(-50%, ${el.classList.contains('evl') ? '-130%' : '-50%'})`;
   });
   svg.style.setProperty('--fs', (13 * v.s).toFixed(2) + 'px');
   svg.style.setProperty('--fe', (22 * v.s).toFixed(2) + 'px');
   svg.style.setProperty('--sw', (1.5 * v.s).toFixed(2) + 'px');
+  mapDeclutterSoon();
 }
+
+let declutterT = null;
+function mapDeclutterSoon() { clearTimeout(declutterT); declutterT = setTimeout(() => mapDeclutter(mapState.svg && mapState.svg.parentNode), 60); }
 
 function mapZoom(f, px, py) {
   const svg = mapState.svg, v = mapState.view;
@@ -1396,8 +1437,8 @@ function viewMap() {
       <button type="button" class="btn route" data-act="mapZoomIn" aria-label="Hineinzoomen">＋</button>
       <button type="button" class="btn route" data-act="mapZoomOut" aria-label="Herauszoomen">−</button>
     </div>
-    <p class="muted small maplegend">${mapLegendHtml(ev)}${myPos ? ' · 🔵 du' : ''}</p>
     <div class="map">${mapSvgHtml(now)}<div id="mapPop" class="mappop" hidden></div></div>
+    <p class="muted small maplegend">${mapLegendHtml(ev)}${myPos ? ' · 🔵 du' : ''}</p>
     ${mapTopListHtml(mapTop(now))}`;
 }
 
@@ -2189,12 +2230,15 @@ function viewWeek() {
   for (let i = 0; i < week.days; i++) {
     const day = new Date(t0); day.setDate(t0.getDate() + i);
     const a = day.getTime(), b = a + 864e5;
-    const list = evs.map(e => ({ e, start: parseLocal(e.beginn) })).filter(x => x.start >= a && x.start < b)
+    const all = evs.map(e => ({ e, start: parseLocal(e.beginn) })).filter(x => x.start >= a && x.start < b)
       .map(x => Object.assign(x, { end: x.start + (x.e.dauer || 165) * 60000 }));
+    // Vorbei = mehr als 40 Minuten nach dem Ende (dann sind die Fahrgäste weg)
+    const list = all.filter(x => x.end + 40 * 60000 > now);
+    const past = all.length - list.length;
     const big = list.filter(x => (x.e.groesse || 'XL') !== 'M');
     const shown = week.showM ? list : big;
     const messen = fairs.filter(m => parseLocal(m.von) <= a && parseLocal(m.bis) >= a);
-    days.push({ a, list, big, shown, messen, wx: week.wx && week.wx[dayKey(a)], holiday: holidayName(a), season: seasonHint(a + 12 * 36e5) });
+    days.push({ a, list, big, shown, messen, past, wx: week.wx && week.wx[dayKey(a)], holiday: holidayName(a), season: seasonHint(a + 12 * 36e5) });
   }
 
   const head = (x, i) => {
@@ -2252,6 +2296,7 @@ function viewWeek() {
       ${peaks(x)}
       ${messeRows || x.shown.length ? `<ul class="list">${messeRows}${x.shown.map(row).join('')}</ul>` : '<p class="muted">Keine großen Veranstaltungen.</p>'}
       ${hidden > 0 ? `<p class="muted small">+ ${hidden} kleinere Veranstaltung${hidden === 1 ? '' : 'en'} (oben „auch kleinere“ antippen)</p>` : ''}
+      ${x.past ? `<p class="muted small">✓ ${x.past} ${x.past === 1 ? 'Veranstaltung ist' : 'Veranstaltungen sind'} heute schon vorbei und ausgeblendet.</p>` : ''}
     </section>`;
   };
 
@@ -2349,6 +2394,7 @@ const ACTIONS = {
   },
   mapPick(el) {
     const now = Date.now();
+    if (el.dataset.g) { const g = wmGroup(now); if (g) mapShowPop(g.popup); return; }
     if (el.dataset.e != null) { const e = mapEvents(now)[Number(el.dataset.e)]; if (e) mapShowPop(eventPopup(e)); return; }
     const p = HP[Number(el.dataset.i)];
     if (p) mapShowPop(standPopup(p, mapTop(now).find(x => x.p === p)));

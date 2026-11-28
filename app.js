@@ -1034,7 +1034,7 @@ function mapTop(now) {
 }
 
 // Punkte: normal klein und grau, Meine Orte gelb, Sonderplätze orange, „nur bei Veranstaltung“ dunkel
-const MAP_DOT = { std: { c: '#8b95a3', r: 1 }, mine: { c: '#ffcc00', r: 1.3 }, sonder: { c: '#ff9f43', r: 1.15 }, note: { c: '#4f5866', r: 0.8 } };
+const MAP_DOT = { std: { c: '#e6eaef', r: 1 }, mine: { c: '#ffcc00', r: 1.2 }, sonder: { c: '#ff9f43', r: 1.1 }, note: { c: '#7d8796', r: 0.85 } };
 const mapDotKind = (p, mine) => p.note ? 'note' : mine.has(p.name) ? 'mine' : p.ch === 5 ? 'sonder' : 'std';
 
 // Schild für eine Veranstaltung: Farbe wie im Radar, Uhrzeit = wann die Leute rauskommen
@@ -1043,9 +1043,9 @@ function evMapLabel(e, now) {
   const c = evColor(e);
   if (e.messe) {
     const h = new Date(now).getHours();
-    return { c, hotNow: h >= 16 && h < 19 && dow(now) !== 6, html: `${EV_ICON[c]} Messe 16–19` };
+    return { c, hotNow: h >= 16 && h < 19 && dow(now) !== 6, html: `<i>${EV_ICON[c]}</i><b>Messe 16–19</b>` };
   }
-  return { c, hotNow: now >= e.end - 20 * 60000 && now <= e.end + 40 * 60000, html: `${EV_ICON[c]} ${hhmm(e.end)}` };
+  return { c, hotNow: now >= e.end - 20 * 60000 && now <= e.end + 40 * 60000, html: `<i>${EV_ICON[c]}</i><b>${hhmm(e.end)}</b>` };
 }
 
 // Liste unter der Karte; Antippen zeigt den Platz auf der Karte
@@ -1060,7 +1060,38 @@ function mapTopListHtml(top) {
 }
 
 function mapLegendHtml(ev) {
-  return `<b class="lg-rk">1</b> jetzt am besten · <i class="lg-d" style="--c:#ffcc00"></i> Meine Orte · <i class="lg-d" style="--c:#ff9f43"></i> Sonderplatz · <i class="lg-d" style="--c:#8b95a3"></i> Stand${ev ? ' · <b>Uhrzeit</b> = Veranstaltung endet' : ''}`;
+  return `<b class="lg-rk">1</b> jetzt am besten${ev ? ' · Schild mit Uhrzeit = Ende' : ''} · <i class="lg-d" style="--c:#ffcc00"></i> Meine Orte · <i class="lg-d" style="--c:#ff9f43"></i> Sonderplatz · <i class="lg-d" style="--c:#e6eaef"></i> Halteplatz (Namen beim Hineinzoomen)`;
+}
+
+// Wichtigkeit eines Schilds: groß vor klein, Weihnachtsmarkt einzeln zuletzt
+const evPrio = e => e.art === 'Weihnachtsmarkt' ? 1 : e.groesse === 'XL' || e.messe ? 3 : 2;
+
+// Alle Weihnachtsmärkte als EIN Schild, solange nicht hineingezoomt ist
+function wmGroup(now) {
+  const wm = wmToday(now).filter(x => now <= x.close + 40 * 60000);
+  if (wm.length < 2) return null;
+  const first = wm[0].close, last = wm[wm.length - 1].close;
+  const lat = wm.reduce((a, x) => a + x.m.pos[0], 0) / wm.length, lon = wm.reduce((a, x) => a + x.m.pos[1], 0) / wm.length;
+  return { pos: [lat, lon], hotNow: now >= first - 20 * 60000 && now <= last + 40 * 60000,
+    html: `<i>🎄</i><b>${wm.length} Märkte ${first === last ? hhmm(first) : hhmm(first) + '–' + hhmm(last)}</b>`,
+    popup: `<div class="pop"><b>🎄 Weihnachtsmärkte heute</b>${wm.map(x => `<div class="sub">${hhmm(x.close)} ${esc(x.m.kurz)} – Platz ${esc(x.m.stand)}</div>`).join('')}
+      <div class="sub">Am besten 20 Min vor Schluss am Platz sein. Hineinzoomen zeigt jeden Markt einzeln.</div></div>` };
+}
+
+// Schilder, die sich überdecken, werden klein (nur Symbol). Nummern und „jetzt“-Schilder haben Vorrang.
+function mapDeclutter(root) {
+  if (!root) return;
+  const boxes = [];
+  const hit = r => boxes.some(b => r.left < b.right + 2 && r.right > b.left - 2 && r.top < b.bottom + 2 && r.bottom > b.top - 2);
+  root.querySelectorAll('.rkicon span').forEach(el => { if (el.offsetParent !== null) boxes.push(el.getBoundingClientRect()); });
+  const evs = [...root.querySelectorAll('.evl')].filter(el => !el.hidden && el.offsetParent !== null);
+  evs.sort((a, b) => (b.classList.contains('now') - a.classList.contains('now')) || (Number(b.dataset.p || 0) - Number(a.dataset.p || 0)));
+  for (const el of evs) {
+    el.classList.remove('mini');
+    let r = el.getBoundingClientRect();
+    if (hit(r)) { el.classList.add('mini'); r = el.getBoundingClientRect(); }
+    boxes.push(r);
+  }
 }
 
 function standPopup(p, hot) {
@@ -1095,43 +1126,61 @@ async function initMap() {
   if (!$('#map') || tab !== 'plaetze' || placesMode !== 'karte') return;   // inzwischen weggewechselt
   destroyMap();
   const L = window.L;
-  const map = L.map('map', { zoomControl: true, preferCanvas: true, attributionControl: true }).setView([50.938, 6.96], 12);
+  const map = L.map('map', { zoomControl: false, preferCanvas: true, attributionControl: true }).setView([50.938, 6.96], 12);
   mapState.map = map;
   L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19, attribution: '© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>-Mitwirkende',
-    className: 'tiles-dark'
+    className: 'tiles-calm'
   }).addTo(map);
 
   const now = Date.now();
   const top = mapTop(now);
   const topBy = new Map(top.map(x => [x.p.name, x]));
   const mine = new Set(S.settings.places);
-  // Normale Stände klein und grau, beim Hineinzoomen größer; die 5 besten als rote Nummern obendrauf
-  const dotSize = z => z <= 11 ? 2.5 : z === 12 ? 3.5 : z === 13 ? 4.5 : z === 14 ? 6 : 7.5;
+  // Normale Stände grau und erst beim Hineinzoomen; Meine Orte und Sonderplätze immer; die 5 besten als rote Nummern
+  const dotSize = z => z <= 11 ? 3.5 : z === 12 ? 5 : z === 13 ? 6 : z === 14 ? 7.5 : 9;
   const dots = [];
+  const stdLayer = L.layerGroup(), wmOne = L.layerGroup(), wmAll = L.layerGroup();
   mapState.mk = {};
   for (const p of HP) {
     if (!p.pos || topBy.has(p.name)) continue;
-    const st = MAP_DOT[mapDotKind(p, mine)];
-    const m = L.circleMarker(p.pos, { radius: st.r * dotSize(12), color: '#101317', weight: 1, fillColor: st.c, fillOpacity: 0.95 })
-      .bindPopup(() => standPopup(p, null), { maxWidth: 280 }).addTo(map);
+    const kind = mapDotKind(p, mine), st = MAP_DOT[kind];
+    const m = L.circleMarker(p.pos, { radius: st.r * dotSize(12), color: '#0b0d10', weight: 2, fillColor: st.c, fillOpacity: 1 })
+      .bindPopup(() => standPopup(p, null), { maxWidth: 280 })
+      .bindTooltip(p.name, { permanent: true, direction: 'right', offset: [8, 0], className: 'hplab' });
+    if (kind === 'std') stdLayer.addLayer(m); else m.addTo(map);
     dots.push([m, st.r]);
     mapState.mk[p.name] = m;
   }
-  map.on('zoomend', () => { const f = dotSize(map.getZoom()); dots.forEach(([m, r]) => m.setRadius(r * f)); });
   for (const x of top) {
-    mapState.mk[x.p.name] = L.marker(x.p.pos, { icon: L.divIcon({ className: 'rkicon', html: `<span>${x.rank}</span>`, iconSize: [30, 30] }), zIndexOffset: 1000 })
+    mapState.mk[x.p.name] = L.marker(x.p.pos, { icon: L.divIcon({ className: 'rkicon', html: `<span>${x.rank}</span>`, iconSize: [26, 26] }), zIndexOffset: 1000 })
       .bindPopup(() => standPopup(x.p, x), { maxWidth: 280 }).addTo(map);
   }
-  // Veranstaltungen und Messen heute: farbiges Schild mit der Endzeit
+  // Veranstaltungen, Messen und Weihnachtsmärkte: farbiges Schild mit der Endzeit
+  const evIcon = (html, c, hot, p) => L.divIcon({ className: 'evlab', html: `<span class="evl c-${c}${hot ? ' now' : ''}" data-p="${p}">${html}</span>`, iconSize: [0, 0] });
   for (const e of mapEvents(now)) {
     const lb = evMapLabel(e, now);
-    L.marker([e.lat, e.lon], { icon: L.divIcon({ className: 'evlab', html: `<span class="evl c-${lb.c}${lb.hotNow ? ' now' : ''}">${lb.html}</span>`, iconSize: [0, 0] }), zIndexOffset: 500 })
-      .bindPopup(() => eventPopup(e), { maxWidth: 280 }).addTo(map);
+    const mk = L.marker([e.lat, e.lon], { icon: evIcon(lb.html, lb.c, lb.hotNow, evPrio(e)), zIndexOffset: lb.hotNow ? 800 : 500 })
+      .bindPopup(() => eventPopup(e), { maxWidth: 280 });
+    if (e.art === 'Weihnachtsmarkt') wmOne.addLayer(mk); else mk.addTo(map);
   }
-  // Start: alles Wichtige im Bild (Top 5 und Veranstaltungen)
+  const g = wmGroup(now);
+  if (g) wmAll.addLayer(L.marker(g.pos, { icon: evIcon(g.html, 'wm', g.hotNow, 2), zIndexOffset: g.hotNow ? 800 : 500 }).bindPopup(() => g.popup, { maxWidth: 280 }));
+  const box = $('#map');
+  const layers = () => {
+    const z = map.getZoom();
+    if (g && z < 15) { map.removeLayer(wmOne); map.addLayer(wmAll); } else { map.removeLayer(wmAll); map.addLayer(wmOne); }
+    if (z <= 11) map.removeLayer(stdLayer); else map.addLayer(stdLayer);
+    box.classList.toggle('names', z >= 15);
+    const f = dotSize(z); dots.forEach(([m, r]) => m.setRadius(r * f));
+    setTimeout(() => mapDeclutter(box), 0);
+  };
+  map.on('zoomend', layers);
+  map.on('moveend', () => mapDeclutter(box));
+  // Start: alles Wichtige im Bild (Top 5 und Veranstaltungen im Stadtgebiet)
   const focus = [...top.map(x => x.p.pos), ...mapEvents(now).map(e => [e.lat, e.lon])].filter(ll => distM(MAP_CITY, ll) < 7500);
   if (focus.length > 1) { map.fitBounds(focus, { padding: [36, 36], maxZoom: 13 }); if (map.getZoom() < 12) map.setView(MAP_CITY, 12); }
+  layers();
 
   // Eigener Standort: blauer Punkt, folgt dir, solange die Karte offen ist
   const showMe = pos => {
@@ -1156,11 +1205,9 @@ async function initMap() {
 function viewMap() {
   const now = Date.now();
   const ev = mapEvents(now).length;
-  return `<div class="maptools">
-      <button type="button" class="btn route" data-act="mapMe">📍 Ich</button>
-      <span class="muted small">${mapLegendHtml(ev)}</span>
-    </div>
-    <div id="map" class="map"></div>
+  return `<div class="mapwrap"><div id="map" class="map"></div>
+      <button type="button" class="mapfab" data-act="mapMe" aria-label="Mein Standort">📍</button></div>
+    <p class="muted small maplegend">${mapLegendHtml(ev)}</p>
     ${mapTopListHtml(mapTop(now))}`;
 }
 
@@ -2118,12 +2165,15 @@ function viewWeek() {
   for (let i = 0; i < week.days; i++) {
     const day = new Date(t0); day.setDate(t0.getDate() + i);
     const a = day.getTime(), b = a + 864e5;
-    const list = evs.map(e => ({ e, start: parseLocal(e.beginn) })).filter(x => x.start >= a && x.start < b)
+    const all = evs.map(e => ({ e, start: parseLocal(e.beginn) })).filter(x => x.start >= a && x.start < b)
       .map(x => Object.assign(x, { end: x.start + (x.e.dauer || 165) * 60000 }));
+    // Vorbei = mehr als 40 Minuten nach dem Ende (dann sind die Fahrgäste weg)
+    const list = all.filter(x => x.end + 40 * 60000 > now);
+    const past = all.length - list.length;
     const big = list.filter(x => (x.e.groesse || 'XL') !== 'M');
     const shown = week.showM ? list : big;
     const messen = fairs.filter(m => parseLocal(m.von) <= a && parseLocal(m.bis) >= a);
-    days.push({ a, list, big, shown, messen, wx: week.wx && week.wx[dayKey(a)], holiday: holidayName(a), season: seasonHint(a + 12 * 36e5) });
+    days.push({ a, list, big, shown, messen, past, wx: week.wx && week.wx[dayKey(a)], holiday: holidayName(a), season: seasonHint(a + 12 * 36e5) });
   }
 
   const head = (x, i) => {
@@ -2181,6 +2231,7 @@ function viewWeek() {
       ${peaks(x)}
       ${messeRows || x.shown.length ? `<ul class="list">${messeRows}${x.shown.map(row).join('')}</ul>` : '<p class="muted">Keine großen Veranstaltungen.</p>'}
       ${hidden > 0 ? `<p class="muted small">+ ${hidden} kleinere Veranstaltung${hidden === 1 ? '' : 'en'} (oben „auch kleinere“ antippen)</p>` : ''}
+      ${x.past ? `<p class="muted small">✓ ${x.past} ${x.past === 1 ? 'Veranstaltung ist' : 'Veranstaltungen sind'} heute schon vorbei und ausgeblendet.</p>` : ''}
     </section>`;
   };
 
@@ -2279,7 +2330,7 @@ const ACTIONS = {
     if (!m || !mapState.map) return;
     const box = $('#map');
     if (box) window.scrollTo({ top: Math.max(0, box.getBoundingClientRect().top + window.scrollY - 80), behavior: 'smooth' });
-    mapState.map.setView(m.getLatLng(), 15);
+    mapState.map.setView(m.getLatLng(), 15, { animate: false });
     m.openPopup();
   },
   mapMe() {
