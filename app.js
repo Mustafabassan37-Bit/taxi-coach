@@ -909,7 +909,7 @@ function mapEvents(now) {
     if (e.abgesagt || e.lat == null || e.groesse === 'M') continue;
     const start = parseLocal(e.beginn), end = start + (e.dauer || 165) * 60000;
     if (end < now - 30 * 60000 || start > t0.getTime() + 864e5 + 3 * 36e5) continue;   // heute bis 3 Uhr nachts
-    out.push({ lat: e.lat, lon: e.lon, titel: e.titel, ort: e.ort, start, end, groesse: e.groesse || 'XL' });
+    out.push({ lat: e.lat, lon: e.lon, titel: e.titel, ort: e.ort, art: e.art, start, end, groesse: e.groesse || 'XL' });
   }
   for (const m of d.messen || []) {
     if (m.lat == null || parseLocal(m.von) > now || parseLocal(m.bis) + 864e5 < now) continue;
@@ -918,11 +918,49 @@ function mapEvents(now) {
   return out;
 }
 
+// Karte: die 5 besten Stände gerade, über die Stadt verteilt (Nr. 1–5)
+// Stadtmitte (Dom/Neumarkt) – Startausschnitt bleibt im Stadtgebiet
+const MAP_CITY = [50.938, 6.96];
+
+function mapTop(now) {
+  return diverse(potentialRanking(now, HP, 40), 5).map((x, i) => ({ p: x.p, rank: i + 1, why: x.pot.why.join(', ') }));
+}
+
+// Punkte: normal klein und grau, Meine Orte gelb, Sonderplätze orange, „nur bei Veranstaltung“ dunkel
+const MAP_DOT = { std: { c: '#8b95a3', r: 1 }, mine: { c: '#ffcc00', r: 1.3 }, sonder: { c: '#ff9f43', r: 1.15 }, note: { c: '#4f5866', r: 0.8 } };
+const mapDotKind = (p, mine) => p.note ? 'note' : mine.has(p.name) ? 'mine' : p.ch === 5 ? 'sonder' : 'std';
+
+// Schild für eine Veranstaltung: Farbe wie im Radar, Uhrzeit = wann die Leute rauskommen
+const EV_ICON = { fb: '⚽', ar: '🎤', ko: '🎵', me: '🏢' };
+function evMapLabel(e, now) {
+  const c = evColor(e);
+  if (e.messe) {
+    const h = new Date(now).getHours();
+    return { c, hotNow: h >= 16 && h < 19 && dow(now) !== 6, html: `${EV_ICON[c]} Messe 16–19` };
+  }
+  return { c, hotNow: now >= e.end - 20 * 60000 && now <= e.end + 40 * 60000, html: `${EV_ICON[c]} ${hhmm(e.end)}` };
+}
+
+// Liste unter der Karte; Antippen zeigt den Platz auf der Karte
+function mapTopListHtml(top) {
+  if (!top.length) return '';
+  const me = posFresh() ? [myPos.lat, myPos.lon] : null;
+  return `<section class="card topnow"><h2>🔥 Jetzt am besten</h2><ul class="list">${top.map(x => `<li class="tp">
+    <button type="button" class="toprow" data-act="mapGo" data-name="${esc(x.p.name)}"><span class="rank hot">${x.rank}</span>
+      <span class="grow"><b>${esc(x.p.name)}</b><span class="sub">${esc(x.why)}${me ? ' · ' + fmtDist(distM(me, x.p.pos)) + ' von dir' : ''}</span></span>
+      <span class="more">Zeigen ›</span></button></li>`).join('')}</ul></section>`;
+}
+
+function mapLegendHtml(ev) {
+  return `<b class="lg-rk">1</b> jetzt am besten · <i class="lg-d" style="--c:#ffcc00"></i> Meine Orte · <i class="lg-d" style="--c:#ff9f43"></i> Sonderplatz · <i class="lg-d" style="--c:#8b95a3"></i> Stand${ev ? ' · <b>Uhrzeit</b> = Veranstaltung endet' : ''}`;
+}
+
 function standPopup(p, hot) {
   const me = posFresh() ? [myPos.lat, myPos.lon] : null;
   const shift = !!activeShift();
-  return `<div class="pop"><b>${esc(p.name)}</b>${hot ? ' <span class="hot">🔥 jetzt gut</span>' : ''}
+  return `<div class="pop"><b>${esc(p.name)}</b>${hot ? ` <span class="hot">🔥 Nr. ${hot.rank} jetzt</span>` : ''}
     <div class="sub">${esc(p.lage)}</div>
+    ${hot && hot.why ? `<div class="sub">Warum jetzt: ${esc(hot.why)}</div>` : ''}
     <div class="sub">${esc([chLabel(p.ch), p.zone ? 'Zone ' + p.zone : '', p.n ? p.n + ' Plätze' : '',
       p.note ? 'nur ' + p.note : '', p.hrs ? 'nur ' + p.hrs + ' Uhr' : '', me ? fmtDist(distM(me, p.pos)) + ' von dir' : ''].filter(Boolean).join(' · '))}</div>
     ${p.env && envLine(p, 4) ? `<div class="sub">Umfeld: ${esc(envLine(p, 4))}</div>` : ''}
@@ -956,21 +994,35 @@ async function initMap() {
   }).addTo(map);
 
   const now = Date.now();
-  const hot = new Set(diverse(potentialRanking(now, HP, 40), 5).map(x => x.p.name));
-  // Stände: grau = nur bei Veranstaltungen/Bedarf, orange = Sonderplatz, gelb = normal, groß und rot = jetzt gut
+  const top = mapTop(now);
+  const topBy = new Map(top.map(x => [x.p.name, x]));
+  const mine = new Set(S.settings.places);
+  // Normale Stände klein und grau, beim Hineinzoomen größer; die 5 besten als rote Nummern obendrauf
+  const dotSize = z => z <= 11 ? 2.5 : z === 12 ? 3.5 : z === 13 ? 4.5 : z === 14 ? 6 : 7.5;
+  const dots = [];
+  mapState.mk = {};
   for (const p of HP) {
-    if (!p.pos) continue;
-    const isHot = hot.has(p.name);
-    const color = isHot ? '#ff5c5c' : p.note ? '#8a94a3' : p.ch === 5 ? '#ff9f43' : '#ffcc00';
-    L.circleMarker(p.pos, { radius: isHot ? 10 : 6, color: '#101317', weight: 1.5, fillColor: color, fillOpacity: 0.95 })
-      .bindPopup(() => standPopup(p, isHot), { maxWidth: 280 }).addTo(map);
+    if (!p.pos || topBy.has(p.name)) continue;
+    const st = MAP_DOT[mapDotKind(p, mine)];
+    const m = L.circleMarker(p.pos, { radius: st.r * dotSize(12), color: '#101317', weight: 1, fillColor: st.c, fillOpacity: 0.95 })
+      .bindPopup(() => standPopup(p, null), { maxWidth: 280 }).addTo(map);
+    dots.push([m, st.r]);
+    mapState.mk[p.name] = m;
   }
-  // Veranstaltungen und Messen heute
+  map.on('zoomend', () => { const f = dotSize(map.getZoom()); dots.forEach(([m, r]) => m.setRadius(r * f)); });
+  for (const x of top) {
+    mapState.mk[x.p.name] = L.marker(x.p.pos, { icon: L.divIcon({ className: 'rkicon', html: `<span>${x.rank}</span>`, iconSize: [30, 30] }), zIndexOffset: 1000 })
+      .bindPopup(() => standPopup(x.p, x), { maxWidth: 280 }).addTo(map);
+  }
+  // Veranstaltungen und Messen heute: farbiges Schild mit der Endzeit
   for (const e of mapEvents(now)) {
-    const soon = e.end && now >= e.end - 30 * 60000 && now <= e.end + 30 * 60000;
-    L.marker([e.lat, e.lon], { icon: L.divIcon({ className: 'evicon' + (soon ? ' soon' : ''), html: e.messe ? '🏢' : soon ? '🔥' : '🎤', iconSize: [30, 30] }) })
+    const lb = evMapLabel(e, now);
+    L.marker([e.lat, e.lon], { icon: L.divIcon({ className: 'evlab', html: `<span class="evl c-${lb.c}${lb.hotNow ? ' now' : ''}">${lb.html}</span>`, iconSize: [0, 0] }), zIndexOffset: 500 })
       .bindPopup(() => eventPopup(e), { maxWidth: 280 }).addTo(map);
   }
+  // Start: alles Wichtige im Bild (Top 5 und Veranstaltungen)
+  const focus = [...top.map(x => x.p.pos), ...mapEvents(now).map(e => [e.lat, e.lon])].filter(ll => distM(MAP_CITY, ll) < 7500);
+  if (focus.length > 1) { map.fitBounds(focus, { padding: [36, 36], maxZoom: 13 }); if (map.getZoom() < 12) map.setView(MAP_CITY, 12); }
 
   // Eigener Standort: blauer Punkt, folgt dir, solange die Karte offen ist
   const showMe = pos => {
@@ -993,12 +1045,14 @@ async function initMap() {
 }
 
 function viewMap() {
-  const ev = mapEvents(Date.now()).length;
+  const now = Date.now();
+  const ev = mapEvents(now).length;
   return `<div class="maptools">
       <button type="button" class="btn route" data-act="mapMe">📍 Ich</button>
-      <span class="muted small">🔴 jetzt gut · 🟡 Stand · 🟠 Sonderplatz · ⚪ nur bei Veranstaltung${ev ? ' · 🎤 Veranstaltung heute' : ''}</span>
+      <span class="muted small">${mapLegendHtml(ev)}</span>
     </div>
-    <div id="map" class="map"></div>`;
+    <div id="map" class="map"></div>
+    ${mapTopListHtml(mapTop(now))}`;
 }
 
 function viewPlaces() {
@@ -2106,6 +2160,14 @@ const ACTIONS = {
     S.stand = { name: el.dataset.name, since: Date.now() };
     save(); tab = 'heute'; render(); window.scrollTo(0, 0);
     toast('Du stehst an: ' + el.dataset.name);
+  },
+  mapGo(el) {
+    const m = mapState.mk && mapState.mk[el.dataset.name];
+    if (!m || !mapState.map) return;
+    const box = $('#map');
+    if (box) window.scrollTo({ top: Math.max(0, box.getBoundingClientRect().top + window.scrollY - 80), behavior: 'smooth' });
+    mapState.map.setView(m.getLatLng(), 15);
+    m.openPopup();
   },
   mapMe() {
     toast('Standort wird gesucht …');

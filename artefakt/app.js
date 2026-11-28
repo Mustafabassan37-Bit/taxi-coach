@@ -1070,7 +1070,7 @@ function mapEvents(now) {
     if (e.abgesagt || e.lat == null || e.groesse === 'M') continue;
     const start = parseLocal(e.beginn), end = start + (e.dauer || 165) * 60000;
     if (end < now - 30 * 60000 || start > t0.getTime() + 864e5 + 3 * 36e5) continue;   // heute bis 3 Uhr nachts
-    out.push({ lat: e.lat, lon: e.lon, titel: e.titel, ort: e.ort, start, end, groesse: e.groesse || 'XL' });
+    out.push({ lat: e.lat, lon: e.lon, titel: e.titel, ort: e.ort, art: e.art, start, end, groesse: e.groesse || 'XL' });
   }
   for (const m of d.messen || []) {
     if (m.lat == null || parseLocal(m.von) > now || parseLocal(m.bis) + 864e5 < now) continue;
@@ -1079,11 +1079,49 @@ function mapEvents(now) {
   return out;
 }
 
+// Stadtmitte (Dom/Neumarkt) – Startausschnitt bleibt im Stadtgebiet
+const MAP_CITY = [50.938, 6.96];
+
+// Karte: die 5 besten Stände gerade, über die Stadt verteilt (Nr. 1–5)
+function mapTop(now) {
+  return diverse(potentialRanking(now, HP, 40), 5).map((x, i) => ({ p: x.p, rank: i + 1, why: x.pot.why.join(', ') }));
+}
+
+// Punkte: normal klein und grau, Meine Orte gelb, Sonderplätze orange, „nur bei Veranstaltung“ dunkel
+const MAP_DOT = { std: { c: '#8b95a3', r: 1 }, mine: { c: '#ffcc00', r: 1.3 }, sonder: { c: '#ff9f43', r: 1.15 }, note: { c: '#4f5866', r: 0.8 } };
+const mapDotKind = (p, mine) => p.note ? 'note' : mine.has(p.name) ? 'mine' : p.ch === 5 ? 'sonder' : 'std';
+
+// Schild für eine Veranstaltung: Farbe wie im Radar, Uhrzeit = wann die Leute rauskommen
+const EV_ICON = { fb: '⚽', ar: '🎤', ko: '🎵', me: '🏢' };
+function evMapLabel(e, now) {
+  const c = evColor(e);
+  if (e.messe) {
+    const h = new Date(now).getHours();
+    return { c, hotNow: h >= 16 && h < 19 && dow(now) !== 6, html: `${EV_ICON[c]} Messe 16–19` };
+  }
+  return { c, hotNow: now >= e.end - 20 * 60000 && now <= e.end + 40 * 60000, html: `${EV_ICON[c]} ${hhmm(e.end)}` };
+}
+
+// Liste unter der Karte; Antippen zeigt den Platz auf der Karte
+function mapTopListHtml(top) {
+  if (!top.length) return '';
+  const me = posFresh() ? [myPos.lat, myPos.lon] : null;
+  return `<section class="card topnow"><h2>🔥 Jetzt am besten</h2><ul class="list">${top.map(x => `<li class="tp">
+    <button type="button" class="toprow" data-act="mapGo" data-name="${esc(x.p.name)}"><span class="rank hot">${x.rank}</span>
+      <span class="grow"><b>${esc(x.p.name)}</b><span class="sub">${esc(x.why)}${me ? ' · ' + fmtDist(distM(me, x.p.pos)) + ' von dir' : ''}</span></span>
+      <span class="more">Zeigen ›</span></button></li>`).join('')}</ul></section>`;
+}
+
+function mapLegendHtml(ev) {
+  return `<b class="lg-rk">1</b> jetzt am besten · <i class="lg-d" style="--c:#ffcc00"></i> Meine Orte · <i class="lg-d" style="--c:#ff9f43"></i> Sonderplatz · <i class="lg-d" style="--c:#8b95a3"></i> Stand${ev ? ' · <b>Uhrzeit</b> = Veranstaltung endet' : ''}`;
+}
+
 function standPopup(p, hot) {
   const me = posFresh() ? [myPos.lat, myPos.lon] : null;
   const shift = !!activeShift();
-  return `<div class="pop"><b>${esc(p.name)}</b>${hot ? ' <span class="hot">🔥 jetzt gut</span>' : ''}
+  return `<div class="pop"><b>${esc(p.name)}</b>${hot ? ` <span class="hot">🔥 Nr. ${hot.rank} jetzt</span>` : ''}
     <div class="sub">${esc(p.lage)}</div>
+    ${hot && hot.why ? `<div class="sub">Warum jetzt: ${esc(hot.why)}</div>` : ''}
     <div class="sub">${esc([chLabel(p.ch), p.zone ? 'Zone ' + p.zone : '', p.n ? p.n + ' Plätze' : '',
       p.note ? 'nur ' + p.note : '', p.hrs ? 'nur ' + p.hrs + ' Uhr' : '', me ? fmtDist(distM(me, p.pos)) + ' von dir' : ''].filter(Boolean).join(' · '))}</div>
     ${p.env && envLine(p, 4) ? `<div class="sub">Umfeld: ${esc(envLine(p, 4))}</div>` : ''}
@@ -1103,31 +1141,30 @@ function eventPopup(e) {
 }
 
 function mapSvgHtml(now) {
-  const hot = new Set(diverse(potentialRanking(now, HP, 40), 5).map(x => x.p.name));
+  const top = mapTop(now), topBy = new Map(top.map(x => [x.p.name, x]));
+  const mine = new Set(S.settings.places);
   const rhein = RHEIN.map(p => proj(p[0], p[1]).map(v => v.toFixed(1)).join(',')).join(' ');
   const labels = STADTTEILE.map(([n, la, lo]) => { const [x, y] = proj(la, lo); return `<text class="mlabel" x="${x.toFixed(1)}" y="${y.toFixed(1)}">${esc(n)}</text>`; }).join('');
-  // Stände: grau = nur bei Veranstaltungen/Bedarf, orange = Sonderplatz, gelb = normal, groß und rot = jetzt gut
+  // Normale Stände klein und grau (beim Hineinzoomen größer), Meine Orte gelb, Sonderplätze orange
   const stands = HP.map((p, i) => {
-    if (!p.pos) return '';
+    if (!p.pos || topBy.has(p.name)) return '';
     const [x, y] = proj(p.pos[0], p.pos[1]);
-    const isHot = hot.has(p.name);
-    const cls = isHot ? 'm-hot' : p.note ? 'm-note' : p.ch === 5 ? 'm-sonder' : 'm-std';
-    return `<circle class="mk ${cls}" data-i="${i}" data-r="${isHot ? 10 : 6}" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="1"/>`;
+    const kind = mapDotKind(p, mine);
+    return `<circle class="mk m-${kind}" data-i="${i}" data-z="${MAP_DOT[kind].r * 5}" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="1"/>`;
   }).join('');
-  const events = mapEvents(now).map((e, i) => {
-    const [x, y] = proj(e.lat, e.lon);
-    const soon = e.end && now >= e.end - 30 * 60000 && now <= e.end + 30 * 60000;
-    return `<text class="mev" data-e="${i}" x="${x.toFixed(1)}" y="${y.toFixed(1)}">${e.messe ? '🏢' : soon ? '🔥' : '🎤'}</text>`;
-  }).join('');
+  // Obendrauf als HTML: die 5 besten (rote Nummern) und Veranstaltungen mit Endzeit
+  const ov = top.map(x => { const [px, py] = proj(x.p.pos[0], x.p.pos[1]);
+    return `<button type="button" class="ovl rkicon" data-act="mapPick" data-i="${HP.indexOf(x.p)}" data-x="${px.toFixed(1)}" data-y="${py.toFixed(1)}" aria-label="Nr. ${x.rank}: ${esc(x.p.name)}"><span>${x.rank}</span></button>`; }).join('')
+    + mapEvents(now).map((e, i) => { const [px, py] = proj(e.lat, e.lon); const lb = evMapLabel(e, now);
+    return `<button type="button" class="ovl evl c-${lb.c}${lb.hotNow ? ' now' : ''}" data-act="mapPick" data-e="${i}" data-x="${px.toFixed(1)}" data-y="${py.toFixed(1)}">${lb.html}</button>`; }).join('');
   let me = '';
   if (myPos) { const [x, y] = proj(myPos.lat, myPos.lon); me = `<circle class="mme" data-r="9" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="1"/>`; }
   return `<svg id="mapSvg" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Karte der Kölner Taxi-Halteplätze">
     <rect x="-3000" y="-3000" width="6000" height="6000" class="mbg"/>
     <polyline class="mrhein" points="${rhein}"/>
     <g>${stands}</g>
-    <g class="mlabels">${labels}</g>
-    <g>${events}</g>${me}
-  </svg>`;
+    <g class="mlabels">${labels}</g>${me}
+  </svg><div class="mov">${ov}</div>`;
 }
 
 function mapApplyView() {
@@ -1137,6 +1174,14 @@ function mapApplyView() {
   svg.setAttribute('viewBox', `${(v.cx - w * v.s / 2).toFixed(2)} ${(v.cy - h * v.s / 2).toFixed(2)} ${(w * v.s).toFixed(2)} ${(h * v.s).toFixed(2)}`);
   // Punkte und Schrift bleiben beim Zoomen gleich groß
   svg.querySelectorAll('[data-r]').forEach(c => c.setAttribute('r', (Number(c.dataset.r) * v.s).toFixed(2)));
+  const grow = Math.min(1.5, Math.max(0.55, Math.sqrt(0.15 / v.s)));
+  svg.querySelectorAll('[data-z]').forEach(c => c.setAttribute('r', (Number(c.dataset.z) * grow * v.s).toFixed(2)));
+  const ov = svg.parentNode && svg.parentNode.querySelector('.mov');
+  if (ov) ov.querySelectorAll('[data-x]').forEach(el => {
+    const px = (Number(el.dataset.x) - v.cx) / v.s + w / 2, py = (Number(el.dataset.y) - v.cy) / v.s + h / 2;
+    el.hidden = px < -60 || py < -40 || px > w + 60 || py > h + 40;
+    el.style.transform = `translate(${px.toFixed(1)}px, ${py.toFixed(1)}px) translate(-50%, ${el.classList.contains('evl') ? '-130%' : '-50%'})`;
+  });
   svg.style.setProperty('--fs', (13 * v.s).toFixed(2) + 'px');
   svg.style.setProperty('--fe', (22 * v.s).toFixed(2) + 'px');
   svg.style.setProperty('--sw', (1.5 * v.s).toFixed(2) + 'px');
@@ -1179,6 +1224,14 @@ function initMap() {
     // Start: der eigene Standort, sonst die Innenstadt mit Deutz
     const c = myPos ? proj(myPos.lat, myPos.lon) : proj(50.94, 6.965);
     mapState.view = { cx: c[0], cy: c[1], s: myPos ? 0.15 : Math.max(0.2, 70 / w) };
+    const focus = [...mapTop(now).map(x => x.p.pos), ...evs.map(e => [e.lat, e.lon])].filter(ll => distM(MAP_CITY, ll) < 7500).map(ll => proj(ll[0], ll[1]));
+    if (!myPos && focus.length > 1) {
+      const h = svg.clientHeight || 400;
+      const xs = focus.map(p => p[0]), ys = focus.map(p => p[1]);
+      const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
+      const fit = Math.max((x1 - x0) / Math.max(100, w - 80), (y1 - y0) / Math.max(100, h - 100));
+      mapState.view = { cx: (x0 + x1) / 2, cy: (y0 + y1) / 2, s: Math.min(0.4, Math.max(0.06, fit)) };
+    }
   }
   mapApplyView();
 
@@ -1220,21 +1273,23 @@ function initMap() {
   svg.addEventListener('click', e => {
     if (moved) return;
     const t = e.target;
-    if (t.dataset && t.dataset.i != null) { const p = HP[Number(t.dataset.i)]; mapShowPop(standPopup(p, t.classList.contains('m-hot'))); }
+    if (t.dataset && t.dataset.i != null) { const p = HP[Number(t.dataset.i)]; mapShowPop(standPopup(p, null)); }
     else if (t.dataset && t.dataset.e != null) mapShowPop(eventPopup(evs[Number(t.dataset.e)]));
     else mapShowPop('');
   });
 }
 
 function viewMap() {
-  const ev = mapEvents(Date.now()).length;
+  const now = Date.now();
+  const ev = mapEvents(now).length;
   return `<div class="maptools">
       <button type="button" class="btn route" data-act="mapMe">📍 ${myPos ? esc(myPos.name) : 'Wo bin ich?'}</button>
       <button type="button" class="btn route" data-act="mapZoomIn" aria-label="Hineinzoomen">＋</button>
       <button type="button" class="btn route" data-act="mapZoomOut" aria-label="Herauszoomen">−</button>
     </div>
-    <p class="muted small maplegend">🔴 jetzt gut · 🟡 Stand · 🟠 Sonderplatz · ⚪ nur bei Veranstaltung${ev ? ' · 🎤 Veranstaltung heute' : ''}${myPos ? ' · 🔵 du' : ''}</p>
-    <div class="map">${mapSvgHtml(Date.now())}<div id="mapPop" class="mappop" hidden></div></div>`;
+    <p class="muted small maplegend">${mapLegendHtml(ev)}${myPos ? ' · 🔵 du' : ''}</p>
+    <div class="map">${mapSvgHtml(now)}<div id="mapPop" class="mappop" hidden></div></div>
+    ${mapTopListHtml(mapTop(now))}`;
 }
 
 function viewPlaces() {
@@ -2178,6 +2233,20 @@ const ACTIONS = {
     S.stand = { name: el.dataset.name, since: Date.now() };
     save(); goTab('heute');
     toast('Du stehst an: ' + el.dataset.name);
+  },
+  mapPick(el) {
+    const now = Date.now();
+    if (el.dataset.e != null) { const e = mapEvents(now)[Number(el.dataset.e)]; if (e) mapShowPop(eventPopup(e)); return; }
+    const p = HP[Number(el.dataset.i)];
+    if (p) mapShowPop(standPopup(p, mapTop(now).find(x => x.p === p)));
+  },
+  mapGo(el) {
+    const p = HP.find(q => q.name === el.dataset.name);
+    if (!p || !p.pos || !mapState.svg) return;
+    const box = $('.map');
+    if (box) window.scrollTo({ top: Math.max(0, box.getBoundingClientRect().top + window.scrollY - 80), behavior: 'smooth' });
+    mapCenter(p.pos[0], p.pos[1], 0.06);
+    mapShowPop(standPopup(p, mapTop(Date.now()).find(x => x.p === p)));
   },
   mapMe() {
     updatePos();
