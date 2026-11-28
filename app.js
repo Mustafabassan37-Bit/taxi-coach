@@ -471,6 +471,111 @@ const TIPS = [
   'Bediene das Handy nur im Stand.'
 ];
 
+/* ---------- Weihnachtsmärkte (feste Termine) ---------- */
+
+// Kölner Weihnachtsmärkte 2026/27 nach Angaben der Veranstalter (Stand Nov. 2026).
+// tage: [von, bis, Schlusszeit Mo..So]; 24./25.12. und 31.12./1.1. sind sicherheitshalber ausgelassen.
+const WM_SPAET = [21, 21, 21, 21, 22, 22, 21];   // So–Do 21 Uhr, Fr+Sa 22 Uhr
+const WM_2026 = [
+  { name: 'Weihnachtsmarkt am Dom', kurz: 'Dom', stand: 'Hauptbahnhof', pos: [50.9406, 6.9585],
+    tage: [['2026-11-16', '2026-12-23', [21, 21, 21, 22, 22, 22, 21]]] },
+  { name: 'Heinzels Wintermärchen (Alter Markt / Heumarkt)', kurz: 'Altstadt', stand: 'Heumarkt', pos: [50.9372, 6.9598],
+    tage: [['2026-11-23', '2026-12-23', [22, 22, 22, 22, 22, 22, 22]], ['2026-12-26', '2026-12-30', [22, 22, 22, 22, 22, 22, 22]],
+      ['2027-01-02', '2027-01-10', [21, 21, 21, 21, 21, 21, 21]]] },
+  { name: 'Markt der Engel (Neumarkt)', kurz: 'Neumarkt', stand: 'Neumarkt', pos: [50.9358, 6.9468],
+    tage: [['2026-11-16', '2026-12-23', WM_SPAET]] },
+  { name: 'Nikolausdorf (Rudolfplatz)', kurz: 'Rudolfplatz', stand: 'Rudolfplatz', pos: [50.9365, 6.9402],
+    tage: [['2026-11-16', '2026-12-23', WM_SPAET]] },
+  { name: 'Hafen-Weihnachtsmarkt (Schokoladenmuseum)', kurz: 'Hafen', stand: 'Rheinau', pos: [50.9322, 6.9640],
+    tage: [['2026-11-13', '2026-12-23', WM_SPAET], ['2026-12-26', '2026-12-30', [21, 21, 21, 21, 21, 21, 21]],
+      ['2027-01-02', '2027-01-03', [21, 21, 21, 21, 21, 21, 21]]] }
+];
+
+// Märkte, die heute offen sind, sortiert nach Schlusszeit
+function wmToday(now) {
+  const k = dayKey(now), wd = dow(now);
+  const d0 = new Date(now); d0.setHours(0, 0, 0, 0);
+  const out = [];
+  for (const m of WM_2026) {
+    const r = m.tage.find(([von, bis]) => k >= von && k <= bis);
+    if (!r) continue;
+    out.push({ m, open: d0.getTime() + (m.kurz === 'Dom' && wd === 5 ? 10 : 11) * 36e5, close: d0.getTime() + r[2][wd] * 36e5 });
+  }
+  return out.sort((a, b) => a.close - b.close);
+}
+
+// Ein Eintrag im Radar für alle Märkte zusammen
+function wmRadarItems(now) {
+  const wm = wmToday(now);
+  if (!wm.length) return [];
+  const first = wm[0].close, last = wm[wm.length - 1].close;
+  if (now > last + 40 * 60000) return [];
+  const list = wm.map(x => `${hhmm(x.close)} ${x.m.kurz} (Platz ${x.m.stand})`).join(' · ');
+  const ev = { start: wm[0].open, end: first, titel: `${wm.length} Weihnachtsmärkte schließen`, ort: 'Weihnachtsmärkte', stand: '', groesse: 'XL', art: 'Weihnachtsmarkt' };
+  if (now >= first - 20 * 60000) return [{ ev, kind: 'raus', prio: 3, icon: '🎄', text: 'Jetzt hin: Weihnachtsmärkte schließen', sub: list }];
+  return [{ ev, ownSub: true, prio: 1, icon: '🎄', text: `Heute: Weihnachtsmärkte schließen ${hhmm(first)}–${hhmm(last)} Uhr`, sub: list }];
+}
+
+function wmTimelineRow(now) {
+  const wm = wmToday(now);
+  if (!wm.length) return null;
+  const first = wm[0].close, last = wm[wm.length - 1].close;
+  if (last + 40 * 60000 <= now) return null;
+  return { start: first - 3 * 36e5, end: first, hot0: first - 20 * 60000, hot1: last + 40 * 60000, c: 'wm', xl: true,
+    lab: first === last ? `${hhmm(first)} Märkte` : `${hhmm(first)}–${hhmm(last)} Märkte` };
+}
+
+function wmMapEvents(now) {
+  return wmToday(now).filter(x => now <= x.close + 40 * 60000).map(x => ({ lat: x.m.pos[0], lon: x.m.pos[1], titel: x.m.name,
+    ort: x.m.name, art: 'Weihnachtsmarkt', start: x.open, end: x.close, groesse: 'L' }));
+}
+
+/* ---------- Deine eigenen Zahlen je Platz und Tageszeit ---------- */
+
+const isWeekendT = t => { const d = dow(t), hr = new Date(t).getHours(); return d === 5 || d === 6 || (d === 4 && hr >= 18); };
+const PLAN_FENSTER = [['Früh', 5, 10], ['Tag', 10, 16], ['Abend', 16, 22], ['Nacht', 22, 5]];
+const inWin = (t, f) => { const h = new Date(t).getHours(); return f[1] < f[2] ? h >= f[1] && h < f[2] : h >= f[1] || h < f[2]; };
+
+// Dein bester Platz um diese Uhrzeit (gleicher Tagestyp, ± 2 Stunden)
+function myBestNow(now) {
+  return standStats(slotFilter(now)).filter(o => o.rides >= MIN_RIDES).sort((a, b) => b.perHour - a.perHour)[0] || null;
+}
+
+// Eine Zeile im Fenster eines Halteplatzes: deine Zahlen dort
+function myStandLine(name, now) {
+  const all = standStats(null).find(o => o.place === name);
+  if (!all || !all.rides) return '';
+  const slot = standStats(slotFilter(now)).find(o => o.place === name);
+  return `<div class="sub mine">⭐ Deine Zahlen: ${all.rides} ${all.rides === 1 ? 'Fahrt' : 'Fahrten'} · Ø ${Math.round(all.avgWait)} Min warten · <b>${eur0(all.perHour)}/Std</b>${slot && slot.rides >= 2 ? ` (um diese Zeit ${eur0(slot.perHour)}/Std)` : ''}</div>`;
+}
+
+function myBestRow(mb, p) {
+  const inner = `<span class="rank star">⭐</span>
+      <span class="grow"><b>${esc(mb.place)}</b><span class="sub">Dein bester Platz um diese Zeit: ${eur0(mb.perHour)}/Std aus ${mb.rides} Fahrten</span></span>`;
+  return p ? `<li class="tp"><button type="button" class="toprow" data-act="mapGo" data-name="${esc(mb.place)}">${inner}<span class="more">Zeigen ›</span></button></li>`
+    : `<li class="tp"><div class="toprow">${inner}</div></li>`;
+}
+
+// Coach: dein bester Platz je Tageszeit, Werktag und Wochenende
+function myPlanCard(now) {
+  const measured = S.rides.filter(r => r.wait != null && r.place).length;
+  const cell = (wk, f) => {
+    const best = standStats(t => isWeekendT(t) === wk && inWin(t, f)).filter(o => o.rides >= MIN_RIDES).sort((a, b) => b.perHour - a.perHour)[0];
+    const cur = isWeekendT(now) === wk && inWin(now, f);
+    return `<td class="${cur ? 'cur' : ''}">${best ? `<b>${esc(best.place)}</b><br><span class="eurh">${eur0(best.perHour)}/Std</span> <span class="muted small">(${best.rides})</span>` : '<span class="muted">–</span>'}</td>`;
+  };
+  return `<section class="card">
+    <h2>⭐ Dein persönlicher Plan</h2>
+    <p class="muted small">Dein bester Halteplatz je Tageszeit – nur aus deinen eigenen Fahrten (€ pro Stunde, Wartezeit mitgerechnet). Der gelbe Rahmen ist jetzt.</p>
+    <table class="t plan"><tr><th></th><th>Werktag</th><th>Wochenende</th></tr>
+      ${PLAN_FENSTER.map(f => `<tr><td>${f[0]}<br><span class="muted small">${f[1]}–${f[2]} Uhr</span></td>${cell(false, f)}${cell(true, f)}</tr>`).join('')}
+    </table>
+    <p class="muted small" style="margin-top:8px">${measured} gemessene ${measured === 1 ? 'Fahrt' : 'Fahrten'}. ${measured < 30
+      ? `Ab ca. 30 werden die Zahlen verlässlich. Ein Feld füllt sich ab ${MIN_RIDES} Fahrten am selben Platz. Trage Fahrten über „Ich stehe an einem Halteplatz“ ein, dann misst die App die Wartezeit mit.`
+      : 'Je mehr Fahrten, desto genauer.'}</p>
+  </section>`;
+}
+
 function viewCoach() {
   const now = Date.now();
   const adv = slotAdvice(now);
@@ -515,6 +620,7 @@ function viewCoach() {
     ${dayTipsCard(now)}
     ${potentialCard(now)}
     ${standCard(now)}
+    ${myPlanCard(now)}
     ${sourceCard()}
     ${bestCard}
     <section class="card">
@@ -915,6 +1021,7 @@ function mapEvents(now) {
     if (m.lat == null || parseLocal(m.von) > now || parseLocal(m.bis) + 864e5 < now) continue;
     out.push({ lat: m.lat, lon: m.lon, titel: 'Messe ' + m.titel, ort: 'Koelnmesse', messe: true });
   }
+  out.push(...wmMapEvents(now));
   return out;
 }
 
@@ -931,7 +1038,7 @@ const MAP_DOT = { std: { c: '#8b95a3', r: 1 }, mine: { c: '#ffcc00', r: 1.3 }, s
 const mapDotKind = (p, mine) => p.note ? 'note' : mine.has(p.name) ? 'mine' : p.ch === 5 ? 'sonder' : 'std';
 
 // Schild für eine Veranstaltung: Farbe wie im Radar, Uhrzeit = wann die Leute rauskommen
-const EV_ICON = { fb: '⚽', ar: '🎤', ko: '🎵', me: '🏢' };
+const EV_ICON = { fb: '⚽', ar: '🎤', ko: '🎵', me: '🏢', wm: '🎄' };
 function evMapLabel(e, now) {
   const c = evColor(e);
   if (e.messe) {
@@ -945,7 +1052,8 @@ function evMapLabel(e, now) {
 function mapTopListHtml(top) {
   if (!top.length) return '';
   const me = posFresh() ? [myPos.lat, myPos.lon] : null;
-  return `<section class="card topnow"><h2>🔥 Jetzt am besten</h2><ul class="list">${top.map(x => `<li class="tp">
+  const mb = myBestNow(Date.now()), mbp = mb && HP.find(q => q.name === mb.place && q.pos);
+  return `<section class="card topnow"><h2>🔥 Jetzt am besten</h2><ul class="list">${mb ? myBestRow(mb, mbp) : ''}${top.map(x => `<li class="tp">
     <button type="button" class="toprow" data-act="mapGo" data-name="${esc(x.p.name)}"><span class="rank hot">${x.rank}</span>
       <span class="grow"><b>${esc(x.p.name)}</b><span class="sub">${esc(x.why)}${me ? ' · ' + fmtDist(distM(me, x.p.pos)) + ' von dir' : ''}</span></span>
       <span class="more">Zeigen ›</span></button></li>`).join('')}</ul></section>`;
@@ -964,6 +1072,7 @@ function standPopup(p, hot) {
     <div class="sub">${esc([chLabel(p.ch), p.zone ? 'Zone ' + p.zone : '', p.n ? p.n + ' Plätze' : '',
       p.note ? 'nur ' + p.note : '', p.hrs ? 'nur ' + p.hrs + ' Uhr' : '', me ? fmtDist(distM(me, p.pos)) + ' von dir' : ''].filter(Boolean).join(' · '))}</div>
     ${p.env && envLine(p, 4) ? `<div class="sub">Umfeld: ${esc(envLine(p, 4))}</div>` : ''}
+    ${myStandLine(p.name, Date.now())}
     <div class="popbtns">
       <a class="btn route" href="${mapsDir(p.pos[0], p.pos[1])}" target="_blank" rel="noopener">Route</a>
       ${shift ? `<button type="button" class="btn route" data-act="mapStand" data-name="${esc(p.name)}">Ich stehe hier</button>` : ''}
@@ -1219,6 +1328,7 @@ function radarItems(now = Date.now()) {
       }
     }
   }
+  items.push(...wmRadarItems(now));
   if (d && Array.isArray(d.messen)) {
     const h = new Date(now).getHours(), wd = dow(now);
     for (const m of d.messen) {
@@ -1257,6 +1367,7 @@ function radarBanner(now = Date.now()) {
 function evColor(ev) {
   if (!ev) return 'ko';
   if (ev.messe) return 'me';
+  if (ev.art === 'Weihnachtsmarkt') return 'wm';
   if (ev.art === 'Fußball' || /Stadion|Sportpark/i.test(ev.ort || '')) return 'fb';
   if (/LANXESS/i.test(ev.ort || '')) return 'ar';
   return 'ko';
@@ -1282,7 +1393,7 @@ function radarRow(x, now) {
   const t = anreise ? ev.start : ev.end;
   const label = anreise ? 'Beginn' : x.kind === 'raus' ? 'raus' : 'Ende';
   const when = x.kind === 'raus' ? 'JETZT' : inDur(t, now);
-  const sub = x.kind ? x.sub : `ab ${hhmm(ev.end - 20 * 60000)} am Platz ${ev.stand} sein · Beginn ${hhmm(ev.start)}`;
+  const sub = x.kind || x.ownSub ? x.sub : `ab ${hhmm(ev.end - 20 * 60000)} am Platz ${ev.stand} sein · Beginn ${hhmm(ev.start)}`;
   return `<li class="rv${ev.groesse === 'XL' ? ' xl' : ''}${x.kind === 'raus' ? ' now' : ''}">
     <div class="rv-time c-${c}"><small>${label}</small><b>${hhmm(t)}</b><small>${esc(when)}</small></div>
     <div class="grow">
@@ -1318,6 +1429,8 @@ function radarTimeline(now) {
       rows.push({ start: hot0 - 6 * 36e5, end: hot0, hot0, hot1, c: 'me', xl: true, lab: `16–19 Messe` });
     }
   }
+  const wmRow = wmTimelineRow(now);
+  if (wmRow) rows.push(wmRow);
   if (!rows.length) return `<section class="card"><h2>🕐 Bis 2 Uhr nachts</h2>
     <p class="muted">Heute keine großen Termine – normaler Betrieb.</p></section>`;
   rows.sort((x, y) => x.hot0 - y.hot0);
